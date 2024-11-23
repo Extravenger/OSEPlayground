@@ -1,4 +1,4 @@
-function givemesystem {
+function sharpsystem {
     param (
         [string]$Params
     )
