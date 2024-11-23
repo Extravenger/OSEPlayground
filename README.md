@@ -1,1 +1,1 @@
-Just a bunch of tools built along the OSEP course.
+Just a bunch of tools built/gathered along the OSEP course.
