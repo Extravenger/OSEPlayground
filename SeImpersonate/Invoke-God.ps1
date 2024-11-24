@@ -1,4 +1,4 @@
-function godsystem {
+function Invoke-God {
     param (
         [string]$Params
     )
