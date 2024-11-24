@@ -1,4 +1,4 @@
-function sharpsystem {
+function Invoke-SharpEFS {
     param (
         [string]$Params
     )
