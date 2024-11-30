@@ -1,3 +1,7 @@
+// We need to install with NuGet package manager some dependencies for the project prior compilation:
+// Install-Package System.Management.Automation.dll -Version 10.0.10586
+// Install-Package Core.System.Configuration.Install -Version 1.1.0
+
 using System;
 using System.Collections.ObjectModel;
 using System.Configuration.Install;
