@@ -1,3 +1,6 @@
+// This file is used to get foothold on challenge 4 in OSEP, we copmpile it, then encode it with: certutil -encode bypass_clm.exe file.txt
+// We move file.txt to our attacking machine and host it, we also have the HTA template in this folder to use to trick the victim download the file, decodes it back to EXE, and run our code.
+
 using System;
 using System.Collections.ObjectModel;
 using System.Configuration.Install;
@@ -5,8 +8,7 @@ using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Text;
 
-// This file is used to solve challenge 4 in OSEP, we copmpile it, then encode it with: certutil -encode bypass_clm.exe file.txt
-// We move file.txt to our attacking machine and host it, we also have the HTA template in this folder to use to trick the victim download the file, decodes it back to EXE, and run our code.
+
 
 namespace PsBypassCostraintLanguageMode
 {
