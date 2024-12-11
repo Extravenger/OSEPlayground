@@ -25,7 +25,7 @@ namespace SQL
             string conString = $"Server={sqlServer}; Database={database}; User Id={username}; Password={password}; MultipleActiveResultSets=true;";
 
             // Create a new SqlConnection object with the constructed connection string
-            SqlConnection con = new SqlConnection(conString); ;
+            SqlConnection con = new SqlConnection(conString);
 
             try
             {
@@ -37,14 +37,12 @@ namespace SQL
                     // List logins and users
                     List<string> impersonableLogins = ListImpersonableLogins(con);
                     List<string> impersonableUsers = ListImpersonableUsers(con);
-                    List<string> linkedServers = ListLinkedServers(con);
 
                     // Display available options
                     Console.WriteLine("Choose an option:" + "\n");
                     Console.WriteLine("\t" + "1. Impersonate a login (EXECUTE AS LOGIN)");
-                    Console.WriteLine("\t" + "2. Impersonate a user (EXECUTE AS USER)");
-                    Console.WriteLine("\t" + "3. List all available SQL links (Linked Servers)" + "\n");
-                    Console.Write("Enter 1, 2, or 3: ");
+                    Console.WriteLine("\t" + "2. Impersonate a user (EXECUTE AS USER)" + "\n");
+                    Console.Write("Enter 1 or 2: ");
                     string choice = Console.ReadLine();
 
                     if (choice.Equals("exit", StringComparison.OrdinalIgnoreCase))
@@ -94,27 +92,9 @@ namespace SQL
                             Console.WriteLine("Invalid choice.");
                         }
                     }
-                    else if (choice == "3")
-                    {
-                        // List all linked servers with sysadmin check
-                        Console.WriteLine("Available linked servers:");
-                        foreach (var server in linkedServers)
-                        {
-                            Console.WriteLine(server);
-                            bool hasSysadmin = CheckSysAdminAccess(con, server);
-                            if (hasSysadmin)
-                            {
-                                Console.WriteLine($"- You have SYSADMIN access to this server.");
-                            }
-                            else
-                            {
-                                Console.WriteLine($"- You do NOT have SYSADMIN access to this server.");
-                            }
-                        }
-                    }
                     else
                     {
-                        Console.WriteLine("Invalid choice. Please enter 1, 2, or 3.");
+                        Console.WriteLine("Invalid choice. Please enter 1 or 2.");
                     }
                 }
             }
@@ -176,55 +156,6 @@ namespace SQL
             }
 
             return users;
-        }
-
-        static List<string> ListLinkedServers(SqlConnection con)
-        {
-            List<string> linkedServers = new List<string>();
-            string query = "SELECT name FROM sys.servers WHERE is_linked = 1;";
-            SqlCommand command = new SqlCommand(query, con);
-
-            try
-            {
-                SqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    linkedServers.Add(reader.GetString(0));
-                }
-                reader.Close();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error listing linked servers: " + ex.Message);
-            }
-
-            return linkedServers;
-        }
-
-        static bool CheckSysAdminAccess(SqlConnection con, string linkedServer)
-        {
-            string checkSysAdminQuery = $"SELECT IS_SRVROLEMEMBER('sysadmin', '{linkedServer}')";
-
-            try
-            {
-                SqlCommand command = new SqlCommand(checkSysAdminQuery, con);
-                object result = command.ExecuteScalar();
-
-                if (result != null && result is bool)
-                {
-                    return (bool)result; // Cast directly to boolean
-                }
-                else
-                {
-                    Console.WriteLine("Error: Unable to check sysadmin access. Invalid result from IS_SRVROLEMEMBER.");
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error checking sysadmin access to {linkedServer}: " + ex.Message);
-                return false;
-            }
         }
 
         static void ImpersonateLoginAndExecuteCommand(SqlConnection con, string impersonatedLogin)
