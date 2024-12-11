@@ -82,7 +82,7 @@ namespace SQL
                         }
                         else
                         {
-                            Console.WriteLine("Invalid choice.");
+                            Console.WriteLine("[!] Invalid choice.");
                         }
                     }
                     else if (choice == "2")
@@ -102,7 +102,7 @@ namespace SQL
                         }
                         else
                         {
-                            Console.WriteLine("Invalid choice.");
+                            Console.WriteLine("[!] Invalid choice.");
                         }
                     }
                     else if (choice == "3")
@@ -115,7 +115,7 @@ namespace SQL
                             continue;
                         }
 
-                        Console.WriteLine("\nAvailable linked servers:\n");
+                        Console.WriteLine("\n[+] Available linked servers:\n");
                         for (int i = 0; i < linkedServers.Count; i++)
                         {
                             Console.WriteLine($"\t{i + 1}. {linkedServers[i]}\n");
@@ -129,12 +129,12 @@ namespace SQL
                         }
                         else
                         {
-                            Console.WriteLine("Invalid choice. Please select a valid number.");
+                            Console.WriteLine("[!] Invalid choice. Please select a valid number.");
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Invalid choice. Please enter 1, 2, or 3.");
+                        Console.WriteLine("[!] Invalid choice. Please enter 1, 2, or 3.");
                     }
                 }
             }
@@ -165,11 +165,11 @@ namespace SQL
                 Console.WriteLine("Choose how to execute the command:" + "\n");
                 Console.WriteLine("\t" + "1. Use xp_cmdshell");
                 Console.WriteLine("\t" + "2. Use sp_oamethod (WScript Shell)" + "\n");
-                Console.Write("Enter 1 or 2: ");
+                Console.Write("[+] Enter 1 or 2: ");
                 string execChoice = Console.ReadLine();
 
                 // Get the command to execute from the user
-                Console.Write("Enter the full command to execute: ");
+                Console.Write("[+] Enter the full command to execute: ");
                 string usercommand = Console.ReadLine();
 
                 if (execChoice == "1")
@@ -185,7 +185,7 @@ namespace SQL
                 }
                 else
                 {
-                    Console.WriteLine("Invalid choice. Please enter 1 or 2.");
+                    Console.WriteLine("[!] Invalid choice. Please enter 1 or 2.");
                 }
 
                 // Revert the impersonation after Option 1
@@ -232,14 +232,14 @@ namespace SQL
                 string revertCmd = "REVERT;";
                 SqlCommand revertCommand = new SqlCommand(revertCmd, con);
                 revertCommand.ExecuteNonQuery();
-                Console.WriteLine("\nReverted impersonation before executing commands on linked server.\n");
+                Console.WriteLine("\n[+] Reverted impersonation before executing commands on linked server.");
 
                 // Ensure login mapping exists for the linked server
                 // CreateLoginMapping(con, linkedServer);
 
-                Console.WriteLine($"\nExecuting commands on linked server: {linkedServer}\n");
+                Console.WriteLine($"\n[+] Executing commands on linked server: {linkedServer}\n");
 
-                Console.WriteLine("Choose an action:\n");
+                Console.WriteLine("[+] Choose an action:\n");
                 Console.WriteLine("\t1. Enable xp_cmdshell");
                 Console.WriteLine("\t2. Execute a command using xp_cmdshell\n");
                 Console.Write("Enter 1 or 2: ");
@@ -264,7 +264,7 @@ namespace SQL
                 }
                 else
                 {
-                    Console.WriteLine("Invalid choice. Please enter 1 or 2.");
+                    Console.WriteLine("[!] Invalid choice. Please enter 1 or 2.");
                 }
             }
             catch (Exception ex)
@@ -411,7 +411,7 @@ namespace SQL
                 }
                 else
                 {
-                    Console.WriteLine("Invalid choice. Please enter 1 or 2.");
+                    Console.WriteLine("[!] Invalid choice. Please enter 1 or 2.");
                 }
 
                 // Revert the impersonation
