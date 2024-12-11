@@ -8,17 +8,24 @@ namespace SQL
     {
         static void Main(string[] args)
         {
-            // Ask the user for SQL Server and Database name
+            // Ask the user for SQL Server name, Database name, Username, and Password
             Console.Write("Enter SQL Server name: ");
             string sqlServer = Console.ReadLine();
 
             Console.Write("Enter Database name: ");
             string database = Console.ReadLine();
 
-            // Construct the connection string dynamically
-            string conString = $"Server={sqlServer}; Database={database}; Integrated Security=True; MultipleActiveResultSets=true;";
+            Console.Write("Enter Username: ");
+            string username = Console.ReadLine();
 
-            SqlConnection con = new SqlConnection(conString);
+            Console.Write("Enter Password: ");
+            string password = Console.ReadLine();
+
+            // Construct the connection string dynamically
+            string conString = $"Server={sqlServer}; Database={database}; User Id={username}; Password={password}; MultipleActiveResultSets=true;";
+
+            // Create a new SqlConnection object with the constructed connection string
+            SqlConnection con = new SqlConnection(conString); ;
 
             try
             {
