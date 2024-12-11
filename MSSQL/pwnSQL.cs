@@ -140,7 +140,7 @@ namespace SQL
             }
             catch (Exception ex)
             {
-                Console.WriteLine("An error occurred while opening the connection: " + ex.Message);
+                Console.WriteLine("[!] An error occurred while opening the connection: " + ex.Message);
             }
             finally
             {
@@ -196,7 +196,7 @@ namespace SQL
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error impersonating login and executing command: " + ex.Message);
+                Console.WriteLine("[!] Error impersonating login and executing command: " + ex.Message);
             }
         }
 
@@ -218,7 +218,7 @@ namespace SQL
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error listing linked servers: " + ex.Message);
+                Console.WriteLine("[!] Error listing linked servers: " + ex.Message);
             }
 
             return linkedServers;
@@ -269,7 +269,7 @@ namespace SQL
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error executing commands on linked server: " + ex.Message);
+                Console.WriteLine("[!] Error executing commands on linked server: " + ex.Message);
             }
         }
 
@@ -305,7 +305,7 @@ namespace SQL
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error enabling xp_cmdshell on linked server: " + ex.Message);
+                Console.WriteLine("[!] Error enabling xp_cmdshell on linked server: " + ex.Message);
             }
         }
 
@@ -340,7 +340,7 @@ namespace SQL
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error executing command on linked server: " + ex.Message);
+                Console.WriteLine("[!] Error executing command on linked server: " + ex.Message);
             }
         }
 
@@ -361,7 +361,7 @@ namespace SQL
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error listing logins: " + ex.Message);
+                Console.WriteLine("[!] Error listing logins: " + ex.Message);
             }
 
             return logins;
@@ -422,7 +422,7 @@ namespace SQL
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error impersonating user and executing command: " + ex.Message);
+                Console.WriteLine("[!] Error impersonating user and executing command: " + ex.Message);
             }
         }
 
@@ -455,7 +455,7 @@ namespace SQL
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error executing command with sp_oamethod: " + ex.Message);
+                Console.WriteLine("[!] Error executing command with sp_oamethod: " + ex.Message);
             }
         }
 
@@ -490,7 +490,7 @@ namespace SQL
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error executing command with xp_cmdshell: " + ex.Message);
+                Console.WriteLine("[!] Error executing command with xp_cmdshell: " + ex.Message);
             }
         }
 
@@ -505,11 +505,11 @@ namespace SQL
                 string enableCmd = "EXEC sp_configure 'Show Advanced Options', 1; RECONFIGURE; EXEC sp_configure 'xp_cmdshell', 1; RECONFIGURE;";
                 SqlCommand enableCommand = new SqlCommand(enableCmd, con);
                 enableCommand.ExecuteNonQuery();
-                Console.WriteLine("Enabled xp_cmdshell.\n");
+                Console.WriteLine("[+] Enabled xp_cmdshell.\n");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error enabling xp_cmdshell: " + ex.Message);
+                Console.WriteLine("[!] Error enabling xp_cmdshell: " + ex.Message);
             }
         }
 
@@ -531,7 +531,7 @@ namespace SQL
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error listing users: " + ex.Message);
+                Console.WriteLine("[!] Error listing users: " + ex.Message);
             }
 
             return users;
