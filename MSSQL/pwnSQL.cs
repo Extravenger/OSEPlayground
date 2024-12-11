@@ -176,7 +176,7 @@ namespace SQL
                     Console.WriteLine("Invalid choice. Please enter 1 or 2.");
                 }
 
-                // Revert the impersonation
+                // Revert the impersonation after Option 1
                 string revertCmd = "REVERT;";
                 SqlCommand revertCommand = new SqlCommand(revertCmd, con);
                 revertCommand.ExecuteNonQuery();
@@ -216,6 +216,12 @@ namespace SQL
         {
             try
             {
+                // Revert any previous impersonation before interacting with linked servers
+                string revertCmd = "REVERT;";
+                SqlCommand revertCommand = new SqlCommand(revertCmd, con);
+                revertCommand.ExecuteNonQuery();
+                Console.WriteLine("\nReverted impersonation before executing commands on linked server.\n");
+
                 // Ensure login mapping exists for the linked server
                 CreateLoginMapping(con, linkedServer);
 
@@ -285,6 +291,7 @@ namespace SQL
                 Console.WriteLine("Error enabling xp_cmdshell on linked server: " + ex.Message);
             }
         }
+    
 
         static void ExecuteCommandOnLinkedServer(SqlConnection con, string linkedServer, string userCommand)
         {
@@ -467,6 +474,8 @@ namespace SQL
                 Console.WriteLine("Error executing command with xp_cmdshell: " + ex.Message);
             }
         }
+
+
 
 
         static void EnableXpCmdShell(SqlConnection con)
