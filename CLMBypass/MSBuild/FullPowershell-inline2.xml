@@ -1,4 +1,5 @@
-
+<!-- C:\Windows\Microsoft.NET\Framework64\v4.0.30319\msbuild.exe pshell.xml -->
+<!-- Opens powershell prompt in FullLanguage mode in current process -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
     <ItemGroup>
       <Reference Include="System" />
