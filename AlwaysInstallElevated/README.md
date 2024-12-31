@@ -1,3 +1,7 @@
+### Leveraging AlwaysInstallElevated
+- Check if enabled: `reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated` 
+                    `reg query HKLM\software\policies\microsoft\windows\installer /v alwaysinstallelevated` 
+
 ### MSI File Purpose
 
 1. Creating the user "amit" with the password "Password123!" 
