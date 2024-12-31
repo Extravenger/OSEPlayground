@@ -1,2 +1,0 @@
-1. Creating the user "amit" with the password "Password123!"
-2. Adding the user to the local administrators group.
