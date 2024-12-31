@@ -1,4 +1,3 @@
-// Can be combined with HTA template to get foothold on challenge 4 (OSEP)
 [Byte[]] $SHELLCODE = 0xff, ...
 
 filter Get-Type ([string]$dllName,[string]$typeName)
