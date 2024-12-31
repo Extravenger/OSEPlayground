@@ -1,12 +1,12 @@
 ### Step 1: Modify the Ligolo-ng agent's main file
-  Clone ligolo-ng repo: https://github.com/nicocha30/ligolo-ng. 
-  Open and edit main.go to adjust the settings as needed: /ligolo-ng/cmd/agent/main.go 
+  - Clone ligolo-ng repo: https://github.com/nicocha30/ligolo-ng. 
+  - Open and edit main.go to adjust the settings as needed: /ligolo-ng/cmd/agent/main.go 
    
   <img width="653" alt="{CAC55401-20B8-42A1-BCDE-EBF6E1DFC442}" src="https://github.com/user-attachments/assets/4d52a625-d15d-477d-a46e-63659f503c42" /> 
 
 ### Step 2: Compile the agent 
   Use the following command to compile: 
-  GOOS=windows go build -o agent.exe cmd/agent/main.go
+  - GOOS=windows go build -o agent.exe cmd/agent/main.go
 
 ### Step 3: Encode the ApplockerBypassExternalBinary executable with certutil 
   certutil -encode .\ApplockerBypassExternalBinary.exe AppLockerBypassLigolo.
