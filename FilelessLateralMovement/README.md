@@ -8,3 +8,9 @@
   - `Invoke-SMBRemoting -ComputerName "Workstation-01.ferrari.local" -PipeName Something -ServiceName RandomService`
   - `Invoke-SMBRemoting -ComputerName "Workstation-01.ferrari.local" -ModifyService -Verbose`
   - `Invoke-SMBRemoting -ComputerName "Workstation-01.ferrari.local" -ModifyService -ServiceName SensorService -Verbose`
+
+<ins>Command Execution</ins>
+- `Invoke-SMBRemoting -ComputerName "Workstation-01.ferrari.local" -Command "whoami /all"`
+- `Invoke-SMBRemoting -ComputerName "Workstation-01.ferrari.local" -Command "whoami /all" -PipeName Something -ServiceName RandomService`
+- `Invoke-SMBRemoting -ComputerName "Workstation-01.ferrari.local" -Command "whoami /all" -ModifyService`
+- `Invoke-SMBRemoting -ComputerName "Workstation-01.ferrari.local" -Command "whoami /all" -ModifyService -ServiceName SensorService -Verbose`
