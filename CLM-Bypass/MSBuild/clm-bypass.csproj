@@ -68,6 +68,7 @@
 
                 while (true)
                 {
+                    // Print the prompt first
                     Console.Write("PS " + currentDirectory + "> ");
                     string cmd = Console.ReadLine();
                     if (string.IsNullOrWhiteSpace(cmd)) continue;
@@ -103,26 +104,39 @@
                         Collection<PSObject> psOutput = ps.Invoke();
                         Collection<ErrorRecord> errors = ps.Streams.Error.ReadAll();
 
-                        foreach (ErrorRecord error in errors)
+                        if (errors.Count > 0)
                         {
-                            Console.WriteLine(error.ToString());
-                        }
-                        foreach (PSObject output in psOutput)
-                        {
-                            if (output != null)
+                            // Print a blank line before the error message and next prompt
+                            Console.WriteLine(); // Blank line before error output
+                            foreach (ErrorRecord error in errors)
                             {
-                                Console.WriteLine(output.ToString());
+                                Console.WriteLine(error.ToString());
+                            }
+                        }
+                        else
+                        {
+                            foreach (PSObject output in psOutput)
+                            {
+                                if (output != null)
+                                {
+                                    // Print a blank line before the command output
+                                    Console.WriteLine(); // Blank line before output
+                                    Console.WriteLine(output.ToString());
+                                }
                             }
                         }
                     }
                     catch (Exception e)
                     {
+                        // Print a blank line before the error message and next prompt
+                        Console.WriteLine(); // Blank line before error output
                         Console.WriteLine("**** ERROR ****");
                         Console.WriteLine(e.Message);
                     }
                     finally
                     {
                         ps.Commands.Clear();
+                        Console.WriteLine();
                     }
                 }
 
