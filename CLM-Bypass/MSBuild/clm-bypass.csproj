@@ -24,19 +24,13 @@
         <![CDATA[
         using System;
         using System.IO;
-        using System.Text;
-        using System.Reflection;
-        using Microsoft.CSharp;
-        using System.Runtime.InteropServices;
-        using Microsoft.Build.Framework;
-        using Microsoft.Build.Utilities;
-        using System.Security.Cryptography;
-        using System.Net;
+        using System.Collections.ObjectModel;
         using System.Management.Automation;
         using System.Management.Automation.Runspaces;
-        using System.Collections.ObjectModel;
+        using Microsoft.Build.Framework;
+        using Microsoft.Build.Utilities;
 
-        public class ClassExample : Task, ITask
+        public class ClassExample : Task
         {
             public override bool Execute()
             {
@@ -50,6 +44,7 @@
 
                 while (true)
                 {
+                    Console.Write("PS " + currentDirectory + "> ");
                     string cmd = Console.ReadLine();
                     if (string.IsNullOrWhiteSpace(cmd)) continue;
 
@@ -69,11 +64,11 @@
                             {
                                 Console.WriteLine("The system cannot find the path specified: " + targetPath);
                             }
-                            Console.Write("PS " + currentDirectory + "> ");
                             continue;
                         }
 
-                        ps.AddScript(cmd);
+                        // Add the Out-String cmdlet to ensure proper formatting
+                        ps.AddScript(cmd + " | Out-String");
                         Collection<PSObject> psOutput = ps.Invoke();
                         Collection<ErrorRecord> errors = ps.Streams.Error.ReadAll();
 
@@ -92,19 +87,14 @@
                     catch (Exception e)
                     {
                         Console.WriteLine("**** ERROR ****");
-                        if (e.Message != null)
-                        {
-                            Console.WriteLine(e.Message);
-                        }
+                        Console.WriteLine(e.Message);
                     }
                     finally
                     {
                         ps.Commands.Clear();
                     }
-
-                    Console.Write("PS " + currentDirectory + "> ");
                 }
-                
+
                 rs.Close();
                 return true;
             }
