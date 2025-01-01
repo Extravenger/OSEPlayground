@@ -10,3 +10,4 @@
 ### Shellcode Runner
 - The file `shellcodeRunner.xml` used to inject and execute shellcode to the current process, transfer to victim and run:
 - `C:\Windows\Microsoft.NET\Framework64\v4.0.30319\msbuild.exe shellcodeRunner.xml`
+- *NOTE: shellcode is XOR'd with key: 0xfa*
