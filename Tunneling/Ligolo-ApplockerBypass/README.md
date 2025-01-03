@@ -6,10 +6,10 @@
 
 ### <ins>Step 2: Compile the agent<ins/> 
   - Use the following command to compile: 
-  - GOOS=windows go build -o agent.exe cmd/agent/main.go
+  - `GOOS=windows go build -o agent.exe cmd/agent/main.go`
 
 ### <ins>Step 3: Encode the ApplockerBypassExternalBinary executable with certutil<ins/> 
-  - certutil -encode .\ApplockerBypassExternalBinary.exe AppLockerBypassLigolo.
+  - `certutil -encode .\ApplockerBypassExternalBinary.exe AppLockerBypassLigolo.txt`
 
 ### <ins>Step 4: Execution on the Target Machine<ins/>
   - Name the agent executable `ligolo-agent.exe` 
