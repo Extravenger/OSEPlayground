@@ -23,7 +23,7 @@ Using netexec:
 
 # <ins>BloodHound Dacls Abuse</ins>
 
-### <ins>GMSAPasswordReader</ins>
+### GMSAPasswordReader
 
 Decrypt the gmsa password
 
