@@ -1,8 +1,8 @@
 Just a bunch of tools built/gathered along the OSEP course.
 
 # Map the network (using netexec)
-- `nxc smb 172.16.125.0/24 --log hosts.txt` (for windows hosts)
-- `nxc ssh 172.16.125.0/24 --log hosts.txt` (for linux hosts)
+- `nxc smb 172.16.125.0/24 --log hosts.txt` (for windows hosts) 
+- `nxc ssh 172.16.125.0/24 --log hosts.txt` (for linux hosts) 
 - `netexec smb 172.16.149.0/24 --log hosts.txt && sed -i 's/x64//g' hosts.txt && cat hosts.txt | awk '{print $9,$11,$11"."$21}' | sed 's/(domain://g' | sed 's/)//g' | uniq | sort -u | tr '[:upper:]' '[:lower:]' | sudo tee -a /etc/hosts` - Automation for `/etc/hosts` file
 
 # Useful Basic Commands:
