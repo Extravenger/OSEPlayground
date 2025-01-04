@@ -49,6 +49,7 @@ Mostly be used for NTLM Relay attacks, first step is to allow inbound and outbou
 - `New-NetFirewallRule -DisplayName "Allow Port 445 Outbound" -Direction Outbound -Protocol TCP -RemotePort 445 -Action Allow`
 
 Now, we will need to disable the SMB port on the victim: 
+
 *Note: Run one by one in CMD, no powershell!)*
 
     1. `sc config LanmanServer start= disabled`
