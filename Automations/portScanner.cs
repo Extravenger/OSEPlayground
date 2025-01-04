@@ -166,7 +166,6 @@ class Program
     }
 
     // Method to get the operating system based on TTL
-
     static async Task<string> GetOperatingSystem(string host)
     {
         try
@@ -203,9 +202,6 @@ class Program
             return "Host Unreachable";
         }
     }
-
-
-
 
     // Method to parse ports from input
     static List<int> ParsePorts(string portInput)
@@ -270,42 +266,148 @@ class Program
     // Main method that orchestrates the port scanning based on user input
     static async Task Main(string[] args)
     {
-        Console.Write("Subnet to scan (e.g., 192.168.1.0/24): ");
-        string target = Console.ReadLine();
-        Console.Write("Ports to scan (e.g., web, admin, top20, or a custom list like 80,443,8080, or range like 1-10000): ");
-        string portInput = Console.ReadLine();
+        Console.WriteLine("\nPlease choose an option:\n");
+        Console.WriteLine("\t1. Host Discovery");
+        Console.WriteLine("\t2. Port Scanning");
+        Console.Write("\nEnter the number: ");
+        string choice = Console.ReadLine();
 
-        List<int> ports = ParsePorts(portInput);
-
-        if (string.IsNullOrEmpty(target) || ports.Count == 0)
+        if (choice == "1")
         {
-            Console.WriteLine("Invalid input. Please make sure to provide a valid subnet and ports.");
-            return;
-        }
+            // Host Discovery Mode
+            Console.Write("Subnet to scan for live hosts (e.g., 192.168.1.0/24): ");
+            string target = Console.ReadLine();
 
-        Console.WriteLine($"\nGo bring coffee or something that might take some time.");
+            if (string.IsNullOrEmpty(target))
+            {
+                Console.WriteLine("Invalid input. Please provide a valid subnet.");
+                return;
+            }
 
-        List<(string, List<int>, string, string)> results = new List<(string, List<int>, string, string)>();
+            Console.WriteLine($"\nPerforming host discovery on {target}...");
 
-        if (target.Contains("."))
-        {
+            List<(string, List<int>, string, string)> results = new List<(string, List<int>, string, string)>();
             if (target.Contains("/"))
             {
-                Console.WriteLine($"Scanning subnet {target}. Please wait...");
-                await ScanSubnet(target, ports, results);
+                await ScanSubnetForHostDiscovery(target, results);
             }
             else
             {
-                Console.WriteLine($"Scanning host {target}. Please wait...");
-                await ScanPorts(target, ports, results);
+                await ScanHostForHostDiscovery(target, results);
             }
 
-            string fileName = GenerateFileName(ports);
+            string fileName = "host-discovery.txt";
             await ExportToTextFile(results, fileName);
+        }
+        else if (choice == "2")
+        {
+            // Port Scanning Mode
+            Console.Write("Subnet to scan (e.g., 192.168.1.0/24): ");
+            string target = Console.ReadLine();
+
+            Console.WriteLine("Choose the port set to scan:\n");
+            Console.WriteLine("\t1. Web (Ports: 21, 23, 25, 80, 443, 8080)");
+            Console.WriteLine("\t2. Admin (Ports: 135, 139, 445, 3389, 5985, 5986)");
+            Console.WriteLine("\t3. Top 20 (Common ports: 21, 22, 23, 25, 53, 80, 110, 111, 135, 139, 143, 443, 445, 993, 995, 1723, 3306, 3389, 5900, 8080)");
+            Console.WriteLine("\t4. Custom (Enter a list or range, e.g., 80,443,8080 or 1000-2000)\n");
+            Console.Write("Enter your choice (1-4): ");
+            string portChoice = Console.ReadLine();
+
+            List<int> ports = new List<int>();
+            switch (portChoice)
+            {
+                case "1":
+                    ports = predefinedPorts["web"];
+                    break;
+                case "2":
+                    ports = predefinedPorts["admin"];
+                    break;
+                case "3":
+                    ports = predefinedPorts["top20"];
+                    break;
+                case "4":
+                    Console.Write("Enter your custom ports (e.g., 80,443,8080 or 1000-2000): ");
+                    string customPorts = Console.ReadLine();
+                    ports = ParsePorts(customPorts);
+                    break;
+                default:
+                    Console.WriteLine("Invalid choice.");
+                    return;
+            }
+
+            if (string.IsNullOrEmpty(target) || ports.Count == 0)
+            {
+                Console.WriteLine("Invalid input. Please make sure to provide a valid subnet and ports.");
+                return;
+            }
+
+            Console.WriteLine($"\nPerforming port scanning on {target}...");
+
+            List<(string, List<int>, string, string)> results = new List<(string, List<int>, string, string)>();
+
+            if (target.Contains("."))
+            {
+                if (target.Contains("/"))
+                {
+                    Console.WriteLine($"Scanning subnet {target}. Please wait...");
+                    await ScanSubnet(target, ports, results);
+                }
+                else
+                {
+                    Console.WriteLine($"Scanning host {target}. Please wait...");
+                    await ScanPorts(target, ports, results);
+                }
+
+                string fileName = GenerateFileName(ports);
+                await ExportToTextFile(results, fileName);
+            }
+            else
+            {
+                Console.WriteLine("Invalid target format. Please provide a valid IP or subnet.");
+            }
         }
         else
         {
-            Console.WriteLine("Invalid target format. Please provide a valid IP or subnet.");
+            Console.WriteLine("Invalid choice. Please restart and choose either 1 or 2.");
         }
+    }
+
+    // Host Discovery Mode: Scan a single host for IP and Hostname
+    static async Task ScanHostForHostDiscovery(string host, List<(string, List<int>, string, string)> results)
+    {
+        string os = await GetOperatingSystem(host);
+        if (os != "Host Unreachable")
+        {
+            string resolvedHost = await ResolveHostname(host);
+            results.Add((host, new List<int>(), resolvedHost, os));
+        }
+    }
+
+    // Host Discovery Mode: Scan a subnet for IPs and Hostnames
+    static async Task ScanSubnetForHostDiscovery(string subnet, List<(string, List<int>, string, string)> results)
+    {
+        var tasks = new List<Task>();
+        List<string> ipList = new List<string>();
+
+        // Collect each IP in the subnet (in range 1-254 for /24)
+        for (int i = 1; i <= 254; i++)
+        {
+            string ip = $"{subnet.Substring(0, subnet.LastIndexOf('.') + 1)}{i}"; // Subnet prefix (e.g., 192.168.1) + host (e.g., 1)
+            ipList.Add(ip);
+        }
+
+        // Sort IP addresses in ascending order
+        ipList = ipList.OrderBy(ip => ip).ToList();
+
+        // Now scan the sorted IPs
+        foreach (var ip in ipList)
+        {
+            tasks.Add(Task.Run(async () =>
+            {
+                await ScanHostForHostDiscovery(ip, results);
+            }));
+        }
+
+        await Task.WhenAll(tasks);
     }
 }
