@@ -38,7 +38,9 @@ Using netexec:
 - `schtasks /run /tn "SystemTask"`
 
 # TCP Port Redirection via powercat.ps1
-Mostly be used for NTLM Relay attacks, first step is to allow inbound and outbound connections to our victim machine:
+Mostly be used for NTLM Relay attacks when the authentication cannot reach our attacking machine, so the idea is to redirect it from a random host in the network (where we have admin privileges) to our attacking machine.
+
+first step is to allow inbound and outbound connections to our victim machine:
 
 ### Using CMD:
 - `netsh advfirewall firewall add rule name="Allow Port 445 Inbound" dir=in action=allow protocol=TCP localport=445`
