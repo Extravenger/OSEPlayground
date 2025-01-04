@@ -105,24 +105,46 @@ class Program
     }
 
     // Method to export scan results to a text file
+    // Method to export scan results to a text file with aligned columns
+    // Method to export scan results to a text file with aligned columns
+    // Method to export scan results to a text file with aligned columns
     static async Task ExportToTextFile(List<(string, List<int>, string, string)> results, string filePath)
     {
         using (var writer = new StreamWriter(filePath))
         {
-            // Write header
-            await writer.WriteLineAsync("Port Scan Results");
-            await writer.WriteLineAsync("IP Address/Hostname\tOperating System\tOpen Ports");
+            // Define the column widths (adjust as necessary for your data)
+            int ipAddressWidth = 20; // Width for IP address column
+            int hostnameWidth = 30;  // Width for Hostname column
+            int osWidth = 20;        // Width for Operating System column
+            int openPortsWidth = 40; // Width for Open Ports column
 
-            // Write each result
+            // Write header with aligned columns
+            await writer.WriteLineAsync(
+                "IP Address".PadRight(ipAddressWidth) +
+                "Hostname".PadRight(hostnameWidth) +
+                "Operating System".PadRight(osWidth) +
+                "Open Ports".PadRight(openPortsWidth)
+            );
+
+            // Write each result with aligned columns
             foreach (var result in results)
             {
-                string openPorts = string.Join(", ", result.Item2);
-                await writer.WriteLineAsync($"{result.Item1} ({result.Item3})\t{result.Item4}\t{openPorts}");
+                // Padding to ensure columns align properly
+                string ipAddress = result.Item1.PadRight(ipAddressWidth);    // IP Address
+                string hostname = result.Item3.PadRight(hostnameWidth);      // Hostname
+                string os = result.Item4.PadRight(osWidth);                  // Operating System
+                string openPorts = string.Join(", ", result.Item2).PadRight(openPortsWidth);  // Open Ports
+
+                // Write the formatted line to the file
+                await writer.WriteLineAsync($"{ipAddress}{hostname}{os}{openPorts}");
             }
         }
 
         Console.WriteLine($"Results saved to {filePath}");
     }
+
+
+
 
     // Method to resolve IP to Hostname (if possible)
     static async Task<string> ResolveHostname(string ip)
