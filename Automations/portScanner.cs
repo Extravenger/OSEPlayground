@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.IO;
 using System.Net.NetworkInformation;
+using System.Threading;
 
 class Program
 {
@@ -20,6 +21,9 @@ class Program
     // Known Windows ports to filter out for Linux
     static List<int> knownWindowsPorts = new List<int> { 135, 139, 445, 3389, 5985, 5986 };
 
+    // Semaphore for controlling concurrency (adjust the max concurrency)
+    static SemaphoreSlim semaphore = new SemaphoreSlim(50); // Max 50 concurrent tasks
+
     // Method to test if a port is open
     static async Task<bool> TestPort(string host, int port, int timeout = 2000)
     {
@@ -30,24 +34,13 @@ class Program
                 var connectTask = tcpClient.ConnectAsync(host, port);
                 var timeoutTask = Task.Delay(timeout);
 
-                // Wait for the connection or timeout
                 var completedTask = await Task.WhenAny(connectTask, timeoutTask);
 
-                if (completedTask == connectTask && tcpClient.Connected)
-                {
-                    // Connection established (port is open)
-                    return true;
-                }
-                else
-                {
-                    // Timeout or failure to connect, port is closed
-                    return false;
-                }
+                return completedTask == connectTask && tcpClient.Connected;
             }
         }
         catch
         {
-            // Connection failure or any other exception, port is closed
             return false;
         }
     }
@@ -57,20 +50,31 @@ class Program
     {
         List<int> openPorts = new List<int>();
 
-        foreach (int port in ports)
-        {
-            bool isOpen = await TestPort(host, port);
-            if (isOpen)
-            {
-                openPorts.Add(port);
-            }
-        }
+        // First, check if the host is alive
+        string os = await GetOperatingSystem(host);
+        if (os == "Host Unreachable") return;
 
-        // If there are open ports, store the result (including hostname if possible)
+        // Parallelize port checking
+        var tasks = ports.Select(async port =>
+        {
+            await semaphore.WaitAsync(); // Control concurrency
+            try
+            {
+                bool isOpen = await TestPort(host, port);
+                if (isOpen)
+                    openPorts.Add(port);
+            }
+            finally
+            {
+                semaphore.Release();
+            }
+        });
+
+        await Task.WhenAll(tasks);
+
         if (openPorts.Any())
         {
             string resolvedHost = await ResolveHostname(host);
-            string os = await GetOperatingSystem(host);
 
             // If the OS is Linux, filter out Windows-specific ports
             if (os == "Linux")
@@ -78,7 +82,6 @@ class Program
                 openPorts = openPorts.Where(port => !knownWindowsPorts.Contains(port)).ToList();
             }
 
-            // Only add the result if there are still open ports
             if (openPorts.Any())
             {
                 results.Add((host, openPorts, resolvedHost, os));
@@ -89,12 +92,22 @@ class Program
     // Method to scan a subnet (CIDR)
     static async Task ScanSubnet(string subnet, List<int> ports, List<(string, List<int>, string, string)> results)
     {
-        List<Task> tasks = new List<Task>();
+        var tasks = new List<Task>();
+        List<string> ipList = new List<string>();
 
-        // Scan each IP in the subnet (in range 1-254 for /24)
+        // Collect each IP in the subnet (in range 1-254 for /24)
         for (int i = 1; i <= 254; i++)
         {
             string ip = $"{subnet.Substring(0, subnet.LastIndexOf('.') + 1)}{i}"; // Subnet prefix (e.g., 192.168.1) + host (e.g., 1)
+            ipList.Add(ip);
+        }
+
+        // Sort IP addresses in ascending order
+        ipList = ipList.OrderBy(ip => ip).ToList();
+
+        // Now scan the sorted IPs
+        foreach (var ip in ipList)
+        {
             tasks.Add(Task.Run(async () =>
             {
                 await ScanPorts(ip, ports, results);
@@ -109,13 +122,11 @@ class Program
     {
         using (var writer = new StreamWriter(filePath))
         {
-            // Define the column widths (adjust as necessary for your data)
-            int ipAddressWidth = 20; // Width for IP address column
-            int hostnameWidth = 30;  // Width for Hostname column
-            int osWidth = 20;        // Width for Operating System column
-            int openPortsWidth = 40; // Width for Open Ports column
+            int ipAddressWidth = 20;
+            int hostnameWidth = 30;
+            int osWidth = 20;
+            int openPortsWidth = 40;
 
-            // Write header with aligned columns
             await writer.WriteLineAsync(
                 "IP Address".PadRight(ipAddressWidth) +
                 "Hostname".PadRight(hostnameWidth) +
@@ -123,16 +134,16 @@ class Program
                 "Open Ports".PadRight(openPortsWidth)
             );
 
-            // Write each result with aligned columns
+            // Add a line break after the header
+            await writer.WriteLineAsync();
+
             foreach (var result in results)
             {
-                // Padding to ensure columns align properly
-                string ipAddress = result.Item1.PadRight(ipAddressWidth);    // IP Address
-                string hostname = result.Item3.PadRight(hostnameWidth);      // Hostname
-                string os = result.Item4.PadRight(osWidth);                  // Operating System
-                string openPorts = string.Join(", ", result.Item2).PadRight(openPortsWidth);  // Open Ports
+                string ipAddress = result.Item1.PadRight(ipAddressWidth);
+                string hostname = result.Item3.PadRight(hostnameWidth);
+                string os = result.Item4.PadRight(osWidth);
+                string openPorts = string.Join(", ", result.Item2).PadRight(openPortsWidth);
 
-                // Write the formatted line to the file
                 await writer.WriteLineAsync($"{ipAddress}{hostname}{os}{openPorts}");
             }
         }
@@ -145,18 +156,17 @@ class Program
     {
         try
         {
-            // Attempt to resolve the IP address to a hostname
             var hostEntry = await Dns.GetHostEntryAsync(ip);
             return hostEntry.HostName;
         }
         catch
         {
-            // If resolution fails, return the IP itself
             return ip;
         }
     }
 
     // Method to get the operating system based on TTL
+
     static async Task<string> GetOperatingSystem(string host)
     {
         try
@@ -166,27 +176,21 @@ class Program
 
             if (reply.Status == IPStatus.Success)
             {
-                // Check TTL to infer OS
-                if (reply.Options != null)
-                {
-                    int ttl = reply.Options.Ttl;
+                int ttl = reply.Options?.Ttl ?? 0;
 
-                    if (ttl == 128)
-                    {
-                        return "Windows"; // Common TTL for Windows
-                    }
-                    else if (ttl == 64)
-                    {
-                        return "Linux"; // Common TTL for Linux
-                    }
-                    else
-                    {
-                        return "Unknown (TTL: " + ttl + ")";
-                    }
+                // TTL <= 64 means likely Linux
+                if (ttl <= 64)
+                {
+                    return "Linux";
+                }
+                // TTL between 100 and 128 means likely Windows
+                else if (ttl >= 100 && ttl <= 128)
+                {
+                    return "Windows";
                 }
                 else
                 {
-                    return "Unknown";
+                    return $"Unknown (TTL: {ttl})";
                 }
             }
             else
@@ -194,52 +198,40 @@ class Program
                 return "Host Unreachable";
             }
         }
-        catch (Exception ex)
+        catch
         {
-            Console.WriteLine($"Error getting OS for {host}: {ex.Message}");
-            return "Error";
+            return "Host Unreachable";
         }
     }
 
-    // Method to parse ports from input (including ranges and predefined groups)
+
+
+
+    // Method to parse ports from input
     static List<int> ParsePorts(string portInput)
     {
         List<int> ports = new List<int>();
 
         if (predefinedPorts.ContainsKey(portInput.ToLower()))
         {
-            // Use predefined port list
             ports = predefinedPorts[portInput.ToLower()];
         }
         else
         {
-            // If not a predefined group, parse individual ports or ranges
             string[] portStrings = portInput.Split(',');
 
             foreach (var portString in portStrings)
             {
                 if (portString.Contains('-'))
                 {
-                    // Handle port range (e.g., 1-10000)
                     string[] range = portString.Split('-');
                     if (range.Length == 2 && int.TryParse(range[0], out int start) && int.TryParse(range[1], out int end))
                     {
-                        if (start <= end)
-                        {
-                            for (int i = start; i <= end; i++)
-                            {
-                                ports.Add(i);
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Invalid port range: {portString}. Start port must be less than or equal to end port.");
-                        }
+                        for (int i = start; i <= end; i++) ports.Add(i);
                     }
                 }
                 else if (int.TryParse(portString, out int port))
                 {
-                    // Handle single port (e.g., 80, 443)
                     ports.Add(port);
                 }
                 else
@@ -256,16 +248,13 @@ class Program
     static string GenerateFileName(List<int> ports)
     {
         string fileName = "open-";
-
         if (predefinedPorts.Values.Any(p => p.SequenceEqual(ports)))
         {
-            // Match predefined port groups
             var groupName = predefinedPorts.FirstOrDefault(p => p.Value.SequenceEqual(ports)).Key;
             fileName += groupName + "ports.txt";
         }
         else if (ports.Count > 0)
         {
-            // Handle custom port ranges
             int minPort = ports.Min();
             int maxPort = ports.Max();
             fileName += $"ports-{minPort}-{maxPort}.txt";
@@ -281,12 +270,9 @@ class Program
     // Main method that orchestrates the port scanning based on user input
     static async Task Main(string[] args)
     {
-        // Ask user for the subnet to scan
-        Console.Write("Subnet to scan (e.g., 192.168.1.0/24 or 192.168.1.1): ");
+        Console.Write("Subnet to scan (e.g., 192.168.1.0/24): ");
         string target = Console.ReadLine();
-
-        // Ask user for the ports to scan
-        Console.Write("Ports to scan (e.g., web, admin, or a custom list like 80,443,8080, or range like 1-10000): ");
+        Console.Write("Ports to scan (e.g., web, admin, top20, or a custom list like 80,443,8080, or range like 1-10000): ");
         string portInput = Console.ReadLine();
 
         List<int> ports = ParsePorts(portInput);
@@ -297,10 +283,7 @@ class Program
             return;
         }
 
-        Console.WriteLine($"Go bring coffee or something that might take some time.");
-
-        // Print the full subnet
-        Console.WriteLine($"Scanning subnet {target}.");
+        Console.WriteLine($"\nGo bring coffee or something that might take some time.");
 
         List<(string, List<int>, string, string)> results = new List<(string, List<int>, string, string)>();
 
@@ -308,18 +291,15 @@ class Program
         {
             if (target.Contains("/"))
             {
-                // Subnet scanning (target is a subnet in CIDR format)
                 Console.WriteLine($"Scanning subnet {target}. Please wait...");
                 await ScanSubnet(target, ports, results);
             }
             else
             {
-                // Single host scanning
                 Console.WriteLine($"Scanning host {target}. Please wait...");
                 await ScanPorts(target, ports, results);
             }
 
-            // Generate a filename based on the ports and export the results
             string fileName = GenerateFileName(ports);
             await ExportToTextFile(results, fileName);
         }
