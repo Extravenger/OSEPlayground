@@ -91,10 +91,10 @@ class Program
     {
         List<Task> tasks = new List<Task>();
 
-        // Scan each IP in the subnet
+        // Scan each IP in the subnet (in range 1-254 for /24)
         for (int i = 1; i <= 254; i++)
         {
-            string ip = $"{subnet}.{i}";
+            string ip = $"{subnet.Substring(0, subnet.LastIndexOf('.') + 1)}{i}"; // Subnet prefix (e.g., 192.168.1) + host (e.g., 1)
             tasks.Add(Task.Run(async () =>
             {
                 await ScanPorts(ip, ports, results);
@@ -105,9 +105,6 @@ class Program
     }
 
     // Method to export scan results to a text file
-    // Method to export scan results to a text file with aligned columns
-    // Method to export scan results to a text file with aligned columns
-    // Method to export scan results to a text file with aligned columns
     static async Task ExportToTextFile(List<(string, List<int>, string, string)> results, string filePath)
     {
         using (var writer = new StreamWriter(filePath))
@@ -142,9 +139,6 @@ class Program
 
         Console.WriteLine($"Results saved to {filePath}");
     }
-
-
-
 
     // Method to resolve IP to Hostname (if possible)
     static async Task<string> ResolveHostname(string ip)
@@ -288,11 +282,11 @@ class Program
     static async Task Main(string[] args)
     {
         // Ask user for the subnet to scan
-        Console.WriteLine("Subnet to scan (e.g., 192.168.1.0/24 or 192.168.1.1): ");
+        Console.Write("Subnet to scan (e.g., 192.168.1.0/24 or 192.168.1.1): ");
         string target = Console.ReadLine();
 
         // Ask user for the ports to scan
-        Console.WriteLine("Ports to scan (e.g., web, admin, or a custom list like 80,443,8080, or range like 1-10000): ");
+        Console.Write("Ports to scan (e.g., web, admin, or a custom list like 80,443,8080, or range like 1-10000): ");
         string portInput = Console.ReadLine();
 
         List<int> ports = ParsePorts(portInput);
@@ -303,7 +297,10 @@ class Program
             return;
         }
 
-        Console.WriteLine("Go bring coffee or something that might take some time.");
+        Console.WriteLine($"Go bring coffee or something that might take some time.");
+
+        // Print the full subnet
+        Console.WriteLine($"Scanning subnet {target}.");
 
         List<(string, List<int>, string, string)> results = new List<(string, List<int>, string, string)>();
 
@@ -312,9 +309,8 @@ class Program
             if (target.Contains("/"))
             {
                 // Subnet scanning (target is a subnet in CIDR format)
-                string subnet = target.Substring(0, target.LastIndexOf("."));
-                Console.WriteLine($"Scanning subnet {subnet}. Please wait...");
-                await ScanSubnet(subnet, ports, results);
+                Console.WriteLine($"Scanning subnet {target}. Please wait...");
+                await ScanSubnet(target, ports, results);
             }
             else
             {
