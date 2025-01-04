@@ -265,7 +265,21 @@ class Program
 
     // Main method that orchestrates the port scanning based on user input
     static async Task Main(string[] args)
+
     {
+
+        // Print the intro ASCII art to the console
+        Console.WriteLine(@"
+███████╗ ██████╗ █████╗ ███╗   ██╗██╗   ██╗███████╗███╗   ██╗ ██████╗ ███████╗██████╗ 
+██╔════╝██╔════╝██╔══██╗████╗  ██║██║   ██║██╔════╝████╗  ██║██╔════╝ ██╔════╝██╔══██╗
+███████╗██║     ███████║██╔██╗ ██║██║   ██║█████╗  ██╔██╗ ██║██║  ███╗█████╗  ██████╔╝
+╚════██║██║     ██╔══██║██║╚██╗██║╚██╗ ██╔╝██╔══╝  ██║╚██╗██║██║   ██║██╔══╝  ██╔══██╗
+███████║╚██████╗██║  ██║██║ ╚████║ ╚████╔╝ ███████╗██║ ╚████║╚██████╔╝███████╗██║  ██║
+╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝  ╚═══╝  ╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝
+                                                                                      ");
+
+        Console.WriteLine("Written by Extravenger mainly for OSEP folks.\n");
+
         Console.WriteLine("\nPlease choose an option:\n");
         Console.WriteLine("\t1. Host Discovery");
         Console.WriteLine("\t2. Port Scanning");
