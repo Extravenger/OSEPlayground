@@ -38,7 +38,7 @@ Using netexec:
 ### <ins>RDP to host using xfreerdp</ins>:
 - `xfreerdp /v:172.16.231.221 /u:amit /p:'Password123!' +dynamic-resolution +clipboard`
 
-### ATEXEC.PY
+### <ins>atexec.py</ins>
 
 - `atexec.py test.local/john:password123@10.10.10.1 whoami'`
 - `atexec.py -hashes aad3b435b51404eeaad3b435b51404ee:5fbc3d5fec8206a30f4b6c473d68ae76 test.local/john@10.10.10.1 whoami`
