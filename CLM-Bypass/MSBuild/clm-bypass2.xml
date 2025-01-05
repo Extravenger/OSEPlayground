@@ -52,7 +52,7 @@
                 ps.Runspace = rs;
                 string currentDirectory = Directory.GetCurrentDirectory();
 
-                Console.Write("PS " + currentDirectory + ">");
+                Console.WriteLine("PS " + currentDirectory + ">");
 
                 // AMSI bypass code (kept as an example)
                 string amsiBypass = @"
@@ -112,50 +112,32 @@
                         }
 
                         // Capture output for all commands (including cmdlets and tools like iex)
-                        ps.AddScript(cmd);
+                        ps.AddScript(cmd + " | Out-String");
 
                         // Execute the script
                         Collection<PSObject> psOutput = ps.Invoke();
                         Collection<ErrorRecord> errors = ps.Streams.Error.ReadAll();
-                        Collection<VerboseRecord> verboseRecords = ps.Streams.Verbose.ReadAll();
-                        Collection<ProgressRecord> progressRecords = ps.Streams.Progress.ReadAll();
 
                         // Handle errors if any
                         if (errors.Count > 0)
                         {
+                            Console.WriteLine(); // Blank line before error output
                             foreach (ErrorRecord error in errors)
                             {
                                 Console.WriteLine("ERROR: " + error.ToString());
                             }
                         }
 
-                        // Handle verbose output
-                        if (verboseRecords.Count > 0)
-                        {
-                            foreach (VerboseRecord verbose in verboseRecords)
-                            {
-                                Console.WriteLine("VERBOSE: " + verbose.Message);
-                            }
-                        }
-
-                        // Handle progress output (if any)
-                        if (progressRecords.Count > 0)
-                        {
-                            foreach (ProgressRecord progress in progressRecords)
-                            {
-                                Console.WriteLine("PROGRESS: " + progress.StatusDescription);
-                            }
-                        }
-
                         // Capture standard output (including cmdlet outputs)
                         if (psOutput.Count > 0)
                         {
+                            Console.WriteLine(); // Blank line before output
                             foreach (PSObject output in psOutput)
                             {
                                 if (output != null)
                                 {
-                                    // Print the output as a string, without introducing extra line breaks
-                                    Console.WriteLine(output.ToString().Trim());
+                                    // Ensure the output is converted to a string and displayed
+                                    Console.WriteLine(output.ToString());
                                 }
                             }
                         }
@@ -163,6 +145,7 @@
                     }
                     catch (Exception e)
                     {
+                        Console.WriteLine(); // Blank line before error message
                         Console.WriteLine("**** ERROR ****");
                         Console.WriteLine(e.Message);
                     }
