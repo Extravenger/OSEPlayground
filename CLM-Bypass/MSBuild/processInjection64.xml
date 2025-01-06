@@ -56,9 +56,9 @@
 
               public static void Main()
               {
-
-                  // Find the target process (e.g., explorer)
-                  Process[] targetProcess = Process.GetProcessesByName("explorer");
+                  Process.Start("C:\\Windows\\System32\\notepad.exe");
+                  // Find the target process (e.g., notepad)
+                  Process[] targetProcess = Process.GetProcessesByName("notepad");
                   IntPtr htargetProcess = targetProcess[0].Handle;
 
                   // Prepare the CLIENT_ID and OBJECT_ATTRIBUTES for NtOpenProcess
