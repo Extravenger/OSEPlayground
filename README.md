@@ -73,9 +73,6 @@ Using netexec:
 
 # TCP Port Redirection via powercat.ps1
 
-![image](https://github.com/user-attachments/assets/6e9afbc5-36eb-407d-9a47-bddb77ad6951)
-
-
 Mostly be used for NTLM Relay attacks when the authentication cannot reach our attacking machine, so the idea is to redirect it from a random host in the network (where we have admin privileges) to our attacking machine.
 
 first step is to allow inbound and outbound connections to our victim machine on port 445:
