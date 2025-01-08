@@ -1,7 +1,7 @@
-### Check if PPL is enabled
+### <ins>Check if PPL is enabled</ins>
 CMD: `reg query "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa" /v RunAsPPL` - `0x1` means enabled.
 
-### <ins></ins>Disable PPL using PPLKiller></ins>
+### <ins>Disable PPL using PPLKiller</ins>
 
 Make sure the session you are running with has SYSTEM privleges.
 We need to upload the driver to the path:
