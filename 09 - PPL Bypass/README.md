@@ -1,5 +1,5 @@
 ### Check if PPL is enabled
-CMD: `reg query "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa" /v RunAsPPL`
+CMD: `reg query "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa" /v RunAsPPL` - `0x1` means enabled.
 
 ### Disable PPL using PPLKiller
 
