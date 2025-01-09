@@ -1,6 +1,9 @@
 Just a bunch of tools built/gathered along the OSEP course.
 
-[Tunneling](#Tunneling)
+1. [Tunneling](#Tunneling)
+2. [Map the network (using netexec)](#Network Mapping)
+
+
 
 # Tunneling
 
