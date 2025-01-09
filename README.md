@@ -1,13 +1,13 @@
 Just a bunch of tools built/gathered along the OSEP course.
 
-1. [Tunneling](#Tunneling)
-2. [Map The Network](#Map-The-Network)
-3. [AMSI-Bypass](#AMSI-Bypass)
-4. [Useful Basic Commands](#Useful-Basic-Commands)
-5. [Escalate to SYSTEM via Schduele Task](#Escalate-to-SYSTEM-via-Schduele-Task)
-6. [TCP Port Redirection via powercat.ps1](#TCP-Port-Redirection-via-powercat.ps1)
-7. [MSSQL Useful Queries](#MSSQL-Useful-Queries)
-8. [MSSQLPwner](#MSSQLPwner)
+- [Tunneling](#Tunneling)
+- [Map The Network](#Map-The-Network)
+- [AMSI-Bypass](#AMSI-Bypass)
+- [Useful Basic Commands](#Useful-Basic-Commands)
+- [Escalate to SYSTEM via Schduele Task](#Escalate-to-SYSTEM-via-Schduele-Task)
+- [TCP Port Redirection via powercat.ps1](#TCP-Port-Redirection-via-powercat.ps1)
+- [MSSQL Useful Queries](#MSSQL-Useful-Queries)
+- [MSSQLPwner](#MSSQLPwner)
 - [Kerberos Delegation](#Kerberos-Delegation)
   - [Unconstrained Delegation](#Unconstrained-Delegation)
 
