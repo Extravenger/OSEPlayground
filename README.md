@@ -182,7 +182,7 @@ Any computer account that contains the `TRUSTED_FOR_DELEGATION` value in its Use
 
 ### Attack Walkthrough
 
-In a high-integrity PS/CMD prompt on the system configured for Unconstrained Delegation, run Rubeus in monitor mode:
+With SYSTEM shell on the system configured for Unconstrained Delegation, run Rubeus in monitor mode:
 - `.\Rubeus.exe monitor interval:5 /nowrap`
 
 Next, using a domain credential that you’ve previously compromised, trigger the printerbug.py or SpoolSample on the domain controller:
