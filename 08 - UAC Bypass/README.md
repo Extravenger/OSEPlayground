@@ -4,7 +4,7 @@
 
 ### FodHelper
 
-uses CurVer to abuse UAC, should bypass Windows Defender (?)
+- uses CurVer to abuse UAC, should bypass Windows Defender (?)
 
 ### Manual Approach - ComputerDefaults
 
