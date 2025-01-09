@@ -8,8 +8,6 @@ Just a bunch of tools built/gathered along the OSEP course.
 - [TCP Port Redirection via powercat.ps1](#TCP-Port-Redirection-via-powercat.ps1)
 - [MSSQL Useful Queries](#MSSQL-Useful-Queries)
 - [MSSQLPwner](#MSSQLPwner)
-- [Kerberos Delegation](#Kerberos-Delegation)
-  - [Unconstrained Delegation](#Unconstrained-Delegation)
 
 
 # Tunneling
