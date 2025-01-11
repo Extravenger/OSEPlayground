@@ -3,6 +3,7 @@ Just a bunch of tools built/gathered along the OSEP course.
 - [Tunneling](#Tunneling)
 - [Map The Network](#Map-The-Network)
 - [AMSI-Bypass](#AMSI-Bypass)
+- [Privilege Escalation](#Privilege-Escalation)
 - [Useful Basic Commands](#Useful-Basic-Commands)
 - [Escalate to SYSTEM via Schduele Task](#Escalate-to-SYSTEM-via-Schduele-Task)
 - [TCP Port Redirection via powercat.ps1](#TCP-Port-Redirection-via-powercat.ps1)
@@ -30,6 +31,9 @@ Automation for `/etc/hosts` file:
 ```
 netexec smb 172.16.149.0/24 --log hosts.txt && sed -i 's/x64//g' hosts.txt && cat hosts.txt | awk '{print $9,$11,$11"."$21}' | sed 's/(domain://g' | sed 's/)//g' | uniq | sort -u | tr '[:upper:]' '[:lower:]' | sudo tee -a /etc/hosts
 ```
+
+# Privilege Escalation
+- `Invoke-PrivescCheck -Report PrivescCheck_$($env:COMPUTERNAME) -Format HTML`
 
 # AMSI-Bypass
 
