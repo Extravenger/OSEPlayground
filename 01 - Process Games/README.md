@@ -1,5 +1,5 @@
 ### revshell.cpp
-Simple C++ reverse shell, can be used to bypass windows defender if we want to get a simple reverse shell.
+Simple C++ reverse shell, can be used to bypass Windows Defender if we want to get a simple reverse shell from the target.
 
 ### newadmin.cpp
 Dll that will make a new local admin with the username `amit` and the password `Password123!`.
