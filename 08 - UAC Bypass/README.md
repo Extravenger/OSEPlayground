@@ -7,7 +7,7 @@
 - uses CurVer to abuse UAC, should bypass Windows Defender (?)
 
 ### EventViewer
--- RCE through Unsafe .Net Deserialization in Windows Event Viewer which leads to UAC bypass.
+- RCE through Unsafe .Net Deserialization in Windows Event Viewer which leads to UAC bypass.
 
     PS C:\Windows\Tasks> Import-Module .\Invoke-EventViewer.ps1
     
