@@ -4,7 +4,6 @@ CMD: `reg query "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa" /v Run
 ### <ins>Disable PPL using PPLKiller</ins>
 
 Make sure the session you are running with has SYSTEM privleges.
-We need to upload the driver to the path:
 - Place the driver RTCore64.sys at: `C:\Windows\System32\config\systemprofile\AppData\Local\Temp` - The Temp directory might no exist, just create it - `mkdir Temp`.
 
 Now, we will need to install the driver:
