@@ -1,3 +1,5 @@
+# Source: https://github.com/gustanini/DLL-Hijack-POC/tree/main
+
 ### revshell.cpp
 - Simple C++ reverse shell, can be used to bypass Windows Defender if we want to get a simple reverse shell from the target.
 
