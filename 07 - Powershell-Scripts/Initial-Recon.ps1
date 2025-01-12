@@ -75,4 +75,4 @@ if ($psHistoryFiles) {
 # 9. Listing Services
 # Search by binary name: reg query HKLM\SYSTEM\CurrentControlSet\Services /s /f "Service.exe" /t REG_EXPAND_SZ
 # Enumerate from service name: reg query HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\CustomService  
-reg query HKLM\SYSTEM\CurentControlSet\Services
+reg query HKLM\SYSTEM\CurrentControlSet\Services
