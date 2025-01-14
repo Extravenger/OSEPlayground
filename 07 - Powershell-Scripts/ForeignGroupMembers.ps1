@@ -1,3 +1,5 @@
+# We need to load PowerView before running this script
+
 function Get-ForeignGroupMembers {
     Write-Host "Retrieving domain trust mappings..."
     $trusts = Get-DomainTrustMapping -API
