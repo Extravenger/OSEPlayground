@@ -82,6 +82,9 @@ Search for interesting files:
 Powershell History Path:
 - `C:\Users\*\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt`
 
+Sticky Notes Path:
+- `C:\Users\*\AppData\Local\Packages\Microsoft.MicrosoftStickyNotes_8wekyb3d8bbwe\LocalState\`
+
 ### Enable RDP and RestrictedAdmin from both Local/Remote: 
 *Note: Enabling RestrictedAdmin allow us to perform PassTheHash with RDP.*
 
