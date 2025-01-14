@@ -6,7 +6,7 @@ Just a bunch of tools built/gathered along the OSEP course.
 - [Privilege Escalation](#Privilege-Escalation)
 - [Useful Basic Commands](#Useful-Basic-Commands)
 - [Escalate to SYSTEM via Schduele Task](#Escalate-to-SYSTEM-via-Schduele-Task)
-- [Enable RDP and RestrictedAdmin from both Local/Remote](#Enable-RDP-and-RestrictedAdmin-from-both-Local/Remote:)
+- [Enable RDP and RestrictedAdmin from both Local/Remote](#Enable-RDP-and-RestrictedAdmin-from-both-Local/Remote)
 - [TCP Port Redirection via powercat.ps1](#TCP-Port-Redirection-via-powercat.ps1)
 - [MSSQL Useful Queries](#MSSQL-Useful-Queries)
 - [MSSQLPwner](#MSSQLPwner)
