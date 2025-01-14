@@ -6,7 +6,7 @@ Just a bunch of tools built/gathered along the OSEP course.
 - [Privilege Escalation](#Privilege-Escalation)
 - [Useful Basic Commands](#Useful-Basic-Commands)
 - [Escalate to SYSTEM via Schduele Task](#Escalate-to-SYSTEM-via-Schduele-Task)
-- [Enable RDP and RestrictedAdmin from both Local/Remote](#Enable-RDP-and-RestrictedAdmin-from-both-Local/Remote)
+- [Enable RDP and RestrictedAdmin](#Enable-RDP-and-RestrictedAdmin)
 - [TCP Port Redirection via powercat.ps1](#TCP-Port-Redirection-via-powercat.ps1)
 - [MSSQL Useful Queries](#MSSQL-Useful-Queries)
 - [MSSQLPwner](#MSSQLPwner)
@@ -86,7 +86,7 @@ Powershell History Path:
 Sticky Notes Path:
 - `C:\Users\*\AppData\Local\Packages\Microsoft.MicrosoftStickyNotes_8wekyb3d8bbwe\LocalState\`
 
-# Enable RDP and RestrictedAdmin from both Local/Remote
+# Enable RDP and RestrictedAdmin
 *Note: Enabling RestrictedAdmin allow us to perform PassTheHash with RDP.*
 
 Using command prompt: 
