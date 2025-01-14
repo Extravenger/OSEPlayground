@@ -85,7 +85,7 @@ Powershell History Path:
 Sticky Notes Path:
 - `C:\Users\*\AppData\Local\Packages\Microsoft.MicrosoftStickyNotes_8wekyb3d8bbwe\LocalState\`
 
-Enable RDP and RestrictedAdmin from both Local/Remote: 
+# Enable RDP and RestrictedAdmin from both Local/Remote: 
 *Note: Enabling RestrictedAdmin allow us to perform PassTheHash with RDP.*
 
 Using command prompt: 
