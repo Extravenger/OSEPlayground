@@ -1,4 +1,4 @@
-Just a bunch of tools built/gathered along the OSEP course.
+Just a bunch of tools built/gathered along the OSEP course, it's time to prepare for the battle.
 
 - [Tunneling](#Tunneling)
 - [Map The Network](#Map-The-Network)
