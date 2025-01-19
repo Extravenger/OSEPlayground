@@ -1,4 +1,4 @@
-Just a bunch of tools built/gathered along the OSEP course.
+Just a bunch of tools built/gathered along the OSEP course, hands down to any tool provided here that was built by other students.
 
 - [Tunneling](#Tunneling)
 - [Map The Network](#Map-The-Network)
