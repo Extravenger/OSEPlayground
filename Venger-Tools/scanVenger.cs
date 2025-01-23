@@ -320,8 +320,8 @@ class Program
             string target = Console.ReadLine();
 
             Console.WriteLine("Choose the port set to scan:\n");
-            Console.WriteLine("\t1. Web (Ports: 21, 23, 25, 80, 443, 8080)");
-            Console.WriteLine("\t2. Admin (Ports: 135, 139, 445, 3389, 5985, 5986)");
+            Console.WriteLine("\t1. Web (Ports: 80, 443, 3000, 8080, 8081, 8443)");
+            Console.WriteLine("\t2. Admin (Ports: 135, 139, 445, 1433, 3389, 5985, 5986)");
             Console.WriteLine("\t3. Top 20 (Common ports: 21, 22, 23, 25, 53, 80, 110, 111, 135, 139, 143, 443, 445, 993, 995, 1723, 3306, 3389, 5900, 8080)");
             Console.WriteLine("\t4. Custom (Enter a list or range, e.g., 80,443,8080 or 1000-2000)\n");
             Console.Write("Enter your choice (1-4): ");
