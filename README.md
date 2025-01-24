@@ -4,7 +4,7 @@ Just a bunch of tools built/gathered along the OSEP course, it's time to prepare
 - [2. Map The Network](#Map-The-Network)
 - [3. AMSI-Bypass](#AMSI-Bypass)
 - [4. Privilege Escalation](#Privilege-Escalation)
-  [5. Kill Defender](#Kill-Defender)
+- [5. Kill Defender](#Kill-Defender)
 - [6. Useful Basic Commands](#Useful-Basic-Commands)
 - [7. Escalate to SYSTEM via Schduele Task](#Escalate-to-SYSTEM-via-Schduele-Task)
 - [8. Enable RDP and RestrictedAdmin](#Enable-RDP-and-RestrictedAdmin)
