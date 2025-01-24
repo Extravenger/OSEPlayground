@@ -1,15 +1,16 @@
 Just a bunch of tools built/gathered along the OSEP course, it's time to prepare for the battle.
 
-- [Tunneling](#Tunneling)
-- [Map The Network](#Map-The-Network)
-- [AMSI-Bypass](#AMSI-Bypass)
-- [Privilege Escalation](#Privilege-Escalation)
-- [Useful Basic Commands](#Useful-Basic-Commands)
-- [Escalate to SYSTEM via Schduele Task](#Escalate-to-SYSTEM-via-Schduele-Task)
-- [Enable RDP and RestrictedAdmin](#Enable-RDP-and-RestrictedAdmin)
-- [TCP Port Redirection via powercat.ps1](#TCP-Port-Redirection-via-powercat.ps1)
-- [MSSQL Useful Queries](#MSSQL-Useful-Queries)
-- [MSSQLPwner](#MSSQLPwner)
+- [1. Tunneling](#Tunneling)
+- [2. Map The Network](#Map-The-Network)
+- [3. AMSI-Bypass](#AMSI-Bypass)
+- [4. Privilege Escalation](#Privilege-Escalation)
+  [5. Kill Defender](#Kill-Defender)
+- [6. Useful Basic Commands](#Useful-Basic-Commands)
+- [7. Escalate to SYSTEM via Schduele Task](#Escalate-to-SYSTEM-via-Schduele-Task)
+- [8. Enable RDP and RestrictedAdmin](#Enable-RDP-and-RestrictedAdmin)
+- [9. TCP Port Redirection via powercat.ps1](#TCP-Port-Redirection-via-powercat.ps1)
+- [10. MSSQL Useful Queries](#MSSQL-Useful-Queries)
+- [11. MSSQLPwner](#MSSQLPwner)
 
 
 # Tunneling
