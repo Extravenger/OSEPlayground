@@ -120,6 +120,11 @@ class Program
     // Method to export scan results to a text file with beautiful formatting
     static async Task ExportToTextFile(List<(string, List<int>, string, string)> results, string filePath)
     {
+        // Group results by domain
+        var groupedResults = results
+            .GroupBy(r => GetDomain(r.Item3)) // Group by domain
+            .OrderBy(g => g.Key); // Sort groups by domain name
+
         using (var writer = new StreamWriter(filePath))
         {
             // Define column widths
@@ -137,15 +142,22 @@ class Program
             await writer.WriteLineAsync(header);
             await writer.WriteLineAsync(separator);
 
-            // Print each row of data
-            foreach (var result in results)
+            // Print each group of results
+            foreach (var group in groupedResults)
             {
-                string ipAddress = result.Item1.PadRight(ipAddressWidth);
-                string hostname = result.Item3.PadRight(hostnameWidth);
-                string os = result.Item4.PadRight(osWidth);
-                string openPorts = string.Join(", ", result.Item2).PadRight(openPortsWidth);
+                // Sort hostnames within the domain alphabetically
+                var sortedResults = group.OrderBy(r => r.Item3);
 
-                await writer.WriteLineAsync($"{ipAddress} | {hostname} | {os} | {openPorts}");
+                // Print each row of data
+                foreach (var result in sortedResults)
+                {
+                    string ipAddress = result.Item1.PadRight(ipAddressWidth);
+                    string hostname = result.Item3.PadRight(hostnameWidth);
+                    string os = result.Item4.PadRight(osWidth);
+                    string openPorts = string.Join(", ", result.Item2).PadRight(openPortsWidth);
+
+                    await writer.WriteLineAsync($"{ipAddress} | {hostname} | {os} | {openPorts}");
+                }
             }
 
             // Print the table footer
@@ -155,17 +167,28 @@ class Program
         Console.WriteLine($"Results saved to {filePath}");
     }
 
-    // Method to resolve IP to Hostname (if possible)
+    // Method to extract the domain from a hostname
+    static string GetDomain(string hostname)
+    {
+        if (hostname.Contains('.'))
+        {
+            int firstDotIndex = hostname.IndexOf('.');
+            return hostname.Substring(firstDotIndex + 1);
+        }
+        return "Unknown";
+    }
+
+    // Method to resolve IP to Hostname (if possible) and get FQDN
     static async Task<string> ResolveHostname(string ip)
     {
         try
         {
             var hostEntry = await Dns.GetHostEntryAsync(ip);
-            return hostEntry.HostName;
+            return hostEntry.HostName; // This will return the FQDN if available
         }
         catch
         {
-            return ip;
+            return ip; // Return the IP if resolution fails
         }
     }
 
