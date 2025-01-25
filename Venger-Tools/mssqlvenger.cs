@@ -93,7 +93,7 @@ namespace SQL
                     Console.WriteLine("\t" + "5. Create new sysadmin user (local/remote)");
                     Console.WriteLine("\t" + "6. Pull login-mapping and execute commands on linked server.");
                     Console.WriteLine("\t" + "7. Enable RPCOUT on linked server.\n");
-                    Console.Write("[+] Enter 1, 2,3,4,5 or 6: ");
+                    Console.Write("[+] Enter 1, 2,3,4,5,6 or 7: ");
                     string choice = Console.ReadLine();
 
                     if (choice.Equals("exit", StringComparison.OrdinalIgnoreCase))
