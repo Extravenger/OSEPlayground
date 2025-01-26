@@ -1,4 +1,5 @@
 # We need to load PowerView before running this script
+# Make sure to change the -DomainController flag value to your Domain's DC.
 
 function Get-ForeignGroupMembers {
     Write-Host "Retrieving domain trust mappings..."
