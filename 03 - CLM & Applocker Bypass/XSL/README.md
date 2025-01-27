@@ -2,7 +2,8 @@
 
 Can be combined with JScript code (SuperSharpShooter) to get a meterpreter shell.
 
-> ![CAUTION] 
+> ![CAUTION]
+
 > Bypasses default AppLocker Rules.
 > We can use 64bit shellcode.
 
