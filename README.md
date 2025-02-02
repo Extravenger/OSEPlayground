@@ -203,7 +203,7 @@ Executing custom assembly:
 
 
 ### NTLM Relay:
-*Note: three tools involved: Responder,ntlmrelayx and mssqlpwner*
+*Note: three tools involved: Responder,ntlmrelayx and mssqlpwner/impacket*
 
 Set up NTLM Relay:
 
