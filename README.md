@@ -1,5 +1,5 @@
 Just a bunch of tools built/gathered along the OSEP course, it's time to prepare for the battle.
-> [!DISCLAIMER]
+> [!NOTE]
 > Some of the tools in this repository weren't built by me; I just wanted to gather the best ones in one place.
 
 
