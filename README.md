@@ -41,7 +41,7 @@ netexec smb 172.16.149.0/24 --log hosts.txt && sed -i 's/x64//g' hosts.txt && ca
 ```
 
 # Windows Privilege Escalation
-- `(Invoke-PrivescCheck)[https://raw.githubusercontent.com/itm4n/PrivescCheck/refs/heads/master/PrivescCheck.ps1] -Report PrivescCheck_$($env:COMPUTERNAME) -Format HTML`
+- `[Invoke-PrivescCheck](https://raw.githubusercontent.com/itm4n/PrivescCheck/refs/heads/master/PrivescCheck.ps1) -Report PrivescCheck_$($env:COMPUTERNAME) -Format HTML`
 - ``
 
 # AMSI-Bypass
