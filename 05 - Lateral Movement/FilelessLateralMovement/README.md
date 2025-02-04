@@ -17,7 +17,7 @@
 
 # EXE Implementation
 
-Save the content below as adduser.c:
+Save the content below as `adduser.c`:
 
 ```
 #include <stdlib.h>
@@ -32,4 +32,5 @@ int main ()
 Compile it:
 - `x86_64-w64-mingw32-gcc adduser.c -o adduser.exe`
 
-Then, run: `.\PsExecLat file01 C:\Windows\Tasks\adduser.exe`
+Execute: 
+- `.\PsExecLat file01 C:\Windows\Tasks\adduser.exe`
