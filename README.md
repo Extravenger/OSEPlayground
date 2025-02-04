@@ -1,5 +1,5 @@
 > [!NOTE]
-> Some of the tools and scripts in this repository weren't built by me; Thank you to everyone whose code was used in this repository.
+> Some of the tools and scripts in here weren't built by me; Thank you to everyone whose code was used in this repository.
 
 
 - [1. Tunneling](#Tunneling)
