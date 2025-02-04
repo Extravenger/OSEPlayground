@@ -17,5 +17,5 @@ Simple C++ reverse shell, can be used to bypass Windows Defender if we want to g
 ## newadmin.c
 Will create new local admin.
 
-- Create a 32-bit EXE file: `i686-w64-mingw32-gcc -oadduser32.exe adduser.c -lnetapi32`
-- Create a 64-bit EXE file: `x86_64-w64-mingw32-gcc -oadduser64.exe adduser.c -lnetapi32`
+- 32bit Compilation: `i686-w64-mingw32-gcc -oadduser32.exe adduser.c -lnetapi32`
+- 64bit Compilation: `x86_64-w64-mingw32-gcc -oadduser64.exe adduser.c -lnetapi32`
