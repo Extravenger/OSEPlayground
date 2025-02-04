@@ -15,6 +15,9 @@
 - `Invoke-SMBRemoting -ComputerName "Workstation-01.ferrari.local" -Command "whoami /all" -ModifyService`
 - `Invoke-SMBRemoting -ComputerName "Workstation-01.ferrari.local" -Command "whoami /all" -ModifyService -ServiceName SensorService -Verbose`
 
+![278768338-645eaffe-e3d3-4428-b7a4-14bf95f5ddce](https://github.com/user-attachments/assets/8b986eb2-8d25-4098-a55a-763c4d802d7d)
+
+
 # EXE Implementation
 
 Save the content below as `adduser.c`:
