@@ -5,7 +5,7 @@
 - [1. Tunneling](#Tunneling)
 - [2. Map The Network](#Map-The-Network)
 - [3. AMSI-Bypass](#AMSI-Bypass)
-- [4. Privilege Escalation](#Windows-Privilege-Escalation)
+- [4. Windows Privilege Escalation](#Windows-Privilege-Escalation)
 - [5. Kill Defender](#Kill-Defender)
 - [6. Useful Basic Commands](#Useful-Basic-Commands)
 - [7. Escalate to SYSTEM via Schduele Task](#Escalate-to-SYSTEM-via-Schduele-Task)
