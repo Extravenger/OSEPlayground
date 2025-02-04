@@ -40,8 +40,9 @@ Automation for `/etc/hosts` file:
 netexec smb 172.16.149.0/24 --log hosts.txt && sed -i 's/x64//g' hosts.txt && cat hosts.txt | awk '{print $9,$11,$11"."$21}' | sed 's/(domain://g' | sed 's/)//g' | uniq | sort -u | tr '[:upper:]' '[:lower:]' | sudo tee -a /etc/hosts
 ```
 
-# Privilege Escalation
-- `Invoke-PrivescCheck -Report PrivescCheck_$($env:COMPUTERNAME) -Format HTML`
+# Windows Privilege Escalation
+- `(Invoke-PrivescCheck)[https://raw.githubusercontent.com/itm4n/PrivescCheck/refs/heads/master/PrivescCheck.ps1] -Report PrivescCheck_$($env:COMPUTERNAME) -Format HTML`
+- ``
 
 # AMSI-Bypass
 
