@@ -87,6 +87,7 @@ Set-MpPreference -DisableRealtimeMonitoring $true
 
 ### Locate local/proof files
 - `tree /f /a C:\Users`
+
  `Get-ChildItem -Path "C:\" -Recurse -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -in "proof.txt", "local.txt", "secret.txt" }`
 
 ### Send email with attachment (Phishing)
