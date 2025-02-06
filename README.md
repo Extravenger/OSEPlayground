@@ -8,7 +8,7 @@
 - [4. Windows Privilege Escalation](#Windows-Privilege-Escalation)
 - [5. Kill Defender](#Kill-Defender)
 - [6. Useful Basic Commands](#Useful-Basic-Commands)
-- [7. Escalate to SYSTEM via Schduele Task](#Escalate-to-SYSTEM-via-Schduele-Task)
+- [7. Escalate to SYSTEM via Schedule Task](#Escalate-to-SYSTEM-via-Schedule-Task)
 - [8. Enable RDP and RestrictedAdmin](#Enable-RDP-and-RestrictedAdmin)
 - [9. TCP Port Redirection via powercat.ps1](#TCP-Port-Redirection-via-powercat.ps1)
 - [10. MSSQL Useful Queries](#MSSQL-Useful-Queries)
