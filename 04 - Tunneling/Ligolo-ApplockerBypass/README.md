@@ -1,3 +1,5 @@
+Source: https://github.com/LorisDietrich/ApplockerBypassExternalBinary
+
 ### <ins>Step 1: Modify the Ligolo-ng agent's main file</ins>
   - Clone ligolo-ng repo: https://github.com/nicocha30/ligolo-ng. 
   - Open and edit main.go to adjust the settings as needed: /ligolo-ng/cmd/agent/main.go 
