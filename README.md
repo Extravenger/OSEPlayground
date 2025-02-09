@@ -10,7 +10,7 @@
 - [6. Useful Basic Commands](#Useful-Basic-Commands)
 - [7. Escalate to SYSTEM via Schedule Task](#Escalate-to-SYSTEM-via-Schedule-Task)
 - [8. Enable RDP and RestrictedAdmin](#Enable-RDP-and-RestrictedAdmin)
-- [9. TCP Port Redirection via powercat.ps1](#TCP-Port-Redirection-via-powercat.ps1)
+- [9. TCP Port Redirection via powercat](#TCP-Port-Redirection-via-powercat)
 - [10. MSSQL Useful Queries](#MSSQL-Useful-Queries)
 - [11. MSSQLPwner](#MSSQLPwner)
 - [12. NTLM Relay](#NTLM-Relay)
@@ -145,7 +145,7 @@ NTLM Auth:
 - `set SESSION <Session Number>`
 - `run`
 
-# TCP Port Redirection via powercat.ps1
+# TCP Port Redirection via powercat
 
 Mostly be used for NTLM Relay attacks when the authentication cannot reach our attacking machine, so the idea is to redirect it from a random host in the network (where we have admin privileges) to our attacking machine.
 
