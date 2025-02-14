@@ -17,7 +17,7 @@ Invoke it:
 
 `ligolo-clmbypass.xml` can be used to load Ligolo agent with bypassing Constrained Language Mode.
 
-- Make sure to prepare ligolo `agent.bin` file and serve it using python server.
+- Make sure to prepare `ligolo.ps1` file and serve it using python server.
 
 Upload to the victim and run (Make sure to change to your IP Address in the file):
 
