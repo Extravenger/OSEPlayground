@@ -1,5 +1,5 @@
 # Heavily Obfuscated UAC Bypass
-Thanks to @saulg00dmin for pointing out this technique.
+Thanks to [saulgoodman](https://github.com/saulg00dmin) for pointing out this technique.
 
 Source: https://github.com/I-Am-Jakoby/PowerShell-for-Hackers/blob/main/Functions/UAC-Bypass.md
 
