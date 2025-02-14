@@ -10,7 +10,7 @@
 ## EventViewer
 - RCE through Unsafe .Net Deserialization in Windows Event Viewer which leads to UAC bypass.
 
-```
+```powershell
     PS C:\Windows\Tasks> Import-Module .\Invoke-EventViewer.ps1
     
     PS C:\Windows\Tasks> Invoke-EventViewer 
