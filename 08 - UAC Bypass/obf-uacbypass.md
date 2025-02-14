@@ -1,6 +1,5 @@
-- Source: https://github.com/I-Am-Jakoby/PowerShell-for-Hackers/blob/main/Functions/UAC-Bypass.md
-
 # Heavily Obfuscated UAC Bypass
+Source: https://github.com/I-Am-Jakoby/PowerShell-for-Hackers/blob/main/Functions/UAC-Bypass.md
 
 1. Prepare command to be executed:
 
