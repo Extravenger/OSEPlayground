@@ -9,7 +9,9 @@ Source: https://github.com/expl0itabl3/uac-bypass-cmstp.<br>
 - uses CurVer to abuse UAC, should bypass Windows Defender (?)
 
 ## EventViewer
-- RCE through Unsafe .Net Deserialization in Windows Event Viewer which leads to UAC bypass.
+
+Source: https://github.com/CsEnox/EventViewer-UACBypass<br>
+RCE through Unsafe .Net Deserialization in Windows Event Viewer which leads to UAC bypass.<br>
 
 ```powershell
     PS C:\Windows\Tasks> Import-Module .\Invoke-EventViewer.ps1
