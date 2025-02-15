@@ -1,5 +1,5 @@
 <p align="center">
-![image](https://github.com/user-attachments/assets/048b30c7-9a62-444b-b0e1-950668160ddb)
+![image](https://github.com/user-attachments/assets/fe26fea4-65ee-4f4c-b36e-469222a6538f)
 </p>
 
 > [!NOTE]
