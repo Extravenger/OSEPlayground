@@ -1,6 +1,6 @@
 <p align="center">
 <img src="https://github.com/user-attachments/assets/fe26fea4-65ee-4f4c-b36e-469222a6538f" alt="Description" width="500"><br>
-<u>"The strongest walls are built by those who know how to break them." </u>
+<i>"The strongest walls are built by those who know how to break them." </i>
 </p>
 
 > [!NOTE]
