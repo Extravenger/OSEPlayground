@@ -38,8 +38,6 @@ namespace Inject
         static void Main(string[] args)
         {
 
-            Thread.Sleep(3000);
-
             byte[] buf;
             IntPtr hremoteProcess = default;
 
@@ -103,8 +101,6 @@ namespace Inject
 
                 }
             }
-
-            Thread.Sleep(3000);
 
             List<int> threadList = new List<int>();
             ProcessThreadCollection threadsBefore = Process.GetProcessById(targetProcess[0].Id).Threads;
