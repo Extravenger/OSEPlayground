@@ -7,4 +7,4 @@
 - Use the InstallUtil template to trick the victim to download the file.txt file and let the magic happen.
 
 ### <ins>MSBuild (msbuild.hta)</ins>
-- Use the file [hollow.xml](https://github.com/Extravenger/OSEPlayground/blob/main/03%20-%20CLM%20%26%20Applocker%20Bypass/3%20-%20MSBuild/hollow.xml). (Bypass defender and Applocker defautlt rules)
+- Use the file [hollow.xml](https://github.com/Extravenger/OSEPlayground/blob/main/03%20-%20CLM%20%26%20Applocker%20Bypass/3%20-%20MSBuild/hollow.xml). (Bypass defender and Applocker default rules)
