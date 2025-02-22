@@ -1,5 +1,5 @@
 > [!NOTE]
-> Some of the tools and scripts here weren’t made by me. Thanks to everyone whose code helped build this repository!
+> Some of the tools and scripts here weren’t made by me—huge thanks to everyone whose code contributed to this repository! If you're taking the course and want to help other students by sharing your technique or tool, feel free to reach out to me on Discord!
 
 > My OSEP course review: https://extravenger.github.io/osep-review/
 
