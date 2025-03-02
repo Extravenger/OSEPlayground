@@ -1,7 +1,7 @@
 > My OSEP course review: https://extravenger.github.io/osep-review/
 
 > [!NOTE]
-> Some of the tools and scripts here weren’t made by me - huge thanks to everyone whose code contributed to this repository! If you're taking the course and want to help other students by sharing your technique or tool, feel free to reach out to me on [Discord](https://extravenger.github.io/contact/)!
+> Some of the tools and scripts here weren’t made by me - huge thanks to everyone whose code contributed to this repository!
 
 - [1. Tunneling](#Tunneling)
 - [2. Map The Network](#Map-The-Network)
