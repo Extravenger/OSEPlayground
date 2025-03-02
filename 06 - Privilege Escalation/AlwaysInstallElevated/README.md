@@ -1,5 +1,6 @@
 # Leveraging AlwaysInstallElevated
 Source: https://github.com/nickvourd/Windows-Local-Privilege-Escalation-Cookbook/blob/master/Notes/AlwaysInstallElevated.md
+
 Check if enabled:
 - `reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated` 
 - `reg query HKLM\software\policies\microsoft\windows\installer /v alwaysinstallelevated`
