@@ -1,4 +1,4 @@
-> My OSEP course review: https://extravenger.github.io/osep-review/
+> My PEN-300 (OSEP) course review: https://extravenger.github.io/osep-review/
 
 > [!NOTE]
 > Some of the tools and scripts in here weren’t made by me - huge thanks to everyone whose code contributed to this repository!
