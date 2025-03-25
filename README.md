@@ -2,7 +2,7 @@
 
 > [!NOTE]
 > Some of the tools and scripts in here weren’t made by me - huge thanks to everyone whose code contributed to this repository!<br>
-> The payloads will not work using the XOR encryption of `msfvenom`, instead, use the one [here](https://github.com/chvancooten/OSEP-Code-Snippets/blob/main/XOR%20Shellcode%20Encoder/Program.cs), or just the GUI version of it [here](https://github.com/Extravenger/OSEPlayground/tree/main/13%20-%20XOR-Encoder).
+> The payloads consist shellcode will not work using the XOR encryption of `msfvenom`, instead, use the one [here](https://github.com/chvancooten/OSEP-Code-Snippets/blob/main/XOR%20Shellcode%20Encoder/Program.cs), or just the GUI version of it [here](https://github.com/Extravenger/OSEPlayground/tree/main/13%20-%20XOR-Encoder).
 
 - [1. Tunneling](#Tunneling)
 - [2. Map The Network](#Map-The-Network)
