@@ -1,7 +1,7 @@
 > My PEN-300 (OSEP) course review: https://extravenger.github.io/osep-review/
 
 > [!NOTE]
-> Some of the tools and scripts in here weren’t made by me - huge thanks to everyone whose code contributed to this repository!
+> Some of the tools and scripts in here weren’t made by me - huge thanks to everyone whose code contributed to this repository!<br>
 > The payloads might not work using the XOR encryption of msfvenom, instead, use the one [here](https://github.com/chvancooten/OSEP-Code-Snippets/blob/main/XOR%20Shellcode%20Encoder/Program.cs), or just the GUI version of it [here](https://github.com/Extravenger/OSEPlayground/tree/main/13%20-%20XOR-Encoder).
 
 - [1. Tunneling](#Tunneling)
