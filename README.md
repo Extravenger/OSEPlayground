@@ -8,7 +8,7 @@
 - [2. Map The Network](#Map-The-Network)
 - [3. AMSI-Bypass](#AMSI-Bypass)
 - [4. Windows Privilege Escalation](#Windows-Privilege-Escalation)
-- [5. Windows Defender/Firewall Commands](#Windows-Defender/Firewall-Commands)
+- [5. Windows Defender/Firewall Commands](#Windows-Defender//Firewall-Commands)
 - [6. Useful Basic Commands](#Useful-Basic-Commands)
 - [7. Escalate to SYSTEM via Schedule Task](#Escalate-to-SYSTEM-via-Schedule-Task)
 - [8. Enable RDP and RestrictedAdmin](#Enable-RDP-and-RestrictedAdmin)
