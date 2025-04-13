@@ -343,10 +343,10 @@ impacket:
 - `Get-DomainGPO | select displayname`  - Show all domain GPO's name.
 - `Get-NetGPO -ComputerName dcorp-stdamin.dollarcorp.moneycorp.local`
 
-### Abuse Trusts
+## Abuse Trusts
 
-`Get-NetForestDomain -Verbose` - All domains in the current forest.
-`Get-NetDomainTrust` - Map the trusts of the current domain.
-`Get-NetForestDomain -Verbose | Get-NetDomainTrust | ?{$_.TrustType -eq 'External'}` - Map externals trusts only.
-`Get-NetForestDomain -Forest eurocorp.local -Verbose | Get-NetDomainTrust` - Enumerate trusts for a trusting domain.
+- `Get-NetForestDomain -Verbose` - All domains in the current forest.
+- `Get-NetDomainTrust` - Map the trusts of the current domain.
+- `Get-NetForestDomain -Verbose | Get-NetDomainTrust | ?{$_.TrustType -eq 'External'}` - Map externals trusts only.
+- `Get-NetForestDomain -Forest eurocorp.local -Verbose | Get-NetDomainTrust` - Enumerate trusts for a trusting domain.
 - `Get-NetGPOGroup` -  Get GPO's which use Restricted Groups or groups.xml for interesting users.
