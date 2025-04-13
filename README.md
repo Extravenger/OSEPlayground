@@ -301,52 +301,46 @@ impacket:
 
 ## Domain/DC Information
 - `Get-NetDomain` - Query basic domain info  
-- `Get-NetDomain -Domain megacorp.com` - Query basic info on another domain.  
-- `Get-NetDomainController` - More info about the DC, IP Included.  
-- `Get-NetDomainController -Domain megacorp.com` - More info about another DC, IP Included.  
-- `Get-DomainSID` - Get the domain SID.
-- `Get-NetGroupMember -GroupName "Enterprise Admins" -Domain moneycorp.local` - Get specific user info including their SID.
-- `Get-DomainPolicy` - Get domain policy information.
+- `Get-NetDomain -Domain megacorp.com` - Query basic info of trusted domain.  
+- `Get-NetDomainController` - Information of the DC, IP Included.  
+- `Get-NetDomainController -Domain megacorp.com` - Information about another DC, IP Included.  
+- `Get-DomainSID` - Query the domain SID.
+- `Get-NetGroupMember -GroupName "Enterprise Admins" -Domain moneycorp.local` - Query specific group information including their SID.
+- `Get-DomainPolicy` - Query domain policy information.
 
 ## Domain Users/Groups Enumeration
 
 -   `Get-NetUser -UACFilter NOT_ACCOUNTDISABLE | select samaccountname, description, pwdlastset, logoncount, badpwdcount` - Basic user enabled info
--   `Get-NetUser | select samaccountname` - Get the whole AD users.
 -   `Get-NetUser | select cn` - Get the whole domain users.
 -   `Get-NetUser | select cn,description` - All user's description.
--   `Find-UserField -SearchField description -SearchTerm "built"`
 -   `Get-DomainUser -PreauthNotRequired -verbose | select samaccountname` - ASREPRoastable users. (GetNPUsers)
 -   `Get-NetUser -SPN` - Kerberoastable users
--   `Get-DomainSPNTicket -SPN "MSSQLSvc/sqlserver.targetdomain.com"` - Crack SPN password.
--   `Get-UserProperty -Properties description` - all descriptions for all users.
--   `Find-UserField -SearchField Description -SearchTerm "password"` - Search for the "password" string in the user's description.
+-   `Get-DomainSPNTicket -SPN "MSSQLSvc/sqlserver.targetdomain.com"` - Query SPN hashes (for offline cracking mostly).
+-   `Get-UserProperty -Properties description` - Descriptions of all domain users.
+-   `Find-UserField -SearchField Description -SearchTerm "password"` - Search for the `password` string in the user's description.
 -   `Get-NetGroup -GroupName *admin*` - Show all groups has the `admin` word in it.
 -   `Get-NetGroupMember -Identity "Domain Admins" -Recurse` - Get all domain admins in the domain.
 
 ## Domain Computers Enumeration
-- `Get-NetComputer` - Get the computers in the current domain.
-- `Get-NetComputer -FullData` - All the machines in the domain with full properties.
-- `Get-NetComputer -FullData | select name` - Get short computer names (not FQDN)
-- `Get-NetComputer -OperatingSystem "*Server 2016*"` - Get specific operating system computers.
+- `Get-NetComputer` - Query all domain joined computers in the current domain.
+- `Get-NetComputer -FullData` - Query all the machines in the domain with full properties.
+- `Get-NetComputer -FullData | select name` - Query NetBIOS computer names (not FQDN).
+- `Get-NetComputer -OperatingSystem "*Server 2016*"` - Query specific operating system computers.
 - `Get-NetComputer -Ping` - Check alive hosts.
 
 ## Sessions
-- `Get-NetSession -ComputerName sv-dc01` - Get active sessions on the remote computer.  
-- `Get-NetLoggedOn -ComputerName svclient08` - Get logged on users from a target computer.
-- `Get-LoggedonLocal -ComputerName megacorp.com` - Get locally logged users on a computer.
+- `Get-NetSession -ComputerName sv-dc01` - Query active sessions on the remote computer.  
+- `Get-NetLoggedOn -ComputerName svclient08` - Query logged on users from a target computer.
+- `Get-LoggedonLocal -ComputerName megacorp.com` - Query locally logged users on a computer.
 
-## Enumerate GPO applied in specific OU:
-- `(Get-DomainOU StudentMachines -FullData).gplink`
--  `Get-DomainGPO -GUID "{3E04167E-C2B6-4A9A-8FB7-C811158DC97C}"`
-- `Get-NetGPO -GPOname "{AB..81}"` - Get GPO applied on an OU.
-- `Get-DomainOU -OUName StudentMachines | %{Get-NetComputer -ADSpath $_}` - Get computers in specific OU.
+## Enumerate GPO applied in specific OU
+- `Get-NetGPO -GPOname "{AB..81}"` - Query GPO applied on an OU.
+- `Get-DomainOU -OUName StudentMachines | %{Get-NetComputer -ADSpath $_}` - Query computers in specific OU.
 - `Get-DomainGPO | select displayname`  - Show all domain GPO's name.
-- `Get-NetGPO -ComputerName dcorp-stdamin.dollarcorp.moneycorp.local`
 
 ## Abuse Trusts
 
 - `Get-NetForestDomain -Verbose` - All domains in the current forest.
 - `Get-NetDomainTrust` - Map the trusts of the current domain.
-- `Get-NetForestDomain -Verbose | Get-NetDomainTrust | ?{$_.TrustType -eq 'External'}` - Map externals trusts only.
 - `Get-NetForestDomain -Forest eurocorp.local -Verbose | Get-NetDomainTrust` - Enumerate trusts for a trusting domain.
 - `Get-NetGPOGroup` -  Get GPO's which use Restricted Groups or groups.xml for interesting users.
