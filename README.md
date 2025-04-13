@@ -17,8 +17,8 @@
 - [11. MSSQLPwner](#MSSQLPwner)
 - [12. NTLM Relay](#NTLM-Relay)
 - [13. MSFVenom Payload Generation Cheetsheet](#MSFVenom-Payload-Generation-Cheetsheet)
-- [15. BloodyAD Cheetsheet](#BloodyAD-``Cheetsheet)
-- [14. Domain Enumeration](#Domain-Enumeration)
+- [14. BloodyAD Cheetsheet](#BloodyAD-Cheetsheet)
+- [15. Domain Enumeration](#Domain-Enumeration)
 
 
 # Tunneling - Ligolo-NG
