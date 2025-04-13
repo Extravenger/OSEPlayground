@@ -1,4 +1,4 @@
-## Powershell Shellcode Runner 
+## Agent Shellcode Runner 
 
 1. Make sure to convert `agent.exe` of Ligolo to shellcode:
 
