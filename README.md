@@ -345,7 +345,7 @@ impacket:
 - `Get-DomainOU -OUName StudentMachines | %{Get-NetComputer -ADSpath $_}` - Query computers in specific OU.
 - `Get-DomainGPO | select displayname`  - Show all domain GPO's name.
 
-## Abuse Trusts
+## Enumerate Trusts
 
 - `Get-NetForestDomain -Verbose` - All domains in the current forest.
 - `Get-NetDomainTrust` - Map the trusts of the current domain.
