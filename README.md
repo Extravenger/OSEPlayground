@@ -360,6 +360,7 @@ impacket:
 | Scheduled Tasks           | HOST                     |
 | Windows File Share/PSEXEC | CIFS                     |
 | Golden Tickets            | krbtgt                   |
+| LDAP operations, included DCSync | LDAP              |
 
 # BloodyAD Cheetsheet
 
