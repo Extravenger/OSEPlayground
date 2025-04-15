@@ -19,8 +19,8 @@
 - [13. NTLM Relay](#NTLM-Relay)
 - [14. Domain Enumeration](#Domain-Enumeration)
 - [15. TGS Abuse](#TGS-Abuse)
-- [15. BloodyAD Cheetsheet](#BloodyAD-Cheetsheet)
-- [16. MSFVenom Payload Generation Cheetsheet](#MSFVenom-Payload-Generation-Cheetsheet)
+- [16. BloodyAD Cheetsheet](#BloodyAD-Cheetsheet)
+- [17. MSFVenom Payload Generation Cheetsheet](#MSFVenom-Payload-Generation-Cheetsheet)
 
 # Tunneling - Ligolo-NG
 
