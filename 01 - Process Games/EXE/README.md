@@ -8,8 +8,6 @@ This technique demonstrates classic process injection using Native Windows API f
 3. Write the shellcode to the allocated memory using `WriteProcessMemory`.
 4. Create a new thread in the remote process pointing to the shellcode with `CreateRemoteThread`.
 
----
-
 ## **NtMapInjection.cs**
 
 This method utilizes NT native APIs to create a shared memory section and map it into both the local and remote process. It’s stealthier than the classic method and avoids using easily-monitored APIs like `WriteProcessMemory`.
@@ -20,8 +18,6 @@ This method utilizes NT native APIs to create a shared memory section and map it
 3. Copy the shellcode into the local view.
 4. Map the same section into the remote process using `NtMapViewOfSection`.
 5. Create a remote thread in the target process with `CreateRemoteThread` or equivalent to execute the code.
-
----
 
 ## **NtQueueApc.cs**
 
