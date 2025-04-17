@@ -1,6 +1,6 @@
 ## **NativeProcInjection.cs**
 
-This technique demonstrates classic process injection using standard Windows API functions. It creates a remote process (usually `notepad.exe`), allocates memory in it, writes shellcode, and creates a remote thread to execute the payload.
+This technique demonstrates classic process injection using Native Windows API functions. It creates a remote process (usually `notepad.exe`), allocates memory in it, writes shellcode, and creates a remote thread to execute the payload.
 
 **High-Level Steps:**
 1. Launch a target process in suspended or running state (e.g., `CreateProcess`).
