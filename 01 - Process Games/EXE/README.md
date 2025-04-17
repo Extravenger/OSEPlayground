@@ -25,10 +25,12 @@ This method utilizes NT native APIs to create a shared memory section and map it
 This method uses Asynchronous Procedure Calls (APCs) to queue execution of shellcode in the context of a thread in a remote process. It is often used in combination with other techniques to delay execution or avoid detection.
 
 **High-Level Steps:**
-1. Open a handle to the target process and a thread within it.
-2. Allocate memory in the target process and write the shellcode using `VirtualAllocEx` and `WriteProcessMemory`.
-3. Use `NtQueueApcThread` to queue a call to the shellcode in the remote thread.
-4. Resume the thread if it's suspended, so the APC can be delivered and executed.
+
+1. Create a new process in a suspended state using `CreateProcess` with the CREATE_SUSPENDED flag.
+2. Allocate memory in the target process with `NtAllocateVirtualMemory`.
+3. Write the shellcode into the allocated memory using `NtWriteVirtualMemory`.
+4. Queue the shellcode for execution in the suspended thread using `NtQueueApcThread`.
+5. Resume the main thread using `NtResumeThread` to trigger the APC and execute the payload.
 
 ## **procHollow.cs**
 
