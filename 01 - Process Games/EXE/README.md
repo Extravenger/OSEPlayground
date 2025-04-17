@@ -29,6 +29,20 @@ This method uses Asynchronous Procedure Calls (APCs) to queue execution of shell
 3. Use `NtQueueApcThread` to queue a call to the shellcode in the remote thread.
 4. Resume the thread if it's suspended, so the APC can be delivered and executed.
 
+## **procHollow.cs**
+
+Description: Process Hollowing is an advanced injection technique where a legitimate process is started in a suspended state, its memory is unmapped, and malicious code is written into it—effectively "hollowing out" the original process. The thread is then resumed, executing the injected payload under the guise of a legitimate executable.
+
+**High-Level Steps:**
+
+1. Create a target process (e.g., svchost.exe) in a suspended state using CreateProcess with CREATE_SUSPENDED.
+2. Retrieve the base address of the main module using NtQueryInformationProcess and ReadProcessMemory.
+3. Unmap the memory of the original executable using NtUnmapViewOfSection.
+4. Allocate memory in the remote process using VirtualAllocEx.
+5. Write the malicious executable (often a PE file) into the allocated memory using WriteProcessMemory.
+6. Update the remote process’s context (entry point) with SetThreadContext.
+7. Resume the main thread with ResumeThread to execute the injected payload.
+
 ## **TryHarder.cs**
 
 Another Process Injection technique that loads the shellcode remotely.<br>
