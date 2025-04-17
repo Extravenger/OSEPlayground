@@ -3,10 +3,11 @@
 This technique demonstrates classic process injection using Native Windows API functions. It creates a remote process (usually `notepad.exe`), allocates memory in it, writes shellcode, and creates a remote thread to execute the payload.
 
 **High-Level Steps:**
-1. Launch a target process in suspended or running state (e.g., `CreateProcess`).
-2. Allocate memory in the remote process using `VirtualAllocEx`.
-3. Write the shellcode to the allocated memory using `WriteProcessMemory`.
-4. Create a new thread in the remote process pointing to the shellcode with `CreateRemoteThread`.
+
+1. Obtain a handle to the target process using `NtOpenProcess`.
+2. Allocate memory in the remote process with `NtAllocateVirtualMemory`.
+3. Write shellcode into the allocated memory using `NtWriteVirtualMemory`.
+4. Create a remote thread in the target process using `NtCreateThreadEx` to execute the shellcode.
 
 ## **NtMapInjection.cs**
 
