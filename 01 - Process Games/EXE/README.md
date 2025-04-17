@@ -31,7 +31,7 @@ This method uses Asynchronous Procedure Calls (APCs) to queue execution of shell
 
 ## **procHollow.cs**
 
-Description: Process Hollowing is an advanced injection technique where a legitimate process is started in a suspended state, its memory is unmapped, and malicious code is written into it—effectively "hollowing out" the original process. The thread is then resumed, executing the injected payload under the guise of a legitimate executable.
+An advanced injection technique where a legitimate process is started in a suspended state, its memory is unmapped, and malicious code is written into it—effectively "hollowing out" the original process. The thread is then resumed, executing the injected payload under the guise of a legitimate executable.
 
 **High-Level Steps:**
 
