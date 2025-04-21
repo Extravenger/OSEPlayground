@@ -1,5 +1,3 @@
-# Execution Techniques
-
 ## InstallUtil (installutil.hta)
 
 *Note: If* `curl` *is unavailable on the target system, use* `bitsadmin` *as an alternative:*
