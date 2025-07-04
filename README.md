@@ -1,5 +1,7 @@
 # OSEPlayground 🛝
 
+![GitHub License](https://img.shields.io/github/license/Extravenger/OSEPlayground)
+
 > [!NOTE]
 > Some of the tools and scripts in here weren’t made by me - huge thanks to everyone whose code contributed to this repository!<br>
 > Payloads consisting shellcode will not work with the XOR encryption of msfvenom. Instead, encrypt the shellcode by using the one provided [here](https://github.com/chvancooten/OSEP-Code-Snippets/blob/main/XOR%20Shellcode%20Encoder/Program.cs) or the GUI version available [here](https://github.com/Extravenger/OSEPlayground/tree/main/13%20-%20XOR-Encoder).
