@@ -1,7 +1,7 @@
 ## Constrained Language Mode (CLM) Bypass
 
-- The `clm-bypass.xml` source file enables bypassing Constrained Language Mode (CLM) to achieve FullLanguage mode within the same session. To utilize, transfer the file to the target system and execute:
-  - `C:\Windows\Microsoft.NET\Framework64\v4.0.30319\msbuild.exe clm-bypass.xml`
+- The `CLM-Bypass.xml` source file enables bypassing Constrained Language Mode (CLM) to achieve FullLanguage mode within the same session. To utilize, transfer the file to the target system and execute:
+  - `C:\Windows\Microsoft.NET\Framework64\v4.0.30319\msbuild.exe CLM-Bypass.xml`
 
 ## Process Hollowing
 
