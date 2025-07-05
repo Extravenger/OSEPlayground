@@ -1,8 +1,3 @@
-## Constrained Language Mode (CLM) Bypass
-
-- The `CLM-Bypass.xml` source file enables bypassing Constrained Language Mode (CLM) to achieve FullLanguage mode within the same session. To utilize, transfer the file to the target system and execute:
-  - `C:\Windows\Microsoft.NET\Framework64\v4.0.30319\msbuild.exe CLM-Bypass.xml`
-
 ## Process Hollowing
 
 - The `hollow.xml` file facilitates process hollowing, offering a stable method capable of executing both 32-bit and 64-bit shellcode while evading Windows Defender detection. To deploy, transfer the file to the target system and execute:
