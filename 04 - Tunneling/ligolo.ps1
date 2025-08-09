@@ -6,7 +6,7 @@ if ([System.IntPtr]::Size -ne 8) {
 
 # Step 2: Start svchost.exe in suspended mode
 Write-Host "Starting notepad.exe..."
-$notepadProcess = Start-Process -FilePath "C:\Windows\System32\notepad.exe" -WindowStyle Hidden -PassThru -ArgumentList "/suspend"
+$notepadProcess = Start-Process -FilePath "C:\Windows\System32\notepad.exe" -WindowStyle Hidden -PassThru -ArgumentList "none.txt"
 $procid = $notepadProcess.Id
 Write-Host "Started notepad.exe with PID: $procid"
 
